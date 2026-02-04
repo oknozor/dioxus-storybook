@@ -1,6 +1,36 @@
 use proc_macro::TokenStream;
+use proc_macro2::TokenStream as TokenStream2;
 use quote::{format_ident, quote};
 use syn::{parse_macro_input, Fields, FnArg, Ident, ItemFn, ItemStruct, Pat, Type};
+
+/// Common field information used by both struct and function storybook processing
+struct FieldInfo {
+    name: Ident,
+    ty: Type,
+}
+
+/// Metadata about the component being processed
+struct ComponentMeta {
+    component_name: Ident,
+    component_name_str: String,
+    props_struct_name: Ident,
+    story_props_name: Ident,
+    tag: String,
+}
+
+impl ComponentMeta {
+    fn render_fn_name(&self) -> Ident {
+        format_ident!("__storybook_render_with_props_{}", self.component_name_str.to_lowercase())
+    }
+
+    fn get_stories_fn_name(&self) -> Ident {
+        format_ident!("__storybook_get_stories_{}", self.component_name_str.to_lowercase())
+    }
+
+    fn get_prop_schema_fn_name(&self) -> Ident {
+        format_ident!("__storybook_get_prop_schema_{}", self.component_name_str.to_lowercase())
+    }
+}
 
 /// Marks a component for inclusion in the storybook.
 ///
@@ -124,94 +154,85 @@ fn get_type_display_name(ty: &Type) -> String {
     }
 }
 
-fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStream {
-    let struct_name = &input.ident;
-    let struct_name_str = struct_name.to_string();
-
-    // The struct name should end with "Props", and the component name is without "Props"
-    let component_name_str = struct_name_str
-        .strip_suffix("Props")
-        .unwrap_or(&struct_name_str);
-    let component_name = format_ident!("{}", component_name_str);
-    let tag = &attr_args.tag;
-
-    let story_props_name = format_ident!("{}StoryProps", component_name_str);
-    let render_fn_name =
-        format_ident!("__storybook_render_with_props_{}", component_name_str.to_lowercase());
-    let get_stories_fn_name =
-        format_ident!("__storybook_get_stories_{}", component_name_str.to_lowercase());
-    let get_prop_schema_fn_name =
-        format_ident!("__storybook_get_prop_schema_{}", component_name_str.to_lowercase());
-
-    // Extract fields from the struct
-    let fields = match &input.fields {
-        Fields::Named(named) => &named.named,
-        _ => {
-            return TokenStream::from(
-                syn::Error::new_spanned(&input, "storybook only supports structs with named fields")
-                    .to_compile_error(),
-            );
-        }
-    };
-
-    // Generate StoryProps fields - map non-serializable types to ()
-    // For Signal types, use the inner type instead
-    let story_props_fields: Vec<_> = fields
+/// Generate StoryProps field definitions from field info
+fn generate_story_props_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
+    fields
         .iter()
         .map(|field| {
-            let field_name = &field.ident;
-            let field_ty = &field.ty;
-            if is_non_serializable_type(field_ty) {
-                quote! { pub #field_name: () }
-            } else if let Some(inner_ty_str) = extract_signal_inner_type_str(field_ty) {
-                // For Signal<T>, use T as the field type
+            let name = &field.name;
+            let ty = &field.ty;
+            if is_non_serializable_type(ty) {
+                quote! { pub #name: () }
+            } else if let Some(inner_ty_str) = extract_signal_inner_type_str(ty) {
                 let inner_ty: Type = syn::parse_str(&inner_ty_str).expect("Failed to parse inner type");
-                quote! { pub #field_name: #inner_ty }
+                quote! { pub #name: #inner_ty }
             } else {
-                quote! { pub #field_name: #field_ty }
+                quote! { pub #name: #ty }
             }
         })
-        .collect();
+        .collect()
+}
 
-    // Generate conversion from StoryProps to Props (for editable fields)
-    // and from Props to StoryProps (for serialization)
-    // For Signal types, read the signal value
-    let props_to_story_fields: Vec<_> = fields
+/// Generate Props to StoryProps field conversions
+fn generate_props_to_story_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
+    fields
         .iter()
         .map(|field| {
-            let field_name = &field.ident;
-            let field_ty = &field.ty;
-            if is_non_serializable_type(field_ty) {
-                quote! { #field_name: () }
-            } else if is_editable_signal_type(field_ty) {
-                // For Signal<T>, read the value from the signal
-                quote! { #field_name: props.#field_name.read().clone() }
+            let name = &field.name;
+            let ty = &field.ty;
+            if is_non_serializable_type(ty) {
+                quote! { #name: () }
+            } else if is_editable_signal_type(ty) {
+                quote! { #name: props.#name.read().clone() }
             } else {
-                quote! { #field_name: props.#field_name.clone() }
+                quote! { #name: props.#name.clone() }
             }
         })
-        .collect();
+        .collect()
+}
 
-    // For Signal types, wrap the value in a new Signal
-    let story_to_props_fields: Vec<_> = fields
+/// Generate StoryProps to Props field conversions
+fn generate_story_to_props_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
+    fields
         .iter()
         .map(|field| {
-            let field_name = &field.ident;
-            let field_ty = &field.ty;
-            if is_non_serializable_type(field_ty) {
-                // Use the default value from StorybookDefault for non-serializable fields
-                quote! { #field_name: default_props.#field_name.clone() }
-            } else if is_editable_signal_type(field_ty) {
-                // For Signal<T>, wrap the value in a new Signal and convert to expected type
-                quote! { #field_name: dioxus::prelude::Signal::new(story_props.#field_name.clone()).into() }
+            let name = &field.name;
+            let ty = &field.ty;
+            if is_non_serializable_type(ty) {
+                quote! { #name: default_props.#name.clone() }
+            } else if is_editable_signal_type(ty) {
+                quote! { #name: dioxus::prelude::Signal::new(story_props.#name.clone()).into() }
             } else {
-                quote! { #field_name: story_props.#field_name.clone() }
+                quote! { #name: story_props.#name.clone() }
             }
         })
-        .collect();
+        .collect()
+}
 
-    let expanded = quote! {
-        #input
+/// Generate the complete storybook code from metadata and fields
+fn generate_storybook_code(
+    meta: &ComponentMeta,
+    fields: &[FieldInfo],
+    original_item: TokenStream2,
+) -> TokenStream2 {
+    let ComponentMeta {
+        component_name,
+        component_name_str,
+        props_struct_name,
+        story_props_name,
+        tag,
+    } = meta;
+
+    let render_fn_name = meta.render_fn_name();
+    let get_stories_fn_name = meta.get_stories_fn_name();
+    let get_prop_schema_fn_name = meta.get_prop_schema_fn_name();
+
+    let story_props_fields = generate_story_props_fields(fields);
+    let props_to_story_fields = generate_props_to_story_fields(fields);
+    let story_to_props_fields = generate_story_to_props_fields(fields);
+
+    quote! {
+        #original_item
 
         /// Auto-generated story props struct for storybook UI editing.
         /// Non-serializable fields (EventHandler, Callback, Element, etc.) are mapped to ().
@@ -223,16 +244,16 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
 
         impl #story_props_name {
             /// Convert from the original Props to StoryProps
-            pub fn from_props(props: &#struct_name) -> Self {
+            pub fn from_props(props: &#props_struct_name) -> Self {
                 Self {
                     #(#props_to_story_fields),*
                 }
             }
 
             /// Convert StoryProps back to Props, using defaults for non-serializable fields
-            pub fn to_props(&self, default_props: &#struct_name) -> #struct_name {
+            pub fn to_props(&self, default_props: &#props_struct_name) -> #props_struct_name {
                 let story_props = self;
-                #struct_name {
+                #props_struct_name {
                     #(#story_to_props_fields),*
                 }
             }
@@ -243,7 +264,7 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
             use storybook::dioxus::prelude::*;
             use storybook::Stories;
 
-            let stories = <#struct_name as Stories>::stories();
+            let stories = <#props_struct_name as Stories>::stories();
             let default_props = stories.into_iter().next().expect("At least one story must be defined").props;
 
             // Try to parse the JSON, fall back to defaults on error
@@ -260,7 +281,7 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         #[doc(hidden)]
         fn #get_stories_fn_name() -> Vec<storybook::StoryInfo> {
             use storybook::Stories;
-            <#struct_name as Stories>::stories()
+            <#props_struct_name as Stories>::stories()
                 .into_iter()
                 .map(|story| {
                     let story_props = #story_props_name::from_props(&story.props);
@@ -287,7 +308,51 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
                 get_prop_schema: #get_prop_schema_fn_name,
             }
         }
+    }
+}
+
+fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStream {
+    let struct_name = &input.ident;
+    let struct_name_str = struct_name.to_string();
+
+    // The struct name should end with "Props", and the component name is without "Props"
+    let component_name_str = struct_name_str
+        .strip_suffix("Props")
+        .unwrap_or(&struct_name_str);
+
+    // Extract fields from the struct
+    let syn_fields = match &input.fields {
+        Fields::Named(named) => &named.named,
+        _ => {
+            return TokenStream::from(
+                syn::Error::new_spanned(&input, "storybook only supports structs with named fields")
+                    .to_compile_error(),
+            );
+        }
     };
+
+    // Convert to FieldInfo format
+    let fields: Vec<FieldInfo> = syn_fields
+        .iter()
+        .filter_map(|field| {
+            field.ident.as_ref().map(|name| FieldInfo {
+                name: name.clone(),
+                ty: field.ty.clone(),
+            })
+        })
+        .collect();
+
+    // Build component metadata
+    let meta = ComponentMeta {
+        component_name: format_ident!("{}", component_name_str),
+        component_name_str: component_name_str.to_string(),
+        props_struct_name: struct_name.clone(),
+        story_props_name: format_ident!("{}StoryProps", component_name_str),
+        tag: attr_args.tag.clone(),
+    };
+
+    let original_item = quote! { #input };
+    let expanded = generate_storybook_code(&meta, &fields, original_item);
 
     TokenStream::from(expanded)
 }
@@ -295,204 +360,42 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
 fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStream {
     let fn_name = &input.sig.ident;
     let fn_name_str = fn_name.to_string();
-    let tag = &attr_args.tag;
 
     // Check if this is a props struct pattern (single argument named "props" with a type ending in "Props")
-    let is_props_struct = is_props_struct_pattern(&input);
+    // For props struct pattern, the storybook attribute should be on the Props struct instead
+    if is_props_struct_pattern(&input) {
+        return TokenStream::from(quote! { #input });
+    }
 
-    let expanded = if is_props_struct {
-        // For props struct pattern, the storybook attribute should be on the Props struct instead
-        // Generate a no-op registration that won't conflict
-        quote! {
-            #input
-        }
-    } else {
-        // Generate props struct name (Dioxus generates ComponentNameProps)
-        let props_struct_name = format_ident!("{}Props", fn_name_str);
-        let story_props_name = format_ident!("{}StoryProps", fn_name_str);
-        let render_fn_name =
-            format_ident!("__storybook_render_with_props_{}", fn_name_str.to_lowercase());
-        let get_stories_fn_name =
-            format_ident!("__storybook_get_stories_{}", fn_name_str.to_lowercase());
-        let get_prop_fields_fn_name =
-            format_ident!("__storybook_get_prop_fields_{}", fn_name_str.to_lowercase());
-        let get_prop_schema_fn_name =
-            format_ident!("__storybook_get_prop_schema_{}", fn_name_str.to_lowercase());
-
-        // Extract function parameters (these become the props struct fields)
-        let params: Vec<_> = input
-            .sig
-            .inputs
-            .iter()
-            .filter_map(|arg| {
-                if let FnArg::Typed(pat_type) = arg {
-                    if let Pat::Ident(pat_ident) = &*pat_type.pat {
-                        let name = &pat_ident.ident;
-                        let ty = &*pat_type.ty;
-                        return Some((name.clone(), ty.clone()));
-                    }
-                }
-                None
-            })
-            .collect();
-
-        // Generate StoryProps fields - map non-serializable types to ()
-        // For Signal types, use the inner type instead of the full Signal type
-        let story_props_fields: Vec<_> = params
-            .iter()
-            .map(|(name, ty)| {
-                if is_non_serializable_type(ty) {
-                    quote! { pub #name: () }
-                } else if is_editable_signal_type(ty) {
-                    // For Signal<T>, ReadSignal<T>, WriteSignal<T>, use the inner type T
-                    if let Some(inner_type_str) = extract_signal_inner_type_str(ty) {
-                        let inner_ty: syn::Type = syn::parse_str(&inner_type_str).unwrap();
-                        quote! { pub #name: #inner_ty }
-                    } else {
-                        quote! { pub #name: #ty }
-                    }
-                } else {
-                    quote! { pub #name: #ty }
-                }
-            })
-            .collect();
-
-        // Generate field info for the UI
-        let field_infos: Vec<_> = params
-            .iter()
-            .map(|(name, ty)| {
-                let field_name = name.to_string();
-                let editable = !is_non_serializable_type(ty);
-                let type_name = get_type_display_name(ty);
-                quote! {
-                    storybook::PropFieldInfo {
-                        name: #field_name,
-                        editable: #editable,
-                        type_name: #type_name,
-                    }
-                }
-            })
-            .collect();
-
-        // Generate conversion from Props to StoryProps (for serialization)
-        // For Signal types, read the signal value
-        let props_to_story_fields: Vec<_> = params
-            .iter()
-            .map(|(name, ty)| {
-                if is_non_serializable_type(ty) {
-                    quote! { #name: () }
-                } else if is_editable_signal_type(ty) {
-                    // For Signal types, read the current value
-                    quote! { #name: props.#name.read().clone() }
-                } else {
-                    quote! { #name: props.#name.clone() }
-                }
-            })
-            .collect();
-
-        // Generate conversion from StoryProps to Props
-        // For Signal types, wrap the value in a new Signal
-        let story_to_props_fields: Vec<_> = params
-            .iter()
-            .map(|(name, ty)| {
-                if is_non_serializable_type(ty) {
-                    // Use the default value from StorybookDefault for non-serializable fields
-                    quote! { #name: default_props.#name.clone() }
-                } else if is_editable_signal_type(ty) {
-                    // For Signal types, wrap the value in a new Signal and convert to expected type
-                    quote! { #name: dioxus::prelude::Signal::new(story_props.#name.clone()).into() }
-                } else {
-                    quote! { #name: story_props.#name.clone() }
-                }
-            })
-            .collect();
-
-        quote! {
-            #input
-
-            /// Auto-generated story props struct for storybook UI editing.
-            /// Non-serializable fields (EventHandler, Callback, Element, etc.) are mapped to ().
-            #[derive(Clone, storybook::serde::Serialize, storybook::serde::Deserialize, storybook::schemars::JsonSchema)]
-            #[doc(hidden)]
-            pub struct #story_props_name {
-                #(#story_props_fields),*
-            }
-
-            impl #story_props_name {
-                /// Convert from the original Props to StoryProps
-                pub fn from_props(props: &#props_struct_name) -> Self {
-                    Self {
-                        #(#props_to_story_fields),*
-                    }
-                }
-
-                /// Convert StoryProps back to Props, using defaults for non-serializable fields
-                pub fn to_props(&self, default_props: &#props_struct_name) -> #props_struct_name {
-                    let story_props = self;
-                    #props_struct_name {
-                        #(#story_to_props_fields),*
-                    }
+    // Extract function parameters as FieldInfo
+    let fields: Vec<FieldInfo> = input
+        .sig
+        .inputs
+        .iter()
+        .filter_map(|arg| {
+            if let FnArg::Typed(pat_type) = arg {
+                if let Pat::Ident(pat_ident) = &*pat_type.pat {
+                    return Some(FieldInfo {
+                        name: pat_ident.ident.clone(),
+                        ty: (*pat_type.ty).clone(),
+                    });
                 }
             }
+            None
+        })
+        .collect();
 
-            #[doc(hidden)]
-            fn #render_fn_name(props_json: &str) -> storybook::dioxus::prelude::Element {
-                use storybook::dioxus::prelude::*;
-                use storybook::Stories;
-
-                let stories = <#props_struct_name as Stories>::stories();
-                let default_props = stories.into_iter().next().expect("At least one story must be defined").props;
-
-                // Try to parse the JSON, fall back to defaults on error
-                let props = match storybook::serde_json::from_str::<#story_props_name>(props_json) {
-                    Ok(story_props) => story_props.to_props(&default_props),
-                    Err(_) => default_props,
-                };
-
-                rsx! {
-                    #fn_name { ..props }
-                }
-            }
-
-            #[doc(hidden)]
-            fn #get_stories_fn_name() -> Vec<storybook::StoryInfo> {
-                use storybook::Stories;
-                <#props_struct_name as Stories>::stories()
-                    .into_iter()
-                    .map(|story| {
-                        let story_props = #story_props_name::from_props(&story.props);
-                        storybook::StoryInfo {
-                            title: story.title.to_string(),
-                            description: story.description.map(|d| d.to_string()),
-                            props_json: storybook::serde_json::to_string_pretty(&story_props).unwrap_or_default(),
-                        }
-                    })
-                    .collect()
-            }
-
-            #[doc(hidden)]
-            fn #get_prop_fields_fn_name() -> Vec<storybook::PropFieldInfo> {
-                vec![
-                    #(#field_infos),*
-                ]
-            }
-
-            #[doc(hidden)]
-            fn #get_prop_schema_fn_name() -> storybook::schemars::schema::RootSchema {
-                storybook::schemars::schema_for!(#story_props_name)
-            }
-
-            storybook::inventory::submit! {
-                storybook::ComponentRegistration {
-                    name: #fn_name_str,
-                    tag: #tag,
-                    render_with_props: #render_fn_name,
-                    get_stories: #get_stories_fn_name,
-                    get_prop_schema: #get_prop_schema_fn_name,
-                }
-            }
-        }
+    // Build component metadata
+    let meta = ComponentMeta {
+        component_name: fn_name.clone(),
+        component_name_str: fn_name_str.clone(),
+        props_struct_name: format_ident!("{}Props", fn_name_str),
+        story_props_name: format_ident!("{}StoryProps", fn_name_str),
+        tag: attr_args.tag,
     };
+
+    let original_item = quote! { #input };
+    let expanded = generate_storybook_code(&meta, &fields, original_item);
 
     TokenStream::from(expanded)
 }
