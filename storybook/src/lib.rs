@@ -121,8 +121,6 @@ pub struct ComponentRegistration {
     pub render_with_props: RenderWithPropsFn,
     /// Gets all stories for this component
     pub get_stories: GetStoriesFn,
-    /// Gets information about each prop field (deprecated, use get_prop_schema instead)
-    pub get_prop_fields: GetPropFieldsFn,
     /// Gets the JSON schema for the props struct
     pub get_prop_schema: GetPropSchemaFn,
 }

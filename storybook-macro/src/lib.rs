@@ -140,8 +140,6 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         format_ident!("__storybook_render_with_props_{}", component_name_str.to_lowercase());
     let get_stories_fn_name =
         format_ident!("__storybook_get_stories_{}", component_name_str.to_lowercase());
-    let get_prop_fields_fn_name =
-        format_ident!("__storybook_get_prop_fields_{}", component_name_str.to_lowercase());
     let get_prop_schema_fn_name =
         format_ident!("__storybook_get_prop_schema_{}", component_name_str.to_lowercase());
 
@@ -171,24 +169,6 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
                 quote! { pub #field_name: #inner_ty }
             } else {
                 quote! { pub #field_name: #field_ty }
-            }
-        })
-        .collect();
-
-    // Generate field info for the UI
-    let field_infos: Vec<_> = fields
-        .iter()
-        .map(|field| {
-            let field_name = field.ident.as_ref().unwrap().to_string();
-            let field_ty = &field.ty;
-            let editable = !is_non_serializable_type(field_ty);
-            let type_name = get_type_display_name(field_ty);
-            quote! {
-                storybook::PropFieldInfo {
-                    name: #field_name,
-                    editable: #editable,
-                    type_name: #type_name,
-                }
             }
         })
         .collect();
@@ -294,13 +274,6 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         }
 
         #[doc(hidden)]
-        fn #get_prop_fields_fn_name() -> Vec<storybook::PropFieldInfo> {
-            vec![
-                #(#field_infos),*
-            ]
-        }
-
-        #[doc(hidden)]
         fn #get_prop_schema_fn_name() -> storybook::schemars::schema::RootSchema {
             storybook::schemars::schema_for!(#story_props_name)
         }
@@ -311,7 +284,6 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
                 tag: #tag,
                 render_with_props: #render_fn_name,
                 get_stories: #get_stories_fn_name,
-                get_prop_fields: #get_prop_fields_fn_name,
                 get_prop_schema: #get_prop_schema_fn_name,
             }
         }
@@ -516,7 +488,6 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
                     tag: #tag,
                     render_with_props: #render_fn_name,
                     get_stories: #get_stories_fn_name,
-                    get_prop_fields: #get_prop_fields_fn_name,
                     get_prop_schema: #get_prop_schema_fn_name,
                 }
             }
