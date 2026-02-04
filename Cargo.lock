@@ -1191,11 +1191,7 @@ name = "dioxus-storybook"
 version = "0.1.0"
 dependencies = [
  "cadence-ui",
- "dioxus",
- "schemars",
- "serde_json",
  "storybook",
- "web-sys",
 ]
 
 [[package]]
