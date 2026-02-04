@@ -3539,6 +3539,7 @@ dependencies = [
  "serde",
  "serde_json",
  "storybook-macro",
+ "web-sys",
 ]
 
 [[package]]

@@ -10,3 +10,6 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 schemars = { version = "0.8", features = ["derive"] }
 inventory = { workspace = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-sys = { workspace = true }
