@@ -1,0 +1,11 @@
+[package]
+name = "storybook"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+storybook-macro = { path = "../storybook-macro" }
+dioxus = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+inventory = { workspace = true }
