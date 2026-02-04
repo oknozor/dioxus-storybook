@@ -7,6 +7,7 @@
 
 pub use dioxus;
 pub use inventory;
+pub use schemars;
 pub use serde;
 pub use serde_json;
 pub use storybook_macro::storybook;
@@ -84,8 +85,11 @@ pub type RenderWithPropsFn = fn(&str) -> Element;
 /// Type alias for getting all stories with their props as JSON
 pub type GetStoriesFn = fn() -> Vec<StoryInfo>;
 
-/// Type alias for getting prop field info
+/// Type alias for getting prop field info (deprecated, use GetPropSchemaFn instead)
 pub type GetPropFieldsFn = fn() -> Vec<PropFieldInfo>;
+
+/// Type alias for getting the JSON schema for props
+pub type GetPropSchemaFn = fn() -> schemars::schema::RootSchema;
 
 /// Runtime representation of a story with serialized props
 #[derive(Clone, Debug, PartialEq)]
@@ -117,8 +121,10 @@ pub struct ComponentRegistration {
     pub render_with_props: RenderWithPropsFn,
     /// Gets all stories for this component
     pub get_stories: GetStoriesFn,
-    /// Gets information about each prop field
+    /// Gets information about each prop field (deprecated, use get_prop_schema instead)
     pub get_prop_fields: GetPropFieldsFn,
+    /// Gets the JSON schema for the props struct
+    pub get_prop_schema: GetPropSchemaFn,
 }
 
 impl std::fmt::Debug for ComponentRegistration {

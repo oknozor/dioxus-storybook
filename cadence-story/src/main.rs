@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
+use schemars::schema::{InstanceType, RootSchema, Schema, SchemaObject, SingleOrVec};
 use std::collections::HashMap;
-use storybook::{find_component, PropFieldInfo, StoryInfo};
+use storybook::{find_component, StoryInfo};
 
 mod components;
 use components::{ComponentInfo, ComponentTree};
@@ -98,7 +99,7 @@ fn StoryCard(
     component_name: String,
     story_index: usize,
     render_fn: fn(&str) -> Element,
-    prop_fields: Vec<PropFieldInfo>,
+    prop_schema: RootSchema,
     #[props(default)]
     attribute: Vec<Attribute>,
 ) -> Element {
@@ -195,7 +196,7 @@ fn StoryCard(
                     "Props Editor"
                 }
                 if props_expanded() {
-                    PropsEditor { props_json, prop_fields: prop_fields.clone() }
+                    PropsEditor { props_json, schema: prop_schema.clone() }
                 }
             }
         }
@@ -220,6 +221,9 @@ fn ComponentPreview(
     let current_stories = (registration.get_stories)();
     let render_fn = registration.render_with_props;
 
+    // Get the schema for this component's props
+    let prop_schema = (registration.get_prop_schema)();
+
     rsx! {
         div { class: "preview-container",
             h2 { "{component_name}" }
@@ -233,7 +237,143 @@ fn ComponentPreview(
                         component_name: component_name.clone(),
                         story_index: index,
                         render_fn,
-                        prop_fields: (registration.get_prop_fields)()
+                        prop_schema: prop_schema.clone()
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Information about a property field extracted from JSON Schema
+#[derive(Clone, Debug, PartialEq)]
+struct SchemaFieldInfo {
+    name: String,
+    type_name: String,
+    instance_type: Option<InstanceType>,
+    is_required: bool,
+    description: Option<String>,
+}
+
+/// Extract field information from a JSON Schema
+fn extract_fields_from_schema(schema: &RootSchema) -> Vec<SchemaFieldInfo> {
+    let mut fields = Vec::new();
+
+    // Get the required fields set
+    let required: std::collections::HashSet<_> = schema
+        .schema
+        .object
+        .as_ref()
+        .map(|obj| obj.required.iter().cloned().collect())
+        .unwrap_or_default();
+
+    // Get properties from the schema
+    if let Some(obj) = &schema.schema.object {
+        for (name, prop_schema) in &obj.properties {
+            let (type_name, instance_type, description) = match prop_schema {
+                Schema::Object(schema_obj) => {
+                    let instance_type = schema_obj
+                        .instance_type
+                        .as_ref()
+                        .and_then(|t| match t {
+                            SingleOrVec::Single(t) => Some(**t),
+                            SingleOrVec::Vec(v) => v.first().copied(),
+                        });
+                    let type_name = get_type_name_from_schema(schema_obj, &schema.definitions);
+                    let desc = schema_obj
+                        .metadata
+                        .as_ref()
+                        .and_then(|m| m.description.clone());
+                    (type_name, instance_type, desc)
+                }
+                Schema::Bool(_) => ("any".to_string(), None, None),
+            };
+
+            fields.push(SchemaFieldInfo {
+                name: name.clone(),
+                type_name,
+                instance_type,
+                is_required: required.contains(name),
+                description,
+            });
+        }
+    }
+
+    // Sort fields: required first, then alphabetically
+    fields.sort_by(|a, b| {
+        match (a.is_required, b.is_required) {
+            (true, false) => std::cmp::Ordering::Less,
+            (false, true) => std::cmp::Ordering::Greater,
+            _ => a.name.cmp(&b.name),
+        }
+    });
+
+    fields
+}
+
+/// Get a human-readable type name from a schema object
+fn get_type_name_from_schema(
+    schema: &SchemaObject,
+    definitions: &schemars::Map<String, Schema>,
+) -> String {
+    // Check for $ref first
+    if let Some(ref_path) = &schema.reference {
+        // Extract the type name from the reference path (e.g., "#/definitions/MyType" -> "MyType")
+        return ref_path.rsplit('/').next().unwrap_or("unknown").to_string();
+    }
+
+    // Check instance type
+    if let Some(instance_type) = &schema.instance_type {
+        match instance_type {
+            SingleOrVec::Single(t) => return format_instance_type(**t),
+            SingleOrVec::Vec(types) => {
+                let type_strs: Vec<_> = types.iter().map(|t| format_instance_type(*t)).collect();
+                return type_strs.join(" | ");
+            }
+        }
+    }
+
+    // Check for enum values
+    if let Some(enum_values) = &schema.enum_values {
+        if !enum_values.is_empty() {
+            return "enum".to_string();
+        }
+    }
+
+    "unknown".to_string()
+}
+
+/// Format an instance type as a string
+fn format_instance_type(t: InstanceType) -> String {
+    match t {
+        InstanceType::Null => "null".to_string(),
+        InstanceType::Boolean => "bool".to_string(),
+        InstanceType::Object => "object".to_string(),
+        InstanceType::Array => "array".to_string(),
+        InstanceType::Number => "number".to_string(),
+        InstanceType::String => "String".to_string(),
+        InstanceType::Integer => "integer".to_string(),
+    }
+}
+
+#[component]
+fn PropsEditor(props_json: Signal<String>, schema: RootSchema) -> Element {
+    let fields = extract_fields_from_schema(&schema);
+
+    rsx! {
+        div { class: "props-editor",
+            if fields.is_empty() {
+                div { class: "props-empty",
+                    "No editable props available."
+                    br {}
+                    "Use #[storybook] on the Props struct for full editing support."
+                }
+            } else {
+                for field in fields.iter() {
+                    PropFieldEditor {
+                        key: "{field.name}",
+                        field: field.clone(),
+                        props_json
                     }
                 }
             }
@@ -242,37 +382,18 @@ fn ComponentPreview(
 }
 
 #[component]
-fn PropsEditor(mut props_json: Signal<String>, prop_fields: Vec<PropFieldInfo>) -> Element {
-    debug!("PropFieldInfo: {:?}", prop_fields);
-    debug!("Signal<String>: {:?}", props_json());
-    rsx! {
-        div { class: "props-editor",
-            if prop_fields.is_empty() {
-                div { class: "props-empty",
-                    "No editable props available."
-                    br {}
-                    "Use #[storybook] on the Props struct for full editing support."
-                }
-            } else {
-                for field in prop_fields.iter() {
-                    PropFieldEditor { field: field.clone(), props_json }
-                }
-            }
-        }
-    }
-}
+fn PropFieldEditor(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Element {
+    let field_name = field.name.clone();
 
-#[component]
-fn PropFieldEditor(field: PropFieldInfo, mut props_json: Signal<String>) -> Element {
-    let field_name = field.name;
+    // Check if this is a non-editable field (unit type represented as null)
+    let is_non_editable = field.instance_type == Some(InstanceType::Null);
 
-    if !field.editable {
-        // Non-editable field (EventHandler, Callback, etc.)
+    if is_non_editable {
         return rsx! {
             div { class: "prop-field non-editable",
                 label { class: "prop-label", "{field_name}" }
                 span { class: "prop-value-placeholder", "—" }
-                span { class: "prop-type", "{field.type_name}" }
+                span { class: "prop-type", "non-editable" }
             }
         };
     }
@@ -280,7 +401,7 @@ fn PropFieldEditor(field: PropFieldInfo, mut props_json: Signal<String>) -> Elem
     // Get the current value for this field by parsing the JSON
     let current_value = serde_json::from_str::<serde_json::Value>(&props_json())
         .ok()
-        .and_then(|v| v.get(field_name).cloned())
+        .and_then(|v| v.get(&field_name).cloned())
         .map(|v| {
             if v.is_string() {
                 v.as_str().unwrap_or("").to_string()
@@ -290,49 +411,95 @@ fn PropFieldEditor(field: PropFieldInfo, mut props_json: Signal<String>) -> Elem
         })
         .unwrap_or_default();
 
-    let field_name_owned = field_name.to_string();
-    let field_type = field.type_name.to_string();
+    let field_name_for_handler = field_name.clone();
+    let instance_type = field.instance_type;
+    let type_name = field.type_name.clone();
+    let required_marker = if field.is_required { "*" } else { "" };
 
-    rsx! {
-        div { class: "prop-field editable",
-            label { class: "prop-label", "{field_name}" }
-            input {
-                class: "prop-input",
-                r#type: "text",
-                value: "{current_value}",
-                oninput: move |e| {
-                    let new_value = e.value();
-                    if let Ok(mut json_value) = serde_json::from_str::<
-                        serde_json::Value,
-                    >(&props_json()) {
-                        if let Some(obj) = json_value.as_object_mut() {
-                            let parsed_value = parse_input_value(&new_value, &field_type);
-                            obj.insert(field_name_owned.clone(), parsed_value);
-                            if let Ok(new_json) = serde_json::to_string_pretty(&json_value) {
-                                props_json.set(new_json);
-                            }
+    // Render different input types based on schema type
+    match field.instance_type {
+        Some(InstanceType::Boolean) => {
+            let is_checked = current_value == "true";
+            rsx! {
+                div { class: "prop-field editable",
+                    label { class: "prop-label", "{field_name}{required_marker}" }
+                    input {
+                        class: "prop-input prop-checkbox",
+                        r#type: "checkbox",
+                        checked: is_checked,
+                        onchange: move |e| {
+                            let new_value = e.checked();
+                            update_prop_value(&mut props_json, &field_name_for_handler, serde_json::Value::Bool(new_value));
                         }
                     }
+                    span { class: "prop-type", "{type_name}" }
                 }
             }
-            span { class: "prop-type", "{field.type_name}" }
+        }
+        Some(InstanceType::Integer) | Some(InstanceType::Number) => {
+            rsx! {
+                div { class: "prop-field editable",
+                    label { class: "prop-label", "{field_name}{required_marker}" }
+                    input {
+                        class: "prop-input",
+                        r#type: "number",
+                        value: "{current_value}",
+                        oninput: move |e| {
+                            let new_value = e.value();
+                            let parsed = parse_input_value(&new_value, instance_type);
+                            update_prop_value(&mut props_json, &field_name_for_handler, parsed);
+                        }
+                    }
+                    span { class: "prop-type", "{type_name}" }
+                }
+            }
+        }
+        _ => {
+            // Default to text input for strings and other types
+            rsx! {
+                div { class: "prop-field editable",
+                    label { class: "prop-label", "{field_name}{required_marker}" }
+                    input {
+                        class: "prop-input",
+                        r#type: "text",
+                        value: "{current_value}",
+                        oninput: move |e| {
+                            let new_value = e.value();
+                            let parsed = parse_input_value(&new_value, instance_type);
+                            update_prop_value(&mut props_json, &field_name_for_handler, parsed);
+                        }
+                    }
+                    span { class: "prop-type", "{type_name}" }
+                }
+            }
         }
     }
 }
 
-/// Parse an input string value into the appropriate JSON value based on type hint
-fn parse_input_value(value: &str, type_hint: &str) -> serde_json::Value {
-    // Try to parse based on type hint
-    match type_hint {
-        "bool" => value
+/// Update a property value in the props JSON
+fn update_prop_value(props_json: &mut Signal<String>, field_name: &str, value: serde_json::Value) {
+    if let Ok(mut json_value) = serde_json::from_str::<serde_json::Value>(&props_json()) {
+        if let Some(obj) = json_value.as_object_mut() {
+            obj.insert(field_name.to_string(), value);
+            if let Ok(new_json) = serde_json::to_string_pretty(&json_value) {
+                props_json.set(new_json);
+            }
+        }
+    }
+}
+
+/// Parse an input string value into the appropriate JSON value based on schema type
+fn parse_input_value(value: &str, instance_type: Option<InstanceType>) -> serde_json::Value {
+    match instance_type {
+        Some(InstanceType::Boolean) => value
             .parse::<bool>()
             .map(serde_json::Value::Bool)
             .unwrap_or_else(|_| serde_json::Value::String(value.to_string())),
-        "i32" | "i64" | "u32" | "u64" | "usize" | "isize" => value
+        Some(InstanceType::Integer) => value
             .parse::<i64>()
             .map(|n| serde_json::Value::Number(n.into()))
             .unwrap_or_else(|_| serde_json::Value::String(value.to_string())),
-        "f32" | "f64" => value
+        Some(InstanceType::Number) => value
             .parse::<f64>()
             .ok()
             .and_then(|n| serde_json::Number::from_f64(n))

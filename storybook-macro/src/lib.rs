@@ -142,6 +142,8 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         format_ident!("__storybook_get_stories_{}", component_name_str.to_lowercase());
     let get_prop_fields_fn_name =
         format_ident!("__storybook_get_prop_fields_{}", component_name_str.to_lowercase());
+    let get_prop_schema_fn_name =
+        format_ident!("__storybook_get_prop_schema_{}", component_name_str.to_lowercase());
 
     // Extract fields from the struct
     let fields = match &input.fields {
@@ -233,7 +235,7 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
 
         /// Auto-generated story props struct for storybook UI editing.
         /// Non-serializable fields (EventHandler, Callback, Element, etc.) are mapped to ().
-        #[derive(Clone, storybook::serde::Serialize, storybook::serde::Deserialize)]
+        #[derive(Clone, storybook::serde::Serialize, storybook::serde::Deserialize, storybook::schemars::JsonSchema)]
         #[doc(hidden)]
         pub struct #story_props_name {
             #(#story_props_fields),*
@@ -298,6 +300,11 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
             ]
         }
 
+        #[doc(hidden)]
+        fn #get_prop_schema_fn_name() -> storybook::schemars::schema::RootSchema {
+            storybook::schemars::schema_for!(#story_props_name)
+        }
+
         storybook::inventory::submit! {
             storybook::ComponentRegistration {
                 name: #component_name_str,
@@ -305,6 +312,7 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
                 render_with_props: #render_fn_name,
                 get_stories: #get_stories_fn_name,
                 get_prop_fields: #get_prop_fields_fn_name,
+                get_prop_schema: #get_prop_schema_fn_name,
             }
         }
     };
@@ -336,6 +344,8 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
             format_ident!("__storybook_get_stories_{}", fn_name_str.to_lowercase());
         let get_prop_fields_fn_name =
             format_ident!("__storybook_get_prop_fields_{}", fn_name_str.to_lowercase());
+        let get_prop_schema_fn_name =
+            format_ident!("__storybook_get_prop_schema_{}", fn_name_str.to_lowercase());
 
         // Extract function parameters (these become the props struct fields)
         let params: Vec<_> = input
@@ -430,7 +440,7 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
 
             /// Auto-generated story props struct for storybook UI editing.
             /// Non-serializable fields (EventHandler, Callback, Element, etc.) are mapped to ().
-            #[derive(Clone, storybook::serde::Serialize, storybook::serde::Deserialize)]
+            #[derive(Clone, storybook::serde::Serialize, storybook::serde::Deserialize, storybook::schemars::JsonSchema)]
             #[doc(hidden)]
             pub struct #story_props_name {
                 #(#story_props_fields),*
@@ -495,6 +505,11 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
                 ]
             }
 
+            #[doc(hidden)]
+            fn #get_prop_schema_fn_name() -> storybook::schemars::schema::RootSchema {
+                storybook::schemars::schema_for!(#story_props_name)
+            }
+
             storybook::inventory::submit! {
                 storybook::ComponentRegistration {
                     name: #fn_name_str,
@@ -502,6 +517,7 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
                     render_with_props: #render_fn_name,
                     get_stories: #get_stories_fn_name,
                     get_prop_fields: #get_prop_fields_fn_name,
+                    get_prop_schema: #get_prop_schema_fn_name,
                 }
             }
         }

@@ -246,6 +246,7 @@ dependencies = [
  "rand 0.8.5",
  "reqwest",
  "rodio",
+ "schemars",
  "scraper",
  "serde",
  "serde_json",
@@ -267,6 +268,7 @@ version = "0.1.0"
 dependencies = [
  "cadence-ui",
  "dioxus",
+ "schemars",
  "serde_json",
  "storybook",
  "web-sys",
@@ -280,6 +282,7 @@ dependencies = [
  "chrono",
  "dioxus",
  "dioxus-sdk",
+ "schemars",
  "serde",
  "storybook",
  "tracing",
@@ -3532,6 +3535,7 @@ version = "0.1.0"
 dependencies = [
  "dioxus",
  "inventory",
+ "schemars",
  "serde",
  "serde_json",
  "storybook-macro",
