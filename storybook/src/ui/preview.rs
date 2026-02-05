@@ -63,6 +63,9 @@ fn StoryCard(
     // Props editor collapsed by default
     let mut props_expanded = use_signal(|| false);
 
+    // Zoom level for the iframe (100 = 100%)
+    let mut zoom_level = use_signal(|| 100i32);
+
     // Unique ID for this story's hidden render container
     let container_id = format!(
         "preview-render-{}-story-{}",
@@ -136,9 +139,46 @@ fn StoryCard(
                 {(render_fn)(&props_json())}
             }
 
+            // Toolbar with zoom controls
+            div { class: "story-toolbar",
+                button {
+                    class: "toolbar-button",
+                    title: "Zoom Out",
+                    onclick: move |_| {
+                        let current = zoom_level();
+                        if current > 25 {
+                            zoom_level.set(current - 25);
+                        }
+                    },
+                    "−"
+                }
+                span { class: "zoom-level", "{zoom_level()}%" }
+                button {
+                    class: "toolbar-button",
+                    title: "Zoom In",
+                    onclick: move |_| {
+                        let current = zoom_level();
+                        if current < 200 {
+                            zoom_level.set(current + 25);
+                        }
+                    },
+                    "+"
+                }
+                button {
+                    class: "toolbar-button reset-zoom",
+                    title: "Reset Zoom",
+                    onclick: move |_| zoom_level.set(100),
+                    "Reset"
+                }
+            }
+
             // Iframe that displays the component with CSS isolation
             div { class: "story-preview-area",
-                iframe { class: "preview-iframe", srcdoc: "{srcdoc}" }
+                iframe {
+                    class: "preview-iframe",
+                    srcdoc: "{srcdoc}",
+                    style: "transform: scale({zoom_level() as f64 / 100.0}); transform-origin: top left; width: {10000.0 / zoom_level() as f64}%; height: auto;"
+                }
             }
 
             // Collapsible props editor section
