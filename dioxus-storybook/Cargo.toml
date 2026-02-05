@@ -1,8 +1,0 @@
-[package]
-name = "dioxus-storybook"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-cadence-ui = { workspace = true, features = ["storybook"] }
-storybook = { workspace = true }

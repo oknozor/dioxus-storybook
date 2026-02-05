@@ -572,7 +572,7 @@ pub fn storydoc(input: TokenStream) -> TokenStream {
             html_content = re
                 .replace_all(
                     &html_content,
-                    r#"<div class="storybook-embed" data-story-path="$1">$2</div>"#,
+                    r#"<div class="storybook-embed" data-story-path="$1" data-story-name="$2"></div>"#,
                 )
                 .to_string();
 

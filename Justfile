@@ -10,4 +10,4 @@ bin:
   cargo run --bin bin -- arg1
 
 example:
-    dx --verbose serve --hot-patch --package dioxus-storybook --platform web
+    dx --verbose serve --hot-patch --package storybook-example --platform web

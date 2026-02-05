@@ -60,7 +60,7 @@ pub(crate) fn ComponentPreview(
 
 /// A single story card that renders one story with its own HTML capture and iframe
 #[component]
-fn StoryCard(
+pub(crate) fn StoryCard(
     story: StoryInfo,
     component_name: String,
     story_index: usize,
@@ -86,6 +86,7 @@ fn StoryCard(
         component_name.replace(" ", "-").replace("::", "-"),
         story_index
     );
+
     let container_id_for_effect = container_id.clone();
 
     // Effect to capture rendered HTML and update iframe content

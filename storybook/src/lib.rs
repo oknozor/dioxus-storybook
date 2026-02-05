@@ -24,6 +24,7 @@ pub use schemars;
 pub use serde;
 pub use serde_json;
 pub use storybook_macro::storybook;
+pub use storybook_macro::storydoc;
 
 use dioxus::prelude::*;
 use schemars::schema::{InstanceType, RootSchema, Schema, SchemaObject, SingleOrVec};

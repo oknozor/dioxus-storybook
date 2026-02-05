@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "storybook-macro", "storybook", "dioxus-storybook"
+    "storybook-macro", "storybook", "storybook-example"
 ]
 
 [workspace.dependencies]
