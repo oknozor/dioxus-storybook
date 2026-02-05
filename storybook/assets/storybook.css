@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -5,7 +7,7 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: #f5f5f5;
 }
 
@@ -77,11 +79,17 @@ body {
 }
 
 .arrow {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin-right: 8px;
-    font-size: 10px;
     transition: transform 0.2s;
     color: #666;
+}
+
+.arrow svg {
+    width: 14px;
+    height: 14px;
 }
 
 .arrow.expanded {
@@ -89,8 +97,16 @@ body {
 }
 
 .node-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin-right: 6px;
-    font-size: 14px;
+    color: #666;
+}
+
+.node-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
 .node-name {
@@ -134,8 +150,16 @@ body {
 }
 
 .component-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin-right: 8px;
-    font-size: 14px;
+    color: #1976d2;
+}
+
+.component-icon svg {
+    width: 14px;
+    height: 14px;
 }
 
 .component-name {
@@ -164,8 +188,16 @@ body {
 }
 
 .doc-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin-right: 8px;
-    font-size: 14px;
+    color: #e65100;
+}
+
+.doc-icon svg {
+    width: 14px;
+    height: 14px;
 }
 
 .doc-name {
@@ -664,4 +696,207 @@ body {
     border-radius: 0 0 4px 4px;
     min-height: 100px;
     overflow: hidden;
+}
+
+/* ============================================
+   Documentation Page Styles
+   ============================================ */
+
+.doc-page {
+    padding: 32px 48px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.doc-content {
+    line-height: 1.7;
+    color: #333;
+}
+
+.doc-html {
+    margin-bottom: 24px;
+}
+
+/* Headings */
+.doc-html h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 24px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.doc-html h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 32px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.doc-html h3 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: #333;
+    margin: 24px 0 12px 0;
+}
+
+.doc-html h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #444;
+    margin: 20px 0 10px 0;
+}
+
+.doc-html h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    margin: 16px 0 8px 0;
+}
+
+.doc-html h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #666;
+    margin: 16px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Paragraphs */
+.doc-html p {
+    margin: 0 0 16px 0;
+    line-height: 1.7;
+}
+
+/* Links */
+.doc-html a {
+    color: #1ea7fd;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.doc-html a:hover {
+    border-bottom-color: #1ea7fd;
+}
+
+/* Inline code */
+.doc-html code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.875em;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #d63384;
+}
+
+/* Code blocks */
+.doc-html pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 16px 20px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 16px 0 24px 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.doc-html pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+/* Lists */
+.doc-html ul,
+.doc-html ol {
+    margin: 0 0 16px 0;
+    padding-left: 24px;
+}
+
+.doc-html li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.doc-html li > ul,
+.doc-html li > ol {
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+/* Blockquotes */
+.doc-html blockquote {
+    margin: 16px 0 24px 0;
+    padding: 12px 20px;
+    border-left: 4px solid #1ea7fd;
+    background: #f8f9fa;
+    color: #555;
+    font-style: italic;
+}
+
+.doc-html blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* Tables */
+.doc-html table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px 0;
+    font-size: 0.9375rem;
+}
+
+.doc-html th,
+.doc-html td {
+    padding: 12px 16px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+}
+
+.doc-html th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+}
+
+.doc-html tr:nth-child(even) {
+    background: #fafafa;
+}
+
+/* Horizontal rule */
+.doc-html hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 32px 0;
+}
+
+/* Images */
+.doc-html img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 16px 0;
+}
+
+/* Embedded story container */
+.embedded-story {
+    margin: 24px 0 32px 0;
+}
+
+/* Embedded story error */
+.embedded-story-error {
+    padding: 16px 20px;
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 6px;
+    color: #c53030;
+    font-size: 0.875rem;
+    margin: 16px 0;
 }

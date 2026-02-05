@@ -8,8 +8,11 @@ use storybook::{storybook, Stories, Story, StorybookConfig};
 pub fn ExampleButton(label: String, #[props(default = false)] disabled: bool) -> Element {
     rsx! {
         button {
+            padding: "8px 16px",
+            border_radius: "4px",
+            border: "1px solid #ccc",
+            cursor: "pointer",
             disabled,
-            style: "padding: 8px 16px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer;",
             "{label}"
         }
     }

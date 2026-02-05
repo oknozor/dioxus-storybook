@@ -10,6 +10,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 schemars = { version = "0.8", features = ["derive"] }
 inventory = { workspace = true }
+lucide-dioxus = { version = "2.563.0", features = ["all-icons"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 web-sys = { workspace = true }

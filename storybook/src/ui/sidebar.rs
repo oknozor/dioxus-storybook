@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 use std::collections::BTreeMap;
 use crate::find_doc;
+use lucide_dioxus::{ChevronRight, FileText, Folder, FolderOpen, Component};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ComponentInfo {
@@ -134,10 +135,10 @@ fn TreeNode(
     let has_doc = node.has_doc;
     let full_path = node.full_path.clone();
 
-    // Determine CSS class and icon based on node type
-    let (node_class, icon) = match node_type {
-        NodeType::Category => ("tree-node category-node", "📁"),
-        NodeType::Folder => ("tree-node folder-node", "📂"),
+    // Determine CSS class based on node type
+    let node_class = match node_type {
+        NodeType::Category => "tree-node category-node",
+        NodeType::Folder => "tree-node folder-node",
     };
 
     rsx! {
@@ -145,8 +146,16 @@ fn TreeNode(
             div {
                 class: "tree-header",
                 onclick: move |_| expanded.set(!expanded()),
-                span { class: if expanded() { "arrow expanded" } else { "arrow" }, "▶" }
-                span { class: "node-icon", "{icon}" }
+                span { class: if expanded() { "arrow expanded" } else { "arrow" },
+                    ChevronRight { size: 14, stroke_width: 2 }
+                }
+                span { class: "node-icon",
+                    if expanded() {
+                        FolderOpen { size: 16, stroke_width: 2 }
+                    } else {
+                        Folder { size: 16, stroke_width: 2 }
+                    }
+                }
                 span { class: "node-name", "{name}" }
                 span { class: "category-count", "{component_count}" }
             }
@@ -163,7 +172,9 @@ fn TreeNode(
                                     onclick: move |_| {
                                         selected.set(Some(Selection::DocPage(doc_path.clone())));
                                     },
-                                    span { class: "doc-icon", "📄" }
+                                    span { class: "doc-icon",
+                                        FileText { size: 16, stroke_width: 2 }
+                                    }
                                     span { class: "doc-name", "Documentation" }
                                 }
                             }
@@ -205,7 +216,9 @@ fn TreeNode(
 fn ComponentNode(name: String, selected: bool, onclick: EventHandler<()>) -> Element {
     rsx! {
         div { class: if selected { "component-node selected" } else { "component-node" }, onclick: move |_| onclick.call(()),
-            span { class: "component-icon", "📦" }
+            span { class: "component-icon",
+                Component { size: 16, stroke_width: 2 }
+            }
             span { class: "component-name", "{name}" }
         }
     }
