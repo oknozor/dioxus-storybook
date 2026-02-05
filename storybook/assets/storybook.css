@@ -280,7 +280,15 @@ body {
     font-size: 12px;
     font-weight: 600;
     color: #555;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+}
+
+.prop-description {
+    font-size: 11px;
+    color: #777;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+    font-style: italic;
 }
 
 .prop-input {

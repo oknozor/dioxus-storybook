@@ -30,6 +30,7 @@ pub(crate) fn PropsEditor(props_json: Signal<String>, schema: RootSchema) -> Ele
 #[component]
 fn PropFieldEditor(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Element {
     let field_name = field.name.clone();
+    let description = field.description.clone();
 
     // Check if this is a non-editable field (unit type represented as null)
     let is_non_editable = field.instance_type == Some(InstanceType::Null);
@@ -38,6 +39,9 @@ fn PropFieldEditor(field: SchemaFieldInfo, mut props_json: Signal<String>) -> El
         return rsx! {
             div { class: "prop-field non-editable",
                 label { class: "prop-label", "{field_name}" }
+                if let Some(desc) = &description {
+                    p { class: "prop-description", "{desc}" }
+                }
                 span { class: "prop-value-placeholder", "—" }
                 span { class: "prop-type", "non-editable" }
             }
@@ -69,6 +73,9 @@ fn PropFieldEditor(field: SchemaFieldInfo, mut props_json: Signal<String>) -> El
             rsx! {
                 div { class: "prop-field editable",
                     label { class: "prop-label", "{field_name}{required_marker}" }
+                    if let Some(desc) = &description {
+                        p { class: "prop-description", "{desc}" }
+                    }
                     input {
                         class: "prop-input prop-checkbox",
                         r#type: "checkbox",
@@ -86,6 +93,9 @@ fn PropFieldEditor(field: SchemaFieldInfo, mut props_json: Signal<String>) -> El
             rsx! {
                 div { class: "prop-field editable",
                     label { class: "prop-label", "{field_name}{required_marker}" }
+                    if let Some(desc) = &description {
+                        p { class: "prop-description", "{desc}" }
+                    }
                     input {
                         class: "prop-input",
                         r#type: "number",
@@ -105,6 +115,9 @@ fn PropFieldEditor(field: SchemaFieldInfo, mut props_json: Signal<String>) -> El
             rsx! {
                 div { class: "prop-field editable",
                     label { class: "prop-label", "{field_name}{required_marker}" }
+                    if let Some(desc) = &description {
+                        p { class: "prop-description", "{desc}" }
+                    }
                     input {
                         class: "prop-input",
                         r#type: "text",

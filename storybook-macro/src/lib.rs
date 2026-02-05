@@ -7,6 +7,8 @@ use syn::{parse_macro_input, Fields, FnArg, Ident, ItemFn, ItemStruct, Pat, Type
 struct FieldInfo {
     name: Ident,
     ty: Type,
+    /// Doc comments for this field (to be preserved in generated StoryProps)
+    doc_attrs: Vec<syn::Attribute>,
 }
 
 /// Metadata about the component being processed
@@ -161,13 +163,23 @@ fn generate_story_props_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
         .map(|field| {
             let name = &field.name;
             let ty = &field.ty;
+            let doc_attrs = &field.doc_attrs;
             if is_non_serializable_type(ty) {
-                quote! { pub #name: () }
+                quote! {
+                    #(#doc_attrs)*
+                    pub #name: ()
+                }
             } else if let Some(inner_ty_str) = extract_signal_inner_type_str(ty) {
                 let inner_ty: Type = syn::parse_str(&inner_ty_str).expect("Failed to parse inner type");
-                quote! { pub #name: #inner_ty }
+                quote! {
+                    #(#doc_attrs)*
+                    pub #name: #inner_ty
+                }
             } else {
-                quote! { pub #name: #ty }
+                quote! {
+                    #(#doc_attrs)*
+                    pub #name: #ty
+                }
             }
         })
         .collect()
@@ -331,13 +343,23 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         }
     };
 
-    // Convert to FieldInfo format
+    // Convert to FieldInfo format, preserving doc comments
     let fields: Vec<FieldInfo> = syn_fields
         .iter()
         .filter_map(|field| {
-            field.ident.as_ref().map(|name| FieldInfo {
-                name: name.clone(),
-                ty: field.ty.clone(),
+            field.ident.as_ref().map(|name| {
+                // Extract doc attributes from the field
+                let doc_attrs: Vec<syn::Attribute> = field
+                    .attrs
+                    .iter()
+                    .filter(|attr| attr.path().is_ident("doc"))
+                    .cloned()
+                    .collect();
+                FieldInfo {
+                    name: name.clone(),
+                    ty: field.ty.clone(),
+                    doc_attrs,
+                }
             })
         })
         .collect();
@@ -368,6 +390,7 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
     }
 
     // Extract function parameters as FieldInfo
+    // Note: Function parameters don't have doc comments, so doc_attrs is empty
     let fields: Vec<FieldInfo> = input
         .sig
         .inputs
@@ -375,9 +398,17 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
         .filter_map(|arg| {
             if let FnArg::Typed(pat_type) = arg {
                 if let Pat::Ident(pat_ident) = &*pat_type.pat {
+                    // Extract doc attributes from the pattern's attributes
+                    let doc_attrs: Vec<syn::Attribute> = pat_type
+                        .attrs
+                        .iter()
+                        .filter(|attr| attr.path().is_ident("doc"))
+                        .cloned()
+                        .collect();
                     return Some(FieldInfo {
                         name: pat_ident.ident.clone(),
                         ty: (*pat_type.ty).clone(),
+                        doc_attrs,
                     });
                 }
             }
