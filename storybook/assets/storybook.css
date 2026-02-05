@@ -142,6 +142,37 @@ body {
     font-size: 14px;
 }
 
+/* Documentation node in sidebar */
+.doc-node {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 2px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    color: #666;
+}
+
+.doc-node:hover {
+    background-color: #f0f0f0;
+}
+
+.doc-node.selected {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.doc-icon {
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.doc-name {
+    font-size: 14px;
+    font-style: italic;
+}
+
 /* Main content */
 .main-content {
     flex: 1;

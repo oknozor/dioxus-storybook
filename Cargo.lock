@@ -3564,6 +3564,7 @@ dependencies = [
  "proc-macro2",
  "pulldown-cmark",
  "quote",
+ "regex",
  "syn",
 ]
 

@@ -307,6 +307,31 @@ pub fn find_component(name: &str) -> Option<&'static ComponentRegistration> {
     inventory::iter::<ComponentRegistration>().find(|c| c.name == name)
 }
 
+/// Registration info for a documentation page.
+///
+/// Documentation pages are markdown files that can be associated with
+/// a category, folder, or component path in the storybook tree.
+/// They are displayed as the first item in a folder.
+#[derive(Debug)]
+pub struct DocRegistration {
+    /// The path in the tree where this doc page belongs (e.g., "Buttons/Primary")
+    pub path: &'static str,
+    /// The HTML content of the documentation (converted from markdown)
+    pub content_html: &'static str,
+}
+
+inventory::collect!(DocRegistration);
+
+/// Get all registered documentation pages
+pub fn get_docs() -> impl Iterator<Item = &'static DocRegistration> {
+    inventory::iter::<DocRegistration>()
+}
+
+/// Find a documentation page by path
+pub fn find_doc(path: &str) -> Option<&'static DocRegistration> {
+    inventory::iter::<DocRegistration>().find(|d| d.path == path)
+}
+
 /// Extract field information from a JSON Schema
 fn extract_fields_from_schema(schema: &RootSchema) -> Vec<SchemaFieldInfo> {
     let mut fields = Vec::new();

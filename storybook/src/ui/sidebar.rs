@@ -1,10 +1,18 @@
 use dioxus::prelude::*;
 use std::collections::BTreeMap;
+use crate::find_doc;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ComponentInfo {
     pub name: String,
     pub category: String,
+}
+
+/// Selection type - either a component or a doc page
+#[derive(Clone, PartialEq, Debug)]
+pub enum Selection {
+    Component(String),
+    DocPage(String),
 }
 
 /// The type of node in the hierarchy tree
@@ -23,16 +31,31 @@ struct CategoryTreeNode {
     children: BTreeMap<String, CategoryTreeNode>,
     /// Components directly under this category
     components: Vec<String>,
+    /// Full path to this node (e.g., "Category/Folder")
+    full_path: String,
+    /// Whether this node has an associated doc page
+    has_doc: bool,
 }
 
 impl CategoryTreeNode {
     /// Insert a component at the given path
-    fn insert(&mut self, path: &[&str], component_name: String) {
+    fn insert(&mut self, path: &[&str], component_name: String, current_path: &str) {
         if path.is_empty() {
             self.components.push(component_name);
         } else {
-            let child = self.children.entry(path[0].to_string()).or_default();
-            child.insert(&path[1..], component_name);
+            let new_path = if current_path.is_empty() {
+                path[0].to_string()
+            } else {
+                format!("{}/{}", current_path, path[0])
+            };
+            let child = self.children.entry(path[0].to_string()).or_insert_with(|| {
+                CategoryTreeNode {
+                    full_path: new_path.clone(),
+                    has_doc: crate::find_doc(&new_path).is_some(),
+                    ..Default::default()
+                }
+            });
+            child.insert(&path[1..], component_name, &new_path);
         }
     }
 
@@ -51,7 +74,7 @@ fn build_category_tree(components: &[ComponentInfo]) -> CategoryTreeNode {
     for component in components {
         // Split the category path by forward slashes
         let path_segments: Vec<&str> = component.category.split('/').collect();
-        root.insert(&path_segments, component.name.clone());
+        root.insert(&path_segments, component.name.clone(), "");
     }
 
     root
@@ -60,7 +83,7 @@ fn build_category_tree(components: &[ComponentInfo]) -> CategoryTreeNode {
 #[component]
 pub fn ComponentTree(
     components: Vec<ComponentInfo>,
-    selected_component: Signal<Option<String>>,
+    selected: Signal<Option<Selection>>,
 ) -> Element {
     let tree = build_category_tree(&components);
 
@@ -74,7 +97,7 @@ pub fn ComponentTree(
                     key: "{category_name}",
                     name: category_name.clone(),
                     node: node.clone(),
-                    selected_component,
+                    selected,
                     node_type: NodeType::Category
                 }
             }
@@ -86,9 +109,9 @@ pub fn ComponentTree(
                         ComponentNode {
                             key: "{component_name}",
                             name: component_name.clone(),
-                            selected: selected_component() == Some(component_name.clone()),
+                            selected: selected() == Some(Selection::Component(component_name.clone())),
                             onclick: move |_| {
-                                selected_component.set(Some(component_name.clone()));
+                                selected.set(Some(Selection::Component(component_name.clone())));
                             },
                         }
                     }
@@ -103,11 +126,13 @@ pub fn ComponentTree(
 fn TreeNode(
     name: String,
     node: CategoryTreeNode,
-    selected_component: Signal<Option<String>>,
+    selected: Signal<Option<Selection>>,
     node_type: NodeType,
 ) -> Element {
     let mut expanded = use_signal(|| true);
     let component_count = node.component_count();
+    let has_doc = node.has_doc;
+    let full_path = node.full_path.clone();
 
     // Determine CSS class and icon based on node type
     let (node_class, icon) = match node_type {
@@ -127,13 +152,30 @@ fn TreeNode(
             }
             if expanded() {
                 div { class: "tree-children",
-                    // Render nested subcategories/folders first
+                    // Render doc page link first if this node has documentation
+                    if has_doc {
+                        {
+                            let doc_path = full_path.clone();
+                            let is_selected = selected() == Some(Selection::DocPage(doc_path.clone()));
+                            rsx! {
+                                div {
+                                    class: if is_selected { "doc-node selected" } else { "doc-node" },
+                                    onclick: move |_| {
+                                        selected.set(Some(Selection::DocPage(doc_path.clone())));
+                                    },
+                                    span { class: "doc-icon", "📄" }
+                                    span { class: "doc-name", "Documentation" }
+                                }
+                            }
+                        }
+                    }
+                    // Render nested subcategories/folders
                     for (child_name , child_node) in node.children.iter() {
                         TreeNode {
                             key: "{child_name}",
                             name: child_name.clone(),
                             node: child_node.clone(),
-                            selected_component,
+                            selected,
                             node_type: NodeType::Folder
                         }
                     }
@@ -145,9 +187,9 @@ fn TreeNode(
                                 ComponentNode {
                                     key: "{component_name}",
                                     name: component_name.clone(),
-                                    selected: selected_component() == Some(component_name.clone()),
+                                    selected: selected() == Some(Selection::Component(component_name.clone())),
                                     onclick: move |_| {
-                                        selected_component.set(Some(component_name.clone()));
+                                        selected.set(Some(Selection::Component(component_name.clone())));
                                     },
                                 }
                             }

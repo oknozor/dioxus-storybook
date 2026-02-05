@@ -519,3 +519,93 @@ impl syn::parse::Parse for StorybookArgs {
         Ok(StorybookArgs { tag })
     }
 }
+
+/// Registers a markdown documentation page for a category or folder in the storybook.
+///
+/// # Example
+/// ```ignore
+/// storydoc!("Buttons/Primary", "docs/buttons_primary.md");
+/// ```
+///
+/// The markdown file can embed stories using image link syntax:
+/// ```markdown
+/// ![MyStory](Path/To/My/Story)
+/// ```
+/// This will render the story inline within the documentation.
+#[proc_macro]
+pub fn storydoc(input: TokenStream) -> TokenStream {
+    let parsed = syn::parse::<StorydocArgs2>(input);
+
+    match parsed {
+        Ok(args) => {
+            let path = args.path;
+            let md_file = args.markdown_file;
+
+            // Read the markdown file at compile time
+            let manifest_dir =
+                std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
+            let full_path = std::path::Path::new(&manifest_dir).join(&md_file);
+
+            let markdown_content = match std::fs::read_to_string(&full_path) {
+                Ok(content) => content,
+                Err(e) => {
+                    return TokenStream::from(
+                        syn::Error::new(
+                            proc_macro2::Span::call_site(),
+                            format!(
+                                "Failed to read markdown file '{}': {}",
+                                full_path.display(),
+                                e
+                            ),
+                        )
+                        .to_compile_error(),
+                    );
+                }
+            };
+
+            // Convert markdown to HTML
+            let mut html_content = markdown_to_html(&markdown_content);
+
+            // Process story embedding: ![name](story/path) becomes <img src="story/path" alt="name">
+            // We need to convert these to special div markers for runtime processing
+            let re = regex::Regex::new(r#"<img src="([^"]+)" alt="([^"]*)"[^>]*/?"#).unwrap();
+            html_content = re
+                .replace_all(
+                    &html_content,
+                    r#"<div class="storybook-embed" data-story-path="$1">$2</div>"#,
+                )
+                .to_string();
+
+            // Generate the inventory submission
+            let expanded = quote! {
+                storybook::inventory::submit! {
+                    storybook::DocRegistration {
+                        path: #path,
+                        content_html: #html_content,
+                    }
+                }
+            };
+
+            TokenStream::from(expanded)
+        }
+        Err(e) => TokenStream::from(e.to_compile_error()),
+    }
+}
+
+struct StorydocArgs2 {
+    path: String,
+    markdown_file: String,
+}
+
+impl syn::parse::Parse for StorydocArgs2 {
+    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
+        let path: syn::LitStr = input.parse()?;
+        let _: syn::Token![,] = input.parse()?;
+        let markdown_file: syn::LitStr = input.parse()?;
+
+        Ok(StorydocArgs2 {
+            path: path.value(),
+            markdown_file: markdown_file.value(),
+        })
+    }
+}
