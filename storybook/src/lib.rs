@@ -195,6 +195,8 @@ struct SchemaFieldInfo {
 pub struct ComponentRegistration {
     pub name: &'static str,
     pub tag: &'static str,
+    /// Component description extracted from doc comments (HTML format)
+    pub description: &'static str,
     /// Renders the component with props from JSON string
     pub render_with_props: RenderWithPropsFn,
     /// Gets all stories for this component
@@ -208,6 +210,7 @@ impl std::fmt::Debug for ComponentRegistration {
         f.debug_struct("ComponentRegistration")
             .field("name", &self.name)
             .field("tag", &self.tag)
+            .field("description", &self.description)
             .finish()
     }
 }

@@ -1,5 +1,6 @@
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
+use pulldown_cmark::{html, Options, Parser};
 use quote::{format_ident, quote};
 use syn::{parse_macro_input, Fields, FnArg, Ident, ItemFn, ItemStruct, Pat, Type};
 
@@ -18,6 +19,38 @@ struct ComponentMeta {
     props_struct_name: Ident,
     story_props_name: Ident,
     tag: String,
+    /// HTML description extracted from doc comments
+    description_html: String,
+}
+
+/// Extract doc comments from a list of attributes and return them as a single string
+fn extract_doc_comments(attrs: &[syn::Attribute]) -> String {
+    attrs
+        .iter()
+        .filter_map(|attr| {
+            if attr.path().is_ident("doc") {
+                // Parse the doc attribute to extract the string content
+                if let syn::Meta::NameValue(meta) = &attr.meta {
+                    if let syn::Expr::Lit(expr_lit) = &meta.value {
+                        if let syn::Lit::Str(lit_str) = &expr_lit.lit {
+                            return Some(lit_str.value());
+                        }
+                    }
+                }
+            }
+            None
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// Convert markdown text to HTML using pulldown-cmark
+fn markdown_to_html(markdown: &str) -> String {
+    let options = Options::all();
+    let parser = Parser::new_ext(markdown, options);
+    let mut html_output = String::new();
+    html::push_html(&mut html_output, parser);
+    html_output
 }
 
 impl ComponentMeta {
@@ -233,6 +266,7 @@ fn generate_storybook_code(
         props_struct_name,
         story_props_name,
         tag,
+        description_html,
     } = meta;
 
     let render_fn_name = meta.render_fn_name();
@@ -315,6 +349,7 @@ fn generate_storybook_code(
             storybook::ComponentRegistration {
                 name: #component_name_str,
                 tag: #tag,
+                description: #description_html,
                 render_with_props: #render_fn_name,
                 get_stories: #get_stories_fn_name,
                 get_prop_schema: #get_prop_schema_fn_name,
@@ -331,6 +366,10 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
     let component_name_str = struct_name_str
         .strip_suffix("Props")
         .unwrap_or(&struct_name_str);
+
+    // Extract doc comments from the struct and convert to HTML
+    let doc_markdown = extract_doc_comments(&input.attrs);
+    let description_html = markdown_to_html(&doc_markdown);
 
     // Extract fields from the struct
     let syn_fields = match &input.fields {
@@ -371,6 +410,7 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         props_struct_name: struct_name.clone(),
         story_props_name: format_ident!("{}StoryProps", component_name_str),
         tag: attr_args.tag.clone(),
+        description_html,
     };
 
     let original_item = quote! { #input };
@@ -388,6 +428,10 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
     if is_props_struct_pattern(&input) {
         return TokenStream::from(quote! { #input });
     }
+
+    // Extract doc comments from the function and convert to HTML
+    let doc_markdown = extract_doc_comments(&input.attrs);
+    let description_html = markdown_to_html(&doc_markdown);
 
     // Extract function parameters as FieldInfo
     // Note: Function parameters don't have doc comments, so doc_attrs is empty
@@ -423,6 +467,7 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
         props_struct_name: format_ident!("{}Props", fn_name_str),
         story_props_name: format_ident!("{}StoryProps", fn_name_str),
         tag: attr_args.tag,
+        description_html,
     };
 
     let original_item = quote! { #input };

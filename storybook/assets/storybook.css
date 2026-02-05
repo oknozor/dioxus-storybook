@@ -164,6 +164,66 @@ body {
     color: #333;
 }
 
+/* Component description from doc comments */
+.component-description {
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #4a5568;
+}
+
+.component-description p {
+    margin: 0 0 12px 0;
+}
+
+.component-description p:last-child {
+    margin-bottom: 0;
+}
+
+.component-description code {
+    background: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 13px;
+}
+
+.component-description pre {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+.component-description pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+.component-description ul,
+.component-description ol {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+
+.component-description li {
+    margin: 4px 0;
+}
+
+.component-description a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.component-description a:hover {
+    text-decoration: underline;
+}
+
 /* Preview layout with side panel */
 .preview-layout {
     display: flex;

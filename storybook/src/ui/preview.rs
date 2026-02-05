@@ -27,6 +27,14 @@ pub(crate) fn ComponentPreview(
         div { class: "preview-container",
             h2 { "{component_name}" }
 
+            // Display component description (from doc comments) if present
+            if !registration.description.is_empty() {
+                div {
+                    class: "component-description",
+                    dangerous_inner_html: "{registration.description}"
+                }
+            }
+
             // Display all stories in a vertical layout
             div { class: "stories-container",
                 for (index , story) in current_stories.iter().enumerate() {
