@@ -50,11 +50,19 @@ body {
 }
 
 /* Tree nodes */
-.category-node {
+.tree-node {
     margin-bottom: 4px;
 }
 
-.category-header {
+.category-node {
+    /* Category-specific styles (top-level) */
+}
+
+.folder-node {
+    /* Folder-specific styles (intermediate levels) */
+}
+
+.tree-header {
     display: flex;
     align-items: center;
     padding: 8px;
@@ -64,7 +72,7 @@ body {
     transition: background-color 0.2s;
 }
 
-.category-header:hover {
+.tree-header:hover {
     background-color: #f0f0f0;
 }
 
@@ -80,7 +88,12 @@ body {
     transform: rotate(90deg);
 }
 
-.category-name {
+.node-icon {
+    margin-right: 6px;
+    font-size: 14px;
+}
+
+.node-name {
     font-weight: 600;
     font-size: 14px;
     color: #333;
@@ -96,7 +109,7 @@ body {
     margin-left: 8px;
 }
 
-.category-children {
+.tree-children {
     margin-left: 20px;
     margin-top: 4px;
 }

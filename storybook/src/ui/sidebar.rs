@@ -7,6 +7,15 @@ pub struct ComponentInfo {
     pub category: String,
 }
 
+/// The type of node in the hierarchy tree
+#[derive(Clone, Copy, PartialEq, Debug)]
+enum NodeType {
+    /// Top-level category (first segment of the path)
+    Category,
+    /// Intermediate folder (middle segments of the path)
+    Folder,
+}
+
 /// A tree node that can contain either subcategories or components (or both)
 #[derive(Clone, PartialEq, Debug, Default)]
 struct CategoryTreeNode {
@@ -59,14 +68,14 @@ pub fn ComponentTree(
 
     rsx! {
         div { class: "tree",
-            // Render top-level categories
+            // Render top-level categories (depth 0 = Category)
             for (category_name , node) in tree.children.iter() {
-                CategoryNode {
+                TreeNode {
                     key: "{category_name}",
                     name: category_name.clone(),
                     node: node.clone(),
                     selected_component,
-                    depth: 0
+                    node_type: NodeType::Category
                 }
             }
             // Render any components at the root level (no category)
@@ -89,36 +98,43 @@ pub fn ComponentTree(
     }
 }
 
-/// Recursive component for rendering category nodes with nested children
+/// Recursive component for rendering tree nodes (categories and folders)
 #[component]
-fn CategoryNode(
+fn TreeNode(
     name: String,
     node: CategoryTreeNode,
     selected_component: Signal<Option<String>>,
-    depth: usize,
+    node_type: NodeType,
 ) -> Element {
     let mut expanded = use_signal(|| true);
     let component_count = node.component_count();
 
+    // Determine CSS class and icon based on node type
+    let (node_class, icon) = match node_type {
+        NodeType::Category => ("tree-node category-node", "📁"),
+        NodeType::Folder => ("tree-node folder-node", "📂"),
+    };
+
     rsx! {
-        div { class: "category-node",
+        div { class: "{node_class}",
             div {
-                class: "category-header",
+                class: "tree-header",
                 onclick: move |_| expanded.set(!expanded()),
                 span { class: if expanded() { "arrow expanded" } else { "arrow" }, "▶" }
-                span { class: "category-name", "{name}" }
+                span { class: "node-icon", "{icon}" }
+                span { class: "node-name", "{name}" }
                 span { class: "category-count", "{component_count}" }
             }
             if expanded() {
-                div { class: "category-children",
-                    // Render nested subcategories first
+                div { class: "tree-children",
+                    // Render nested subcategories/folders first
                     for (child_name , child_node) in node.children.iter() {
-                        CategoryNode {
+                        TreeNode {
                             key: "{child_name}",
                             name: child_name.clone(),
                             node: child_node.clone(),
                             selected_component,
-                            depth: depth + 1
+                            node_type: NodeType::Folder
                         }
                     }
                     // Then render components at this level
