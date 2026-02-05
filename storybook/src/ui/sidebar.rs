@@ -26,6 +26,13 @@ impl CategoryTreeNode {
             child.insert(&path[1..], component_name);
         }
     }
+
+    /// Count all components in this node and all its children recursively
+    fn component_count(&self) -> usize {
+        let direct_count = self.components.len();
+        let children_count: usize = self.children.values().map(|c| c.component_count()).sum();
+        direct_count + children_count
+    }
 }
 
 /// Build a tree structure from flat component info
@@ -91,6 +98,7 @@ fn CategoryNode(
     depth: usize,
 ) -> Element {
     let mut expanded = use_signal(|| true);
+    let component_count = node.component_count();
 
     rsx! {
         div { class: "category-node",
@@ -99,6 +107,7 @@ fn CategoryNode(
                 onclick: move |_| expanded.set(!expanded()),
                 span { class: if expanded() { "arrow expanded" } else { "arrow" }, "▶" }
                 span { class: "category-name", "{name}" }
+                span { class: "category-count", "{component_count}" }
             }
             if expanded() {
                 div { class: "category-children",
