@@ -335,6 +335,7 @@ fn generate_storybook_code(
                         title: story.title.to_string(),
                         description: story.description.map(|d| d.to_string()),
                         props_json: storybook::serde_json::to_string_pretty(&story_props).unwrap_or_default(),
+                        decorators: story.decorators,
                     }
                 })
                 .collect()

@@ -94,6 +94,31 @@ pub(crate) fn take_config() -> StorybookConfig {
     CONFIG.with(|c| c.borrow_mut().take()).unwrap_or_default()
 }
 
+/// Type alias for a decorator function.
+///
+/// A decorator wraps a story's rendered element to add extra markup,
+/// styling, or context. Decorators are applied in order, with the first
+/// decorator being the outermost wrapper.
+///
+/// # Example
+/// ```ignore
+/// use storybook::Decorator;
+/// use dioxus::prelude::*;
+///
+/// fn with_padding(story: Element) -> Element {
+///     rsx! {
+///         div { style: "padding: 20px;", {story} }
+///     }
+/// }
+///
+/// fn with_dark_background(story: Element) -> Element {
+///     rsx! {
+///         div { style: "background: #333; color: white;", {story} }
+///     }
+/// }
+/// ```
+pub type Decorator = fn(Element) -> Element;
+
 /// A single story configuration for a component.
 ///
 /// Each story represents a specific state or configuration of the component
@@ -106,6 +131,9 @@ pub struct Story<T> {
     pub description: Option<&'static str>,
     /// The props to render the component with
     pub props: T,
+    /// Optional decorators to wrap the story rendering.
+    /// Decorators are applied in order, with the first decorator being the outermost wrapper.
+    pub decorators: Vec<Decorator>,
 }
 
 impl<T> Story<T> {
@@ -115,6 +143,7 @@ impl<T> Story<T> {
             title,
             description: None,
             props,
+            decorators: Vec::new(),
         }
     }
 
@@ -124,7 +153,33 @@ impl<T> Story<T> {
             title,
             description: Some(description),
             props,
+            decorators: Vec::new(),
         }
+    }
+
+    /// Add a decorator to this story.
+    ///
+    /// Decorators wrap the story's rendered element. Multiple decorators
+    /// are applied in order, with the first decorator being the outermost wrapper.
+    ///
+    /// # Example
+    /// ```ignore
+    /// Story::new("With Padding", MyProps::default())
+    ///     .with_decorator(|story| rsx! {
+    ///         div { style: "padding: 20px;", {story} }
+    ///     })
+    /// ```
+    pub fn with_decorator(mut self, decorator: Decorator) -> Self {
+        self.decorators.push(decorator);
+        self
+    }
+
+    /// Add multiple decorators to this story.
+    ///
+    /// Decorators are applied in order, with the first decorator being the outermost wrapper.
+    pub fn with_decorators(mut self, decorators: impl IntoIterator<Item = Decorator>) -> Self {
+        self.decorators.extend(decorators);
+        self
     }
 }
 
@@ -169,7 +224,7 @@ pub type GetStoriesFn = fn() -> Vec<StoryInfo>;
 pub type GetPropSchemaFn = fn() -> schemars::schema::RootSchema;
 
 /// Runtime representation of a story with serialized props
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone)]
 pub struct StoryInfo {
     /// The title of the story
     pub title: String,
@@ -177,6 +232,31 @@ pub struct StoryInfo {
     pub description: Option<String>,
     /// The props serialized as JSON
     pub props_json: String,
+    /// Decorators to wrap the story rendering
+    pub decorators: Vec<Decorator>,
+}
+
+impl std::fmt::Debug for StoryInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("StoryInfo")
+            .field("title", &self.title)
+            .field("description", &self.description)
+            .field("props_json", &self.props_json)
+            .field("decorators", &format!("[{} decorators]", self.decorators.len()))
+            .finish()
+    }
+}
+
+impl PartialEq for StoryInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.title == other.title
+            && self.description == other.description
+            && self.props_json == other.props_json
+            && self.decorators.len() == other.decorators.len()
+            // Compare function pointers by address
+            && self.decorators.iter().zip(other.decorators.iter())
+                .all(|(a, b)| (*a as usize) == (*b as usize))
+    }
 }
 
 

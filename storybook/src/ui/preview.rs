@@ -1,7 +1,13 @@
 use crate::ui::props_editor::PropsEditor;
-use crate::{StoryInfo, StorybookConfig, find_component};
+use crate::{Decorator, StoryInfo, StorybookConfig, find_component};
 use dioxus::prelude::*;
 use schemars::schema::RootSchema;
+
+/// Apply decorators to an element.
+/// Decorators are applied in order, with the first decorator being the outermost wrapper.
+fn apply_decorators(element: Element, decorators: &[Decorator]) -> Element {
+    decorators.iter().rev().fold(element, |acc, decorator| decorator(acc))
+}
 
 #[component]
 pub(crate) fn ComponentPreview(
@@ -144,7 +150,7 @@ fn StoryCard(
             div {
                 id: "{container_id}",
                 style: "position: absolute; visibility: hidden; pointer-events: none;",
-                {(render_fn)(&props_json())}
+                {apply_decorators((render_fn)(&props_json()), &story.decorators)}
             }
 
             // Toolbar with zoom controls
