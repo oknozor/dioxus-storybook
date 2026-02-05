@@ -150,7 +150,9 @@ pub(crate) fn StoryCard(
             // Hidden container where we render the component to capture its HTML
             div {
                 id: "{container_id}",
-                style: "position: absolute; visibility: hidden; pointer-events: none;",
+                position: "absolute",
+                visibility: "hidden",
+                pointer_events: "none",
                 {apply_decorators((render_fn)(&props_json()), &story.decorators)}
             }
 
@@ -192,7 +194,10 @@ pub(crate) fn StoryCard(
                 iframe {
                     class: "preview-iframe",
                     srcdoc: "{srcdoc}",
-                    style: "transform: scale({zoom_level() as f64 / 100.0}); transform-origin: top left; width: {10000.0 / zoom_level() as f64}%; height: auto;"
+                    transform: "scale({zoom_level() as f64 / 100.0})",
+                    transform_origin: "top left",
+                    width: "{10000.0 / zoom_level() as f64}%",
+                    height: "auto",
                 }
             }
 
