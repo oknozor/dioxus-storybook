@@ -13,7 +13,15 @@ body {
 
 .storybook-container {
     display: flex;
+    flex-direction: column;
     height: 100vh;
+    overflow: hidden;
+}
+
+/* Content wrapper (sidebar + main content) */
+.content-wrapper {
+    display: flex;
+    flex: 1;
     overflow: hidden;
 }
 
@@ -899,4 +907,238 @@ body {
     color: #c53030;
     font-size: 0.875rem;
     margin: 16px 0;
+}
+
+/* ============================================
+   Top Navigation Bar
+   ============================================ */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    padding: 0 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
+}
+
+.top-bar-left,
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.top-bar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.top-bar-btn:hover {
+    background: #f0f0f0;
+    border-color: #e0e0e0;
+    color: #333;
+}
+
+.top-bar-btn.active {
+    background: #e3f2fd;
+    border-color: #90caf9;
+    color: #1976d2;
+}
+
+.top-bar-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.top-bar-divider {
+    width: 1px;
+    height: 24px;
+    background: #e0e0e0;
+    margin: 0 8px;
+}
+
+/* ============================================
+   Dark Theme Overrides
+   ============================================ */
+.dark-theme .top-bar {
+    background: #1e1e1e;
+    border-bottom-color: #333;
+}
+
+.dark-theme .top-bar-btn {
+    color: #aaa;
+}
+
+.dark-theme .top-bar-btn:hover {
+    background: #333;
+    border-color: #444;
+    color: #fff;
+}
+
+.dark-theme .top-bar-btn.active {
+    background: #1e3a5f;
+    border-color: #2962ff;
+    color: #64b5f6;
+}
+
+.dark-theme .top-bar-divider {
+    background: #444;
+}
+
+.dark-theme .sidebar {
+    background: #1e1e1e;
+    border-right-color: #333;
+}
+
+.dark-theme .search-container input {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+.dark-theme .search-container input::placeholder {
+    color: #888;
+}
+
+.dark-theme .sidebar-item {
+    color: #ddd;
+}
+
+.dark-theme .sidebar-item:hover {
+    background: #2d2d2d;
+}
+
+.dark-theme .sidebar-item.active {
+    background: #1e3a5f;
+    color: #64b5f6;
+}
+
+.dark-theme .main-content {
+    background: #121212;
+}
+
+.dark-theme .story-card {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+.dark-theme .story-card-header {
+    border-bottom-color: #333;
+}
+
+.dark-theme .story-title {
+    color: #fff;
+}
+
+.dark-theme .story-description {
+    color: #aaa;
+}
+
+.dark-theme .zoom-toolbar {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+.dark-theme .zoom-btn {
+    color: #aaa;
+    border-color: #444;
+}
+
+.dark-theme .zoom-btn:hover {
+    background: #3d3d3d;
+    color: #fff;
+}
+
+.dark-theme .zoom-level {
+    color: #aaa;
+}
+
+.dark-theme .preview-container {
+    background: #2d2d2d;
+}
+
+.dark-theme .props-editor {
+    background: #1e1e1e;
+    border-top-color: #333;
+}
+
+.dark-theme .props-toggle-btn {
+    color: #aaa;
+}
+
+.dark-theme .props-toggle-btn:hover {
+    background: #2d2d2d;
+}
+
+.dark-theme .prop-row {
+    border-bottom-color: #333;
+}
+
+.dark-theme .prop-label {
+    color: #ddd;
+}
+
+.dark-theme .prop-input,
+.dark-theme .prop-select {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+/* ============================================
+   Fullscreen Mode
+   ============================================ */
+.fullscreen-mode .content-wrapper {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.fullscreen-mode .sidebar {
+    display: none;
+}
+
+.fullscreen-mode .main-content {
+    width: 100%;
+    max-width: 100%;
+}
+
+.fullscreen-mode .top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+}
+
+/* ============================================
+   Grid Overlay for Preview
+   ============================================ */
+.preview-container.grid-enabled {
+    background-image:
+        linear-gradient(to right, rgba(128, 128, 128, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(128, 128, 128, 0.15) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.dark-theme .preview-container.grid-enabled {
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
 }

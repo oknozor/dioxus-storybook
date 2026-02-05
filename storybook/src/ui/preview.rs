@@ -1,4 +1,5 @@
 use crate::ui::props_editor::PropsEditor;
+use crate::ui::UiSettings;
 use crate::{Decorator, StoryInfo, StorybookConfig, find_component};
 use dioxus::prelude::*;
 use schemars::schema::RootSchema;
@@ -112,6 +113,11 @@ pub(crate) fn StoryCard(
     // Get the config from context to access component CSS
     let config = use_context::<StorybookConfig>();
 
+    // Get UI settings for grid/outline toggles
+    let ui_settings = use_context::<UiSettings>();
+    let outline_enabled = (ui_settings.outline_enabled)();
+    let grid_enabled = (ui_settings.grid_enabled)();
+
     // Build CSS link tags from config
     let css_links = config
         .component_css
@@ -119,6 +125,13 @@ pub(crate) fn StoryCard(
         .map(|css| format!(r#"<link rel="stylesheet" href="{}">"#, css))
         .collect::<Vec<_>>()
         .join("\n    ");
+
+    // Build outline CSS if enabled
+    let outline_css = if outline_enabled {
+        "* { outline: 1px solid rgba(255, 0, 0, 0.3) !important; }"
+    } else {
+        ""
+    };
 
     // Build the srcdoc content with CSS isolation
     let srcdoc = format!(
@@ -128,6 +141,7 @@ pub(crate) fn StoryCard(
     {css_links}
     <style>
         body {{ margin: 0; padding: 16px; }}
+        {outline_css}
     </style>
 </head>
 <body>
@@ -136,6 +150,13 @@ pub(crate) fn StoryCard(
 </html>"#,
         iframe_html()
     );
+
+    // Build the preview area class with optional grid
+    let preview_area_class = if grid_enabled {
+        "story-preview-area grid-enabled"
+    } else {
+        "story-preview-area"
+    };
 
     rsx! {
         div { class: "story-card",
@@ -190,7 +211,7 @@ pub(crate) fn StoryCard(
             }
 
             // Iframe that displays the component with CSS isolation
-            div { class: "story-preview-area",
+            div { class: "{preview_area_class}",
                 iframe {
                     class: "preview-iframe",
                     srcdoc: "{srcdoc}",
