@@ -133,6 +133,13 @@ pub(crate) fn StoryCard(
         ""
     };
 
+    // Build grid CSS if enabled
+    let grid_css = if grid_enabled {
+        "body { background-size: 10px 10px; background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px); }"
+    } else {
+        ""
+    };
+
     // Build the srcdoc content with CSS isolation
     let srcdoc = format!(
         r#"<!DOCTYPE html>
@@ -142,6 +149,7 @@ pub(crate) fn StoryCard(
     <style>
         body {{ margin: 0; padding: 16px; }}
         {outline_css}
+        {grid_css}
     </style>
 </head>
 <body>
@@ -150,13 +158,6 @@ pub(crate) fn StoryCard(
 </html>"#,
         iframe_html()
     );
-
-    // Build the preview area class with optional grid
-    let preview_area_class = if grid_enabled {
-        "story-preview-area grid-enabled"
-    } else {
-        "story-preview-area"
-    };
 
     rsx! {
         div { class: "story-card",
@@ -211,7 +212,7 @@ pub(crate) fn StoryCard(
             }
 
             // Iframe that displays the component with CSS isolation
-            div { class: "{preview_area_class}",
+            div { class: "story-preview-area",
                 iframe {
                     class: "preview-iframe",
                     srcdoc: "{srcdoc}",
