@@ -2,6 +2,7 @@ use crate::ui::props_editor::PropsEditor;
 use crate::ui::UiSettings;
 use crate::{Decorator, StoryInfo, StorybookConfig, find_component};
 use dioxus::prelude::*;
+use lucide_dioxus::{ChevronDown, ChevronRight, ZoomIn, ZoomOut, RotateCcw};
 use schemars::schema::RootSchema;
 
 /// Apply decorators to an element.
@@ -189,7 +190,7 @@ pub(crate) fn StoryCard(
                             zoom_level.set(current - 25);
                         }
                     },
-                    "−"
+                    ZoomOut { size: 16, stroke_width: 2 }
                 }
                 span { class: "zoom-level", "{zoom_level()}%" }
                 button {
@@ -201,13 +202,13 @@ pub(crate) fn StoryCard(
                             zoom_level.set(current + 25);
                         }
                     },
-                    "+"
+                    ZoomIn { size: 16, stroke_width: 2 }
                 }
                 button {
                     class: "toolbar-button reset-zoom",
                     title: "Reset Zoom",
                     onclick: move |_| zoom_level.set(100),
-                    "Reset"
+                    RotateCcw { size: 16, stroke_width: 2 }
                 }
             }
 
@@ -230,9 +231,9 @@ pub(crate) fn StoryCard(
                     onclick: move |_| props_expanded.toggle(),
                     span { class: "collapse-icon",
                         if props_expanded() {
-                            "▼"
+                            ChevronDown { size: 14, stroke_width: 2 }
                         } else {
-                            "▶"
+                            ChevronRight { size: 14, stroke_width: 2 }
                         }
                     }
                     "Props Editor"
