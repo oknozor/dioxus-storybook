@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use dioxus::prelude::*;
 use lucide_dioxus::{Sun, Moon, Grid3X3, Square, Maximize2, Minimize2};
-use crate::{get_components, take_config, StorybookConfig, STORYBOOK_CSS};
-use crate::ui::preview::ComponentPreview;
+use crate::{get_components, take_config, STORYBOOK_CSS};
+use crate::ui::preview::StoryPage;
 use crate::ui::sidebar::{ComponentInfo, ComponentTree, Selection};
 use crate::ui::doc_page::DocPage;
 
@@ -147,10 +147,18 @@ fn Storybook() -> Element {
                 div { class: "main-content",
                     div { class: "component-preview",
                         match selected() {
+                            Some(Selection::Story(component_name, story_index)) => rsx! {
+                                StoryPage {
+                                    key: "{component_name}-{story_index}",
+                                    component_name,
+                                    story_index
+                                }
+                            },
                             Some(Selection::Component(component_name)) => rsx! {
-                                ComponentPreview {
-                                    key: "{component_name}",
-                                    component_name
+                                StoryPage {
+                                    key: "{component_name}-0",
+                                    component_name,
+                                    story_index: 0
                                 }
                             },
                             Some(Selection::DocPage(doc_path)) => rsx! {
@@ -161,8 +169,8 @@ fn Storybook() -> Element {
                             },
                             None => rsx! {
                                 div { class: "empty-state",
-                                    h2 { "Select a component" }
-                                    p { "Choose a component from the sidebar to preview it" }
+                                    h2 { "Select a story" }
+                                    p { "Choose a component and story from the sidebar to preview it" }
                                 }
                             }
                         }

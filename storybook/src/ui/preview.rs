@@ -11,31 +11,38 @@ fn apply_decorators(element: Element, decorators: &[Decorator]) -> Element {
     decorators.iter().rev().fold(element, |acc, decorator| decorator(acc))
 }
 
+/// A dedicated page for displaying a single story in full-screen mode.
 #[component]
-pub(crate) fn ComponentPreview(
+pub(crate) fn StoryPage(
     component_name: String,
+    story_index: usize,
     #[props(default)] attribute: Vec<Attribute>,
 ) -> Element {
-    // Find the component registration
+
     let Some(registration) = find_component(&component_name) else {
         return rsx! {
             div { class: "error", "Component not found: {component_name}" }
         };
     };
 
-    // Load stories directly - no need for use_effect since the component
-    // is remounted when component_name changes (via key attribute on parent)
     let current_stories = (registration.get_stories)();
     let render_fn = registration.render_with_props;
-
-    // Get the schema for this component's props
     let prop_schema = (registration.get_prop_schema)();
 
-    rsx! {
-        div { class: "preview-container",
-            h2 { "{component_name}" }
+    let Some(story) = current_stories.get(story_index) else {
+        return rsx! {
+            div { class: "error", "Story not found: index {story_index} for {component_name}" }
+        };
+    };
 
-            // Display component description (from doc comments) if present
+    rsx! {
+        div { class: "story-page",
+            div { class: "story-page-header",
+                span { class: "story-page-component-name", "{component_name}" }
+                span { class: "story-page-separator", "/" }
+                span { class: "story-page-story-name", "{story.title}" }
+            }
+
             if !registration.description.is_empty() {
                 div {
                     class: "component-description",
@@ -43,17 +50,14 @@ pub(crate) fn ComponentPreview(
                 }
             }
 
-            // Display all stories in a vertical layout
-            div { class: "stories-container",
-                for (index , story) in current_stories.iter().enumerate() {
-                    StoryCard {
-                        key: "{component_name}-{index}",
-                        story: story.clone(),
-                        component_name: component_name.clone(),
-                        story_index: index,
-                        render_fn,
-                        prop_schema: prop_schema.clone()
-                    }
+            div { class: "story-page-content",
+                StoryCard {
+                    key: "{component_name}-{story_index}",
+                    story: story.clone(),
+                    component_name: component_name.clone(),
+                    story_index,
+                    render_fn,
+                    prop_schema: prop_schema.clone()
                 }
             }
         }
@@ -70,31 +74,21 @@ pub(crate) fn StoryCard(
     prop_schema: RootSchema,
     #[props(default)] attribute: Vec<Attribute>,
 ) -> Element {
-    // Each story card has its own iframe HTML signal
     let mut iframe_html = use_signal(|| String::new());
-
-    // Props JSON as a signal so it can be edited
     let props_json = use_signal(|| story.props_json.clone());
-
-    // Props editor collapsed by default
     let mut props_expanded = use_signal(|| false);
-
-    // Zoom level for the iframe (100 = 100%)
     let mut zoom_level = use_signal(|| 100i32);
 
-    // Unique ID for this story's hidden render container
     let container_id = format!(
         "preview-render-{}-story-{}",
         component_name.replace(" ", "-").replace("::", "-"),
         story_index
     );
 
+    #[cfg(target_arch = "wasm32")]
     let container_id_for_effect = container_id.clone();
 
-    // Effect to capture rendered HTML and update iframe content
-    // This effect re-runs whenever props_json changes
     use_effect(move || {
-        // Read props_json to make this effect reactive to changes
         let _props_json_value = props_json();
 
         #[cfg(target_arch = "wasm32")]
@@ -111,15 +105,11 @@ pub(crate) fn StoryCard(
         }
     });
 
-    // Get the config from context to access component CSS
     let config = use_context::<StorybookConfig>();
-
-    // Get UI settings for grid/outline toggles
     let ui_settings = use_context::<UiSettings>();
     let outline_enabled = (ui_settings.outline_enabled)();
     let grid_enabled = (ui_settings.grid_enabled)();
 
-    // Build CSS link tags from config
     let css_links = config
         .component_css
         .iter()
@@ -127,21 +117,18 @@ pub(crate) fn StoryCard(
         .collect::<Vec<_>>()
         .join("\n    ");
 
-    // Build outline CSS if enabled
     let outline_css = if outline_enabled {
         "* { outline: 1px solid rgba(255, 0, 0, 0.3) !important; }"
     } else {
         ""
     };
 
-    // Build grid CSS if enabled
     let grid_css = if grid_enabled {
         "body { background-size: 10px 10px; background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px); }"
     } else {
         ""
     };
 
-    // Build the srcdoc content with CSS isolation
     let srcdoc = format!(
         r#"<!DOCTYPE html>
 <html>
@@ -162,15 +149,12 @@ pub(crate) fn StoryCard(
 
     rsx! {
         div { class: "story-card",
-            // Story title
             h4 { class: "story-card-title", "{story.title}" }
 
-            // Story description (if present)
             if let Some(desc) = &story.description {
                 p { class: "story-card-description", "{desc}" }
             }
 
-            // Hidden container where we render the component to capture its HTML
             div {
                 id: "{container_id}",
                 position: "absolute",
@@ -179,7 +163,6 @@ pub(crate) fn StoryCard(
                 {apply_decorators((render_fn)(&props_json()), &story.decorators)}
             }
 
-            // Toolbar with zoom controls
             div { class: "story-toolbar",
                 button {
                     class: "toolbar-button",
@@ -212,7 +195,6 @@ pub(crate) fn StoryCard(
                 }
             }
 
-            // Iframe that displays the component with CSS isolation
             div { class: "story-preview-area",
                 iframe {
                     class: "preview-iframe",
@@ -224,7 +206,6 @@ pub(crate) fn StoryCard(
                 }
             }
 
-            // Collapsible props editor section
             div { class: "props-editor-section",
                 div {
                     class: "props-editor-header",

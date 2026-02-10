@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use std::collections::BTreeMap;
-use lucide_dioxus::{ChevronRight, FileText, Folder, FolderOpen, Component};
+use lucide_dioxus::{BookOpen, ChevronRight, FileText, Folder, FolderOpen, Component};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ComponentInfo {
@@ -8,10 +8,14 @@ pub struct ComponentInfo {
     pub category: String,
 }
 
-/// Selection type - either a component or a doc page
+/// Selection type - a story, component, or doc page
 #[derive(Clone, PartialEq, Debug)]
 pub enum Selection {
+    /// A specific story within a component (component_name, story_index)
+    Story(String, usize),
+    /// A component (used internally for expand/collapse, not for display)
     Component(String),
+    /// A documentation page
     DocPage(String),
 }
 
@@ -107,10 +111,7 @@ pub fn ComponentTree(
                         ComponentNode {
                             key: "{component_name}",
                             name: component_name.clone(),
-                            selected: selected() == Some(Selection::Component(component_name.clone())),
-                            onclick: move |_| {
-                                selected.set(Some(Selection::Component(component_name.clone())));
-                            },
+                            selected,
                         }
                     }
                 }
@@ -195,10 +196,7 @@ fn TreeNode(
                                 ComponentNode {
                                     key: "{component_name}",
                                     name: component_name.clone(),
-                                    selected: selected() == Some(Selection::Component(component_name.clone())),
-                                    onclick: move |_| {
-                                        selected.set(Some(Selection::Component(component_name.clone())));
-                                    },
+                                    selected,
                                 }
                             }
                         }
@@ -209,14 +207,76 @@ fn TreeNode(
     }
 }
 
+/// Expandable component node that shows individual stories as children
 #[component]
-fn ComponentNode(name: String, selected: bool, onclick: EventHandler<()>) -> Element {
+fn ComponentNode(name: String, selected: Signal<Option<Selection>>) -> Element {
+    let mut expanded = use_signal(|| false);
+    let component_name = name.clone();
+
+    // Look up stories for this component
+    let stories: Vec<String> = crate::find_component(&component_name)
+        .map(|reg| (reg.get_stories)().into_iter().map(|s| s.title).collect())
+        .unwrap_or_default();
+
+    // Check if this component or any of its stories is selected
+    let is_component_active = match selected() {
+        Some(Selection::Story(ref cn, _)) => cn == &component_name,
+        Some(Selection::Component(ref cn)) => cn == &component_name,
+        _ => false,
+    };
+
+    // Auto-expand when a story in this component is selected
+    let should_expand = expanded() || is_component_active;
+
+    let toggle_name = component_name.clone();
     rsx! {
-        div { class: if selected { "component-node selected" } else { "component-node" }, onclick: move |_| onclick.call(()),
-            span { class: "component-icon",
-                Component { size: 16, stroke_width: 2 }
+        div { class: "component-node-group",
+            div {
+                class: if is_component_active { "component-node active" } else { "component-node" },
+                onclick: move |_| {
+                    expanded.set(!expanded());
+                    // If expanding and component has stories, select the first story
+                    if !expanded() {
+                        if let Some(reg) = crate::find_component(&toggle_name) {
+                            let s = (reg.get_stories)();
+                            if !s.is_empty() {
+                                selected.set(Some(Selection::Story(toggle_name.clone(), 0)));
+                            }
+                        }
+                    }
+                },
+                span { class: if should_expand { "arrow expanded" } else { "arrow" },
+                    ChevronRight { size: 12, stroke_width: 2 }
+                }
+                span { class: "component-icon",
+                    Component { size: 14, stroke_width: 2 }
+                }
+                span { class: "component-name", "{name}" }
             }
-            span { class: "component-name", "{name}" }
+            if should_expand {
+                div { class: "story-children",
+                    for (index , story_title) in stories.iter().enumerate() {
+                        {
+                            let cn = component_name.clone();
+                            let is_selected = selected() == Some(Selection::Story(cn.clone(), index));
+                            let title = story_title.clone();
+                            rsx! {
+                                div {
+                                    key: "{cn}-story-{index}",
+                                    class: if is_selected { "story-node selected" } else { "story-node" },
+                                    onclick: move |_| {
+                                        selected.set(Some(Selection::Story(cn.clone(), index)));
+                                    },
+                                    span { class: "story-icon",
+                                        BookOpen { size: 12, stroke_width: 2 }
+                                    }
+                                    span { class: "story-name", "{title}" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
