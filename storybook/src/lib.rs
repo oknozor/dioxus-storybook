@@ -1,22 +1,113 @@
-//! Dioxus Storybook - Component documentation and testing framework
+//! # Dioxus Storybook
 //!
-//! Use the `#[storybook(tag = "Category")]` attribute to register components.
+//! A component development and documentation framework for [Dioxus](https://dioxuslabs.com/).
+//! Develop, document, and visually test your UI components in isolation — inspired
+//! by [Storybook.js](https://storybook.js.org/).
 //!
-//! Components must implement the `Stories` trait to provide story configurations
-//! for the storybook UI.
+//! ## Quick start
 //!
-//! # Example
-//! ```ignore
-//! use storybook::StorybookConfig;
-//! use my_component_lib::MY_CSS;
+//! ### 1. Annotate your component
 //!
-//! fn main() {
-//!     storybook::launch(StorybookConfig {
-//!         component_css: vec![MY_CSS.to_string()],
-//!         title: Some("My Component Library".to_string()),
-//!     });
+//! ```rust,ignore
+//! use dioxus::prelude::*;
+//! use storybook::{storybook, Stories, Story};
+//!
+//! #[storybook(tag = "Examples")]
+//! #[component]
+//! pub fn MyButton(label: String, #[props(default = false)] disabled: bool) -> Element {
+//!     rsx! { button { disabled, "{label}" } }
 //! }
 //! ```
+//!
+//! ### 2. Implement the [`Stories`] trait
+//!
+//! ```rust,ignore
+//! impl Stories for MyButtonProps {
+//!     fn stories() -> Vec<Story<Self>> {
+//!         vec![
+//!             Story::new("Default", Self {
+//!                 label: "Click me".to_string(),
+//!                 disabled: false,
+//!             }),
+//!             Story::with_description(
+//!                 "Disabled",
+//!                 "A disabled button that cannot be clicked",
+//!                 Self { label: "Can't click".to_string(), disabled: true },
+//!             ),
+//!         ]
+//!     }
+//! }
+//! ```
+//!
+//! ### 3. Launch the storybook
+//!
+//! ```rust,ignore
+//! fn main() {
+//!     storybook::launch(
+//!         storybook::StorybookConfig::default()
+//!             .with_title("My Component Library"),
+//!     );
+//! }
+//! ```
+//!
+//! ## Features
+//!
+//! - **Story-centric navigation** — sidebar tree with Category → Component → Story,
+//!   just like Storybook.js.
+//! - **Live props editor** — auto-generated from [`schemars::JsonSchema`]; edit props
+//!   in real time and see the component update.
+//! - **Decorators** — wrap stories with extra markup via [`Decorator`] functions
+//!   (padding, theme providers, etc.).
+//! - **Documentation pages** — embed Markdown docs in the sidebar with the
+//!   [`storydoc!`] macro, including live story previews.
+//! - **Dark / light theme** — toggle between themes from the toolbar.
+//! - **Zero-config registration** — the [`storybook`](macro@storybook) attribute macro
+//!   and the [`inventory`] crate handle compile-time discovery automatically.
+//!
+//! ## Categories and folders
+//!
+//! The `tag` parameter on `#[storybook]` controls sidebar placement. Use `/` to
+//! create nested folders:
+//!
+//! ```rust,ignore
+//! #[storybook(tag = "Forms/Inputs")]
+//! #[component]
+//! pub fn TextInput(/* ... */) -> Element { /* ... */ }
+//! ```
+//!
+//! This produces a sidebar tree like:
+//!
+//! ```text
+//! Forms/
+//!   Inputs/
+//!     TextInput
+//!       Default
+//!       With Placeholder
+//! ```
+//!
+//! ## Documentation pages
+//!
+//! Register a Markdown file alongside a category:
+//!
+//! ```rust,ignore
+//! storybook::storydoc!("Examples", "assets/getting-started.md");
+//! ```
+//!
+//! Inside the Markdown you can embed live story previews with image syntax:
+//!
+//! ```markdown
+//! ![Default](Examples/ExampleCard/Default)
+//! ```
+//!
+//! ## Re-exports
+//!
+//! This crate re-exports several dependencies so that downstream crates do not
+//! need to depend on them directly:
+//!
+//! - [`dioxus`] — the Dioxus framework
+//! - [`serde`] / [`serde_json`] — serialization
+//! - [`schemars`] — JSON Schema generation (used for the props editor)
+//! - [`inventory`] — compile-time component collection
 
 pub use dioxus;
 pub use inventory;
@@ -36,8 +127,19 @@ mod ui;
 
 /// Configuration for the storybook application.
 ///
-/// This struct allows users to customize the storybook with their own CSS
-/// and other settings.
+/// Use the builder methods [`with_css`](Self::with_css) and
+/// [`with_title`](Self::with_title) to customise the storybook, then pass
+/// the config to [`launch()`].
+///
+/// # Example
+///
+/// ```rust,ignore
+/// storybook::launch(
+///     StorybookConfig::default()
+///         .with_css(MY_CSS)
+///         .with_title("My Component Library"),
+/// );
+/// ```
 #[derive(Clone, Default)]
 pub struct StorybookConfig {
     /// CSS URLs to inject into the component preview iframes.
@@ -63,19 +165,20 @@ impl StorybookConfig {
 
 /// Launch the storybook application with the given configuration.
 ///
-/// This is the main entry point for the storybook. It sets up the configuration
-/// context and launches the Dioxus application.
+/// This is the main entry point for the storybook. It stores the
+/// [`StorybookConfig`], then starts the Dioxus application which
+/// automatically discovers all components registered with
+/// [`#[storybook]`](macro@storybook).
 ///
 /// # Example
-/// ```ignore
-/// use storybook::StorybookConfig;
-/// use my_component_lib::MY_CSS;
 ///
+/// ```rust,ignore
 /// fn main() {
-///     storybook::launch(StorybookConfig {
-///         component_css: vec![MY_CSS.to_string()],
-///         title: Some("My Component Library".to_string()),
-///     });
+///     storybook::launch(
+///         storybook::StorybookConfig::default()
+///             .with_css(MY_CSS)
+///             .with_title("My Component Library"),
+///     );
 /// }
 /// ```
 pub fn launch(config: StorybookConfig) {
@@ -217,16 +320,27 @@ pub trait Stories {
         Self: Sized;
 }
 
-/// Type alias for the render function that takes JSON props
+/// Function pointer that renders a component from a JSON-encoded props string.
+///
+/// Generated automatically by the [`#[storybook]`](macro@storybook) macro.
 pub type RenderWithPropsFn = fn(&str) -> Element;
 
-/// Type alias for getting all stories with their props as JSON
+/// Function pointer that returns all [`StoryInfo`] entries for a component.
+///
+/// Generated automatically by the [`#[storybook]`](macro@storybook) macro.
 pub type GetStoriesFn = fn() -> Vec<StoryInfo>;
 
-/// Type alias for getting the JSON schema for props
+/// Function pointer that returns the JSON Schema ([`RootSchema`])
+/// for a component's props struct.
+///
+/// Generated automatically by the [`#[storybook]`](macro@storybook) macro.
 pub type GetPropSchemaFn = fn() -> schemars::schema::RootSchema;
 
-/// Runtime representation of a story with serialized props
+/// Runtime representation of a story with serialized (JSON) props.
+///
+/// This is the type-erased counterpart of [`Story<T>`] — it is produced by
+/// the generated code so the UI can work with stories without knowing the
+/// concrete props type.
 #[derive(Clone)]
 pub struct StoryInfo {
     /// The title of the story
@@ -275,9 +389,15 @@ struct SchemaFieldInfo {
     description: Option<String>,
 }
 
-/// Registration info for a storybook component
+/// Compile-time registration record for a storybook component.
+///
+/// One of these is created for every `#[storybook]`-annotated component and
+/// collected at link time via the [`inventory`] crate. You should not need
+/// to construct this manually — use the macro instead.
 pub struct ComponentRegistration {
+    /// Component name (e.g. `"MyButton"`).
     pub name: &'static str,
+    /// Sidebar category / folder path (e.g. `"Forms/Inputs"`).
     pub tag: &'static str,
     /// Component description extracted from doc comments (HTML format)
     pub description: &'static str,
@@ -301,21 +421,25 @@ impl std::fmt::Debug for ComponentRegistration {
 
 inventory::collect!(ComponentRegistration);
 
-/// Get all registered components
+/// Returns an iterator over every [`ComponentRegistration`] collected at
+/// compile time (i.e. every component annotated with `#[storybook]`).
 pub fn get_components() -> impl Iterator<Item = &'static ComponentRegistration> {
     inventory::iter::<ComponentRegistration>()
 }
 
-/// Find a component by name
+/// Look up a [`ComponentRegistration`] by its component name.
+///
+/// Returns `None` if no component with the given name has been registered.
 pub fn find_component(name: &str) -> Option<&'static ComponentRegistration> {
     inventory::iter::<ComponentRegistration>().find(|c| c.name == name)
 }
 
-/// Registration info for a documentation page.
+/// Compile-time registration record for a documentation page.
 ///
-/// Documentation pages are markdown files that can be associated with
-/// a category, folder, or component path in the storybook tree.
-/// They are displayed as the first item in a folder.
+/// Created by the [`storydoc!`] macro. The Markdown source is converted to
+/// HTML at compile time and stored in [`content_html`](Self::content_html).
+/// The page appears as a "Documentation" link inside the matching sidebar
+/// folder.
 #[derive(Debug)]
 pub struct DocRegistration {
     /// The path in the tree where this doc page belongs (e.g., "Buttons/Primary")
@@ -326,12 +450,16 @@ pub struct DocRegistration {
 
 inventory::collect!(DocRegistration);
 
-/// Get all registered documentation pages
+/// Returns an iterator over every [`DocRegistration`] collected at compile
+/// time (i.e. every page registered with [`storydoc!`]).
 pub fn get_docs() -> impl Iterator<Item = &'static DocRegistration> {
     inventory::iter::<DocRegistration>()
 }
 
-/// Find a documentation page by path
+/// Look up a [`DocRegistration`] by its tree path.
+///
+/// Returns `None` if no documentation page with the given path has been
+/// registered.
 pub fn find_doc(path: &str) -> Option<&'static DocRegistration> {
     inventory::iter::<DocRegistration>().find(|d| d.path == path)
 }
