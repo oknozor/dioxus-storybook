@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
+use lucide_dioxus::{BookOpen, ChevronRight, Component, FileText, Folder, FolderOpen};
 use std::collections::BTreeMap;
-use lucide_dioxus::{BookOpen, ChevronRight, FileText, Folder, FolderOpen, Component};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ComponentInfo {
@@ -13,8 +13,6 @@ pub struct ComponentInfo {
 pub enum Selection {
     /// A specific story within a component (component_name, story_index)
     Story(String, usize),
-    /// A component (used internally for expand/collapse, not for display)
-    Component(String),
     /// A documentation page
     DocPage(String),
 }
@@ -52,13 +50,14 @@ impl CategoryTreeNode {
             } else {
                 format!("{}/{}", current_path, path[0])
             };
-            let child = self.children.entry(path[0].to_string()).or_insert_with(|| {
-                CategoryTreeNode {
-                    full_path: new_path.clone(),
-                    has_doc: crate::find_doc(&new_path).is_some(),
-                    ..Default::default()
-                }
-            });
+            let child =
+                self.children
+                    .entry(path[0].to_string())
+                    .or_insert_with(|| CategoryTreeNode {
+                        full_path: new_path.clone(),
+                        has_doc: crate::find_doc(&new_path).is_some(),
+                        ..Default::default()
+                    });
             child.insert(&path[1..], component_name, &new_path);
         }
     }
@@ -221,7 +220,6 @@ fn ComponentNode(name: String, selected: Signal<Option<Selection>>) -> Element {
     // Check if this component or any of its stories is selected
     let is_component_active = match selected() {
         Some(Selection::Story(ref cn, _)) => cn == &component_name,
-        Some(Selection::Component(ref cn)) => cn == &component_name,
         _ => false,
     };
 
@@ -236,14 +234,13 @@ fn ComponentNode(name: String, selected: Signal<Option<Selection>>) -> Element {
                 onclick: move |_| {
                     expanded.set(!expanded());
                     // If expanding and component has stories, select the first story
-                    if !expanded() {
-                        if let Some(reg) = crate::find_component(&toggle_name) {
+                    if !expanded() && let Some(reg) = crate::find_component(&toggle_name) {
                             let s = (reg.get_stories)();
                             if !s.is_empty() {
                                 selected.set(Some(Selection::Story(toggle_name.clone(), 0)));
                             }
                         }
-                    }
+
                 },
                 span { class: if should_expand { "arrow expanded" } else { "arrow" },
                     ChevronRight { size: 12, stroke_width: 2 }

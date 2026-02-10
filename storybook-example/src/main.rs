@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use storybook::{storybook, Stories, Story, StorybookConfig};
+use storybook::{Stories, Story, StorybookConfig, storybook};
 
 // Example Button component
 #[storybook(tag = "Examples")]
@@ -20,10 +20,13 @@ pub fn ExampleButton(label: String, #[props(default = false)] disabled: bool) ->
 impl Stories for ExampleButtonProps {
     fn stories() -> Vec<Story<Self>> {
         vec![
-            Story::new("Default", Self {
-                label: "Click me".to_string(),
-                disabled: false,
-            }),
+            Story::new(
+                "Default",
+                Self {
+                    label: "Click me".to_string(),
+                    disabled: false,
+                },
+            ),
             Story::with_description(
                 "Disabled",
                 "A disabled button that cannot be clicked",
@@ -71,9 +74,5 @@ impl Stories for ExampleCardProps {
 storybook::storydoc!("Examples", "assets/getting-started.md");
 
 fn main() {
-    storybook::launch(StorybookConfig::default()
-        .with_title("Example Storybook")
-    );
+    storybook::launch(StorybookConfig::default().with_title("Example Storybook"));
 }
-
-

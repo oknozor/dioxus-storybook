@@ -1,6 +1,6 @@
+use crate::{SchemaFieldInfo, extract_fields_from_schema, parse_input_value, update_prop_value};
 use dioxus::prelude::*;
 use schemars::schema::{InstanceType, RootSchema};
-use crate::{extract_fields_from_schema, parse_input_value, update_prop_value, SchemaFieldInfo};
 
 #[component]
 pub(crate) fn PropsEditor(props_json: Signal<String>, schema: RootSchema) -> Element {

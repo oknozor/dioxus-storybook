@@ -1,6 +1,6 @@
-use dioxus::prelude::*;
-use crate::{find_doc, find_component};
 use crate::ui::preview::StoryCard;
+use crate::{find_component, find_doc};
+use dioxus::prelude::*;
 
 /// Component to render a documentation page
 #[component]
@@ -24,10 +24,10 @@ pub fn DocPage(path: String) -> Element {
 fn DocContent(content_html: String) -> Element {
     // Parse the HTML content and find story embed markers
     // Story embeds are marked as: <div class="storybook-embed" data-story-path="..."></div>
-    
+
     // Split content by story embed markers and render each part
     let parts = parse_doc_content(&content_html);
-    
+
     rsx! {
         div { class: "doc-content",
             for (index, part) in parts.iter().enumerate() {
@@ -55,24 +55,27 @@ fn DocContent(content_html: String) -> Element {
 #[derive(Clone, Debug)]
 enum DocPart {
     Html(String),
-    StoryEmbed { story_path: String, story_name: String },
+    StoryEmbed {
+        story_path: String,
+        story_name: String,
+    },
 }
 
 /// Parse documentation content and extract story embed markers
 fn parse_doc_content(content: &str) -> Vec<DocPart> {
     let mut parts = Vec::new();
     let mut remaining = content;
-    
+
     while let Some(start_idx) = remaining.find(r#"<div class="storybook-embed""#) {
         // Add HTML before the embed marker
         if start_idx > 0 {
             parts.push(DocPart::Html(remaining[..start_idx].to_string()));
         }
-        
+
         // Find the end of this div
         if let Some(end_idx) = remaining[start_idx..].find("</div>") {
             let embed_div = &remaining[start_idx..start_idx + end_idx + 6];
-            
+
             // Extract story path and name from data attributes
             if let (Some(path), Some(name)) = (
                 extract_attr(embed_div, "data-story-path"),
@@ -83,18 +86,18 @@ fn parse_doc_content(content: &str) -> Vec<DocPart> {
                     story_name: name,
                 });
             }
-            
+
             remaining = &remaining[start_idx + end_idx + 6..];
         } else {
             break;
         }
     }
-    
+
     // Add any remaining HTML
     if !remaining.is_empty() {
         parts.push(DocPart::Html(remaining.to_string()));
     }
-    
+
     parts
 }
 

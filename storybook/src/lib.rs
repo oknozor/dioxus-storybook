@@ -26,9 +26,9 @@ pub use serde_json;
 pub use storybook_macro::storybook;
 pub use storybook_macro::storydoc;
 
+use crate::ui::App;
 use dioxus::prelude::*;
 use schemars::schema::{InstanceType, RootSchema, Schema, SchemaObject, SingleOrVec};
-use crate::ui::App;
 
 const STORYBOOK_CSS: Asset = asset!("../assets/storybook.css");
 
@@ -212,7 +212,9 @@ impl<T> Story<T> {
 /// }
 /// ```
 pub trait Stories {
-    fn stories() -> Vec<Story<Self>> where Self: Sized;
+    fn stories() -> Vec<Story<Self>>
+    where
+        Self: Sized;
 }
 
 /// Type alias for the render function that takes JSON props
@@ -243,7 +245,10 @@ impl std::fmt::Debug for StoryInfo {
             .field("title", &self.title)
             .field("description", &self.description)
             .field("props_json", &self.props_json)
-            .field("decorators", &format!("[{} decorators]", self.decorators.len()))
+            .field(
+                "decorators",
+                &format!("[{} decorators]", self.decorators.len()),
+            )
             .finish()
     }
 }
@@ -260,7 +265,6 @@ impl PartialEq for StoryInfo {
     }
 }
 
-
 /// Information about a property field extracted from JSON Schema
 #[derive(Clone, Debug, PartialEq)]
 struct SchemaFieldInfo {
@@ -270,7 +274,6 @@ struct SchemaFieldInfo {
     is_required: bool,
     description: Option<String>,
 }
-
 
 /// Registration info for a storybook component
 pub struct ComponentRegistration {
@@ -350,13 +353,10 @@ fn extract_fields_from_schema(schema: &RootSchema) -> Vec<SchemaFieldInfo> {
         for (name, prop_schema) in &obj.properties {
             let (type_name, instance_type, description) = match prop_schema {
                 Schema::Object(schema_obj) => {
-                    let instance_type = schema_obj
-                        .instance_type
-                        .as_ref()
-                        .and_then(|t| match t {
-                            SingleOrVec::Single(t) => Some(**t),
-                            SingleOrVec::Vec(v) => v.first().copied(),
-                        });
+                    let instance_type = schema_obj.instance_type.as_ref().and_then(|t| match t {
+                        SingleOrVec::Single(t) => Some(**t),
+                        SingleOrVec::Vec(v) => v.first().copied(),
+                    });
                     let type_name = get_type_name_from_schema(schema_obj, &schema.definitions);
                     let desc = schema_obj
                         .metadata
@@ -378,12 +378,10 @@ fn extract_fields_from_schema(schema: &RootSchema) -> Vec<SchemaFieldInfo> {
     }
 
     // Sort fields: required first, then alphabetically
-    fields.sort_by(|a, b| {
-        match (a.is_required, b.is_required) {
-            (true, false) => std::cmp::Ordering::Less,
-            (false, true) => std::cmp::Ordering::Greater,
-            _ => a.name.cmp(&b.name),
-        }
+    fields.sort_by(|a, b| match (a.is_required, b.is_required) {
+        (true, false) => std::cmp::Ordering::Less,
+        (false, true) => std::cmp::Ordering::Greater,
+        _ => a.name.cmp(&b.name),
     });
 
     fields
@@ -392,7 +390,7 @@ fn extract_fields_from_schema(schema: &RootSchema) -> Vec<SchemaFieldInfo> {
 /// Get a human-readable type name from a schema object
 fn get_type_name_from_schema(
     schema: &SchemaObject,
-    definitions: &schemars::Map<String, Schema>,
+    _definitions: &schemars::Map<String, Schema>,
 ) -> String {
     // Check for $ref first
     if let Some(ref_path) = &schema.reference {
@@ -412,10 +410,10 @@ fn get_type_name_from_schema(
     }
 
     // Check for enum values
-    if let Some(enum_values) = &schema.enum_values {
-        if !enum_values.is_empty() {
-            return "enum".to_string();
-        }
+    if let Some(enum_values) = &schema.enum_values
+        && !enum_values.is_empty()
+    {
+        return "enum".to_string();
     }
 
     "unknown".to_string()
@@ -434,16 +432,14 @@ fn format_instance_type(t: InstanceType) -> String {
     }
 }
 
-
-
 /// Update a property value in the props JSON
 fn update_prop_value(props_json: &mut Signal<String>, field_name: &str, value: serde_json::Value) {
-    if let Ok(mut json_value) = serde_json::from_str::<serde_json::Value>(&props_json()) {
-        if let Some(obj) = json_value.as_object_mut() {
-            obj.insert(field_name.to_string(), value);
-            if let Ok(new_json) = serde_json::to_string_pretty(&json_value) {
-                props_json.set(new_json);
-            }
+    if let Ok(mut json_value) = serde_json::from_str::<serde_json::Value>(&props_json())
+        && let Some(obj) = json_value.as_object_mut()
+    {
+        obj.insert(field_name.to_string(), value);
+        if let Ok(new_json) = serde_json::to_string_pretty(&json_value) {
+            props_json.set(new_json);
         }
     }
 }
@@ -462,7 +458,7 @@ fn parse_input_value(value: &str, instance_type: Option<InstanceType>) -> serde_
         Some(InstanceType::Number) => value
             .parse::<f64>()
             .ok()
-            .and_then(|n| serde_json::Number::from_f64(n))
+            .and_then(serde_json::Number::from_f64)
             .map(serde_json::Value::Number)
             .unwrap_or_else(|| serde_json::Value::String(value.to_string())),
         _ => {

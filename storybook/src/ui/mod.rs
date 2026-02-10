@@ -1,15 +1,15 @@
-use std::collections::HashMap;
-use dioxus::prelude::*;
-use lucide_dioxus::{Sun, Moon, Grid3X3, Square, Maximize2, Minimize2};
-use crate::{get_components, take_config, STORYBOOK_CSS};
+use crate::ui::doc_page::DocPage;
 use crate::ui::preview::StoryPage;
 use crate::ui::sidebar::{ComponentInfo, ComponentTree, Selection};
-use crate::ui::doc_page::DocPage;
+use crate::{STORYBOOK_CSS, get_components, take_config};
+use dioxus::prelude::*;
+use lucide_dioxus::{Grid3X3, Maximize2, Minimize2, Moon, Square, Sun};
+use std::collections::HashMap;
 
-pub mod preview;
-pub mod sidebar;
-pub mod props_editor;
 pub mod doc_page;
+pub mod preview;
+pub mod props_editor;
+pub mod sidebar;
 
 /// Global UI settings shared via context
 #[derive(Clone, Copy)]
@@ -23,7 +23,7 @@ pub(crate) struct UiSettings {
 #[component]
 pub(crate) fn App() -> Element {
     // Take the config from thread-local storage and provide it as context
-    let _config = use_context_provider(|| take_config());
+    let _config = use_context_provider(take_config);
 
     // Provide UI settings as context
     let _ui_settings = use_context_provider(|| UiSettings {
@@ -98,13 +98,19 @@ fn TopBar() -> Element {
 #[component]
 fn Storybook() -> Element {
     let ui_settings = use_context::<UiSettings>();
-    let mut search_query = use_signal(|| String::new());
+    let mut search_query = use_signal(String::new);
     let selected = use_signal(|| Option::<Selection>::None);
     let components = use_store(|| ComponentStore {
-        components: get_components().into_iter().map(|c| (c.name.to_string(), ComponentInfo {
-            name: c.name.to_string(),
-            category: c.tag.to_string(),
-        }))
+        components: get_components()
+            .map(|c| {
+                (
+                    c.name.to_string(),
+                    ComponentInfo {
+                        name: c.name.to_string(),
+                        category: c.tag.to_string(),
+                    },
+                )
+            })
             .collect(),
     });
 
@@ -143,7 +149,6 @@ fn Storybook() -> Element {
                     }
                 }
 
-                // Main content area
                 div { class: "main-content",
                     div { class: "component-preview",
                         match selected() {
@@ -152,13 +157,6 @@ fn Storybook() -> Element {
                                     key: "{component_name}-{story_index}",
                                     component_name,
                                     story_index
-                                }
-                            },
-                            Some(Selection::Component(component_name)) => rsx! {
-                                StoryPage {
-                                    key: "{component_name}-0",
-                                    component_name,
-                                    story_index: 0
                                 }
                             },
                             Some(Selection::DocPage(doc_path)) => rsx! {

@@ -1,8 +1,8 @@
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
-use pulldown_cmark::{html, Options, Parser};
+use pulldown_cmark::{Options, Parser, html};
 use quote::{format_ident, quote};
-use syn::{parse_macro_input, Fields, FnArg, Ident, ItemFn, ItemStruct, Pat, Type};
+use syn::{Fields, FnArg, Ident, ItemFn, ItemStruct, Pat, Type, parse_macro_input};
 
 /// Common field information used by both struct and function storybook processing
 struct FieldInfo {
@@ -30,12 +30,11 @@ fn extract_doc_comments(attrs: &[syn::Attribute]) -> String {
         .filter_map(|attr| {
             if attr.path().is_ident("doc") {
                 // Parse the doc attribute to extract the string content
-                if let syn::Meta::NameValue(meta) = &attr.meta {
-                    if let syn::Expr::Lit(expr_lit) = &meta.value {
-                        if let syn::Lit::Str(lit_str) = &expr_lit.lit {
-                            return Some(lit_str.value());
-                        }
-                    }
+                if let syn::Meta::NameValue(meta) = &attr.meta
+                    && let syn::Expr::Lit(expr_lit) = &meta.value
+                    && let syn::Lit::Str(lit_str) = &expr_lit.lit
+                {
+                    return Some(lit_str.value());
                 }
             }
             None
@@ -55,15 +54,24 @@ fn markdown_to_html(markdown: &str) -> String {
 
 impl ComponentMeta {
     fn render_fn_name(&self) -> Ident {
-        format_ident!("__storybook_render_with_props_{}", self.component_name_str.to_lowercase())
+        format_ident!(
+            "__storybook_render_with_props_{}",
+            self.component_name_str.to_lowercase()
+        )
     }
 
     fn get_stories_fn_name(&self) -> Ident {
-        format_ident!("__storybook_get_stories_{}", self.component_name_str.to_lowercase())
+        format_ident!(
+            "__storybook_get_stories_{}",
+            self.component_name_str.to_lowercase()
+        )
     }
 
     fn get_prop_schema_fn_name(&self) -> Ident {
-        format_ident!("__storybook_get_prop_schema_{}", self.component_name_str.to_lowercase())
+        format_ident!(
+            "__storybook_get_prop_schema_{}",
+            self.component_name_str.to_lowercase()
+        )
     }
 }
 
@@ -122,7 +130,7 @@ pub fn storybook(attr: TokenStream, item: TokenStream) -> TokenStream {
                 proc_macro2::Span::call_site(),
                 "storybook attribute can only be applied to functions or structs",
             )
-                .to_compile_error(),
+            .to_compile_error(),
         )
     }
 }
@@ -169,26 +177,6 @@ fn is_non_serializable_type(ty: &Type) -> bool {
         || ty_str.starts_with("Vec<Attribute>")
 }
 
-/// Get a human-readable type name for display
-fn get_type_display_name(ty: &Type) -> String {
-    let ty_str = quote!(#ty).to_string();
-    // Simplify common types for display
-    if ty_str.starts_with("EventHandler") {
-        "EventHandler".to_string()
-    } else if ty_str.starts_with("Callback") {
-        "Callback".to_string()
-    } else if ty_str == "Element" {
-        "Element".to_string()
-    } else if let Some(inner) = extract_signal_inner_type_str(ty) {
-        // For Signal<T>, show the inner type
-        inner
-    } else if ty_str.starts_with("Vec < Attribute >") {
-        "Attributes".to_string()
-    } else {
-        ty_str
-    }
-}
-
 /// Generate StoryProps field definitions from field info
 fn generate_story_props_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
     fields
@@ -203,7 +191,8 @@ fn generate_story_props_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
                     pub #name: ()
                 }
             } else if let Some(inner_ty_str) = extract_signal_inner_type_str(ty) {
-                let inner_ty: Type = syn::parse_str(&inner_ty_str).expect("Failed to parse inner type");
+                let inner_ty: Type =
+                    syn::parse_str(&inner_ty_str).expect("Failed to parse inner type");
                 quote! {
                     #(#doc_attrs)*
                     pub #name: #inner_ty
@@ -379,8 +368,11 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         Fields::Named(named) => &named.named,
         _ => {
             return TokenStream::from(
-                syn::Error::new_spanned(&input, "storybook only supports structs with named fields")
-                    .to_compile_error(),
+                syn::Error::new_spanned(
+                    &input,
+                    "storybook only supports structs with named fields",
+                )
+                .to_compile_error(),
             );
         }
     };
@@ -443,21 +435,21 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
         .inputs
         .iter()
         .filter_map(|arg| {
-            if let FnArg::Typed(pat_type) = arg {
-                if let Pat::Ident(pat_ident) = &*pat_type.pat {
-                    // Extract doc attributes from the pattern's attributes
-                    let doc_attrs: Vec<syn::Attribute> = pat_type
-                        .attrs
-                        .iter()
-                        .filter(|attr| attr.path().is_ident("doc"))
-                        .cloned()
-                        .collect();
-                    return Some(FieldInfo {
-                        name: pat_ident.ident.clone(),
-                        ty: (*pat_type.ty).clone(),
-                        doc_attrs,
-                    });
-                }
+            if let FnArg::Typed(pat_type) = arg
+                && let Pat::Ident(pat_ident) = &*pat_type.pat
+            {
+                // Extract doc attributes from the pattern's attributes
+                let doc_attrs: Vec<syn::Attribute> = pat_type
+                    .attrs
+                    .iter()
+                    .filter(|attr| attr.path().is_ident("doc"))
+                    .cloned()
+                    .collect();
+                return Some(FieldInfo {
+                    name: pat_ident.ident.clone(),
+                    ty: (*pat_type.ty).clone(),
+                    doc_attrs,
+                });
             }
             None
         })
@@ -482,17 +474,15 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
 /// Check if the function uses a props struct pattern (single argument named "props" with a type ending in "Props")
 fn is_props_struct_pattern(input: &ItemFn) -> bool {
     let args: Vec<_> = input.sig.inputs.iter().collect();
-    if args.len() == 1 {
-        if let FnArg::Typed(pat_type) = &args[0] {
-            if let Pat::Ident(pat_ident) = &*pat_type.pat {
-                if pat_ident.ident == "props" {
-                    // Check if the type name ends with "Props"
-                    let ty = &*pat_type.ty;
-                    let ty_str = quote!(#ty).to_string().replace(" ", "");
-                    return ty_str.ends_with("Props");
-                }
-            }
-        }
+    if args.len() == 1
+        && let FnArg::Typed(pat_type) = &args[0]
+        && let Pat::Ident(pat_ident) = &*pat_type.pat
+        && pat_ident.ident == "props"
+    {
+        // Check if the type name ends with "Props"
+        let ty = &*pat_type.ty;
+        let ty_str = quote!(#ty).to_string().replace(" ", "");
+        return ty_str.ends_with("Props");
     }
     false
 }

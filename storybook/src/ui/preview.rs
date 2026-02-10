@@ -1,14 +1,17 @@
-use crate::ui::props_editor::PropsEditor;
 use crate::ui::UiSettings;
+use crate::ui::props_editor::PropsEditor;
 use crate::{Decorator, StoryInfo, StorybookConfig, find_component};
 use dioxus::prelude::*;
-use lucide_dioxus::{ChevronDown, ChevronRight, ZoomIn, ZoomOut, RotateCcw};
+use lucide_dioxus::{ChevronDown, ChevronRight, RotateCcw, ZoomIn, ZoomOut};
 use schemars::schema::RootSchema;
 
 /// Apply decorators to an element.
 /// Decorators are applied in order, with the first decorator being the outermost wrapper.
 fn apply_decorators(element: Element, decorators: &[Decorator]) -> Element {
-    decorators.iter().rev().fold(element, |acc, decorator| decorator(acc))
+    decorators
+        .iter()
+        .rev()
+        .fold(element, |acc, decorator| decorator(acc))
 }
 
 /// A dedicated page for displaying a single story in full-screen mode.
@@ -18,7 +21,6 @@ pub(crate) fn StoryPage(
     story_index: usize,
     #[props(default)] attribute: Vec<Attribute>,
 ) -> Element {
-
     let Some(registration) = find_component(&component_name) else {
         return rsx! {
             div { class: "error", "Component not found: {component_name}" }
@@ -74,7 +76,10 @@ pub(crate) fn StoryCard(
     prop_schema: RootSchema,
     #[props(default)] attribute: Vec<Attribute>,
 ) -> Element {
-    let mut iframe_html = use_signal(|| String::new());
+    #[cfg(target_arch = "wasm32")]
+    let mut iframe_html = use_signal(String::new);
+    #[cfg(not(target_arch = "wasm32"))]
+    let iframe_html = use_signal(String::new);
     let props_json = use_signal(|| story.props_json.clone());
     let mut props_expanded = use_signal(|| false);
     let mut zoom_level = use_signal(|| 100i32);
