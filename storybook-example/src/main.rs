@@ -1,5 +1,4 @@
 use dioxus::prelude::*;
-use storybook::schemars;
 use storybook::{storybook, Stories, Story, StorybookConfig};
 
 // Example Button component

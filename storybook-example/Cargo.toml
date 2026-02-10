@@ -5,5 +5,4 @@ edition = "2024"
 
 [dependencies]
 dioxus = { workspace = true, features = ["web"] }
-serde = { workspace = true, features = ["derive"] }
 storybook = { workspace = true }

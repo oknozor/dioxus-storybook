@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use std::collections::BTreeMap;
-use crate::find_doc;
 use lucide_dioxus::{ChevronRight, FileText, Folder, FolderOpen, Component};
 
 #[derive(Clone, PartialEq, Debug)]
@@ -87,8 +86,6 @@ pub fn ComponentTree(
     selected: Signal<Option<Selection>>,
 ) -> Element {
     let tree = build_category_tree(&components);
-
-    info!("ComponentTree: {:?} top-level categories", tree.children.len());
 
     rsx! {
         div { class: "tree",

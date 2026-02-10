@@ -283,6 +283,8 @@ fn generate_storybook_code(
         /// Auto-generated story props struct for storybook UI editing.
         /// Non-serializable fields (EventHandler, Callback, Element, etc.) are mapped to ().
         #[derive(Clone, storybook::serde::Serialize, storybook::serde::Deserialize, storybook::schemars::JsonSchema)]
+        #[serde(crate = "storybook::serde")]
+        #[schemars(crate = "storybook::schemars")]
         #[doc(hidden)]
         pub struct #story_props_name {
             #(#story_props_fields),*

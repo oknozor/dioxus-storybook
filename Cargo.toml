@@ -1,11 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
-    "storybook-macro", "storybook", "storybook-example"
-]
+    "storybook-macro", "storybook", "storybook-example"]
 
 [workspace.dependencies]
-cadence-ui = { path = "../cadence/crates/cadence-ui" }
 storybook = { path = "storybook" }
 storybook-macro = { path = "storybook-macro" }
 inventory = "0.3"
