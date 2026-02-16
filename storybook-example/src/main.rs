@@ -44,8 +44,7 @@ impl Stories for ExampleButtonProps {
 #[component]
 pub fn ExampleCard(title: String, content: String) -> Element {
     rsx! {
-        div {
-            style: "border: 1px solid #ddd; border-radius: 8px; padding: 16px; max-width: 300px;",
+        div { style: "border: 1px solid #ddd; border-radius: 8px; padding: 16px; max-width: 300px;",
             h3 { style: "margin: 0 0 8px 0;", "{title}" }
             p { style: "margin: 0; color: #666;", "{content}" }
         }

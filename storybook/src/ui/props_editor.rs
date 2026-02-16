@@ -29,7 +29,7 @@ pub(crate) fn PropsEditor(props_json: Signal<String>, schema: RootSchema) -> Ele
                             PropFieldRow {
                                 key: "{field.name}",
                                 field: field.clone(),
-                                props_json
+                                props_json,
                             }
                         }
                     }
@@ -92,8 +92,12 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
                     checked: is_checked,
                     onchange: move |e| {
                         let new_value = e.checked();
-                        update_prop_value(&mut props_json, &field_name_for_handler, serde_json::Value::Bool(new_value));
-                    }
+                        update_prop_value(
+                            &mut props_json,
+                            &field_name_for_handler,
+                            serde_json::Value::Bool(new_value),
+                        );
+                    },
                 }
             }
         }
@@ -107,7 +111,7 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
                         let new_value = e.value();
                         let parsed = parse_input_value(&new_value, instance_type);
                         update_prop_value(&mut props_json, &field_name_for_handler, parsed);
-                    }
+                    },
                 }
             }
         }
@@ -121,7 +125,7 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
                         let new_value = e.value();
                         let parsed = parse_input_value(&new_value, instance_type);
                         update_prop_value(&mut props_json, &field_name_for_handler, parsed);
-                    }
+                    },
                 }
             }
         }

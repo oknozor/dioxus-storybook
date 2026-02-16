@@ -99,7 +99,7 @@ pub fn ComponentTree(
                     name: category_name.clone(),
                     node: node.clone(),
                     selected,
-                    node_type: NodeType::Category
+                    node_type: NodeType::Category,
                 }
             }
             // Render any components at the root level (no category)
@@ -107,11 +107,7 @@ pub fn ComponentTree(
                 {
                     let component_name = component_name.clone();
                     rsx! {
-                        ComponentNode {
-                            key: "{component_name}",
-                            name: component_name.clone(),
-                            selected,
-                        }
+                        ComponentNode { key: "{component_name}", name: component_name.clone(), selected }
                     }
                 }
             }
@@ -184,7 +180,7 @@ fn TreeNode(
                             name: child_name.clone(),
                             node: child_node.clone(),
                             selected,
-                            node_type: NodeType::Folder
+                            node_type: NodeType::Folder,
                         }
                     }
                     // Then render components at this level
@@ -192,11 +188,7 @@ fn TreeNode(
                         {
                             let component_name = component_name.clone();
                             rsx! {
-                                ComponentNode {
-                                    key: "{component_name}",
-                                    name: component_name.clone(),
-                                    selected,
-                                }
+                                ComponentNode { key: "{component_name}", name: component_name.clone(), selected }
                             }
                         }
                     }
@@ -235,11 +227,11 @@ fn ComponentNode(name: String, selected: Signal<Option<Selection>>) -> Element {
                     expanded.set(!expanded());
                     // If expanding and component has stories, select the first story
                     if !expanded() && let Some(reg) = crate::find_component(&toggle_name) {
-                            let s = (reg.get_stories)();
-                            if !s.is_empty() {
-                                selected.set(Some(Selection::Story(toggle_name.clone(), 0)));
-                            }
+                        let s = (reg.get_stories)();
+                        if !s.is_empty() {
+                            selected.set(Some(Selection::Story(toggle_name.clone(), 0)));
                         }
+                    }
 
                 },
                 span { class: if should_expand { "arrow expanded" } else { "arrow" },

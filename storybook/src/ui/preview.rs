@@ -48,7 +48,7 @@ pub(crate) fn StoryPage(
             if !registration.description.is_empty() {
                 div {
                     class: "component-description",
-                    dangerous_inner_html: "{registration.description}"
+                    dangerous_inner_html: "{registration.description}",
                 }
             }
 
@@ -59,7 +59,7 @@ pub(crate) fn StoryPage(
                     component_name: component_name.clone(),
                     story_index,
                     render_fn,
-                    prop_schema: prop_schema.clone()
+                    prop_schema: prop_schema.clone(),
                 }
             }
         }

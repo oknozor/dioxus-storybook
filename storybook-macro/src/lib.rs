@@ -43,13 +43,53 @@ fn extract_doc_comments(attrs: &[syn::Attribute]) -> String {
         .join("\n")
 }
 
-/// Convert markdown text to HTML using pulldown-cmark
-fn markdown_to_html(markdown: &str) -> String {
+/// Convert Markdown text to HTML using pulldown-cmark.
+///
+/// When `process_story_embeds` is `true`, the raw markdown is pre-processed
+/// to replace `@[story:Category/Component/Story Name]` lines with
+/// `<div class="storybook-embed" …></div>` HTML blocks before parsing.
+/// This avoids issues with pulldown-cmark splitting `@[story:…]` across
+/// multiple text events.
+fn markdown_to_html(markdown: &str, process_story_embeds: bool) -> String {
+    let source = if process_story_embeds {
+        preprocess_story_embeds(markdown)
+    } else {
+        markdown.to_string()
+    };
+
     let options = Options::all();
-    let parser = Parser::new_ext(markdown, options);
+    let parser = Parser::new_ext(&source, options);
+
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
     html_output
+}
+
+/// Pre-process raw markdown to replace `@[story:…]` lines with HTML embed
+/// markers before feeding the text to pulldown-cmark.
+///
+/// pulldown-cmark treats `[…]` as potential link references and splits the
+/// surrounding text across multiple `Text` events, making it impossible to
+/// detect `@[story:…]` reliably in the event stream. By replacing matching
+/// lines in the source markdown with `<div>` blocks, pulldown-cmark passes
+/// them through as native HTML blocks.
+fn preprocess_story_embeds(markdown: &str) -> String {
+    let mut result = String::with_capacity(markdown.len());
+    for line in markdown.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("@[story:") && trimmed.ends_with(']') {
+            let full_path = &trimmed[8..trimmed.len() - 1];
+            let story_name = full_path.rsplit('/').next().unwrap_or(full_path);
+            result.push_str(&format!(
+                "<div class=\"storybook-embed\" data-story-path=\"{}\" data-story-name=\"{}\"></div>\n",
+                full_path, story_name
+            ));
+        } else {
+            result.push_str(line);
+            result.push('\n');
+        }
+    }
+    result
 }
 
 impl ComponentMeta {
@@ -361,7 +401,7 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
 
     // Extract doc comments from the struct and convert to HTML
     let doc_markdown = extract_doc_comments(&input.attrs);
-    let description_html = markdown_to_html(&doc_markdown);
+    let description_html = markdown_to_html(&doc_markdown, false);
 
     // Extract fields from the struct
     let syn_fields = match &input.fields {
@@ -426,7 +466,7 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
 
     // Extract doc comments from the function and convert to HTML
     let doc_markdown = extract_doc_comments(&input.attrs);
-    let description_html = markdown_to_html(&doc_markdown);
+    let description_html = markdown_to_html(&doc_markdown, false);
 
     // Extract function parameters as FieldInfo
     // Note: Function parameters don't have doc comments, so doc_attrs is empty
@@ -519,9 +559,9 @@ impl syn::parse::Parse for StorybookArgs {
 /// storydoc!("Buttons/Primary", "docs/buttons_primary.md");
 /// ```
 ///
-/// The markdown file can embed stories using image link syntax:
+/// The markdown file can embed live story previews using the `@[story:...]` syntax:
 /// ```markdown
-/// ![MyStory](Path/To/My/Story)
+/// @[story:Category/Component/Story Name]
 /// ```
 /// This will render the story inline within the documentation.
 #[proc_macro]
@@ -555,18 +595,8 @@ pub fn storydoc(input: TokenStream) -> TokenStream {
                 }
             };
 
-            // Convert markdown to HTML
-            let mut html_content = markdown_to_html(&markdown_content);
-
-            // Process story embedding: ![name](story/path) becomes <img src="story/path" alt="name">
-            // We need to convert these to special div markers for runtime processing
-            let re = regex::Regex::new(r#"<img src="([^"]+)" alt="([^"]*)"[^>]*/?"#).unwrap();
-            html_content = re
-                .replace_all(
-                    &html_content,
-                    r#"<div class="storybook-embed" data-story-path="$1" data-story-name="$2"></div>"#,
-                )
-                .to_string();
+            // Convert markdown to HTML, processing @[story:...] embeds
+            let html_content = markdown_to_html(&markdown_content, true);
 
             // Generate the inventory submission
             let expanded = quote! {

@@ -140,11 +140,14 @@ fn Storybook() -> Element {
                                 r#type: "text",
                                 placeholder: "Search components...",
                                 value: "{search_query}",
-                                oninput: move |e| search_query.set(e.value())
+                                oninput: move |e| search_query.set(e.value()),
                             }
                         }
                         div { class: "component-tree",
-                            ComponentTree { components: filtered_components(), selected }
+                            ComponentTree {
+                                components: filtered_components(),
+                                selected,
+                            }
                         }
                     }
                 }
@@ -156,21 +159,18 @@ fn Storybook() -> Element {
                                 StoryPage {
                                     key: "{component_name}-{story_index}",
                                     component_name,
-                                    story_index
+                                    story_index,
                                 }
                             },
                             Some(Selection::DocPage(doc_path)) => rsx! {
-                                DocPage {
-                                    key: "{doc_path}",
-                                    path: doc_path
-                                }
+                                DocPage { key: "{doc_path}", path: doc_path }
                             },
                             None => rsx! {
                                 div { class: "empty-state",
                                     h2 { "Select a story" }
                                     p { "Choose a component and story from the sidebar to preview it" }
                                 }
-                            }
+                            },
                         }
                     }
                 }

@@ -93,10 +93,10 @@
 //! storybook::storydoc!("Examples", "assets/getting-started.md");
 //! ```
 //!
-//! Inside the Markdown you can embed live story previews with image syntax:
+//! Inside the Markdown you can embed live story previews with the `@[story:...]` syntax:
 //!
 //! ```markdown
-//! ![Default](Examples/ExampleCard/Default)
+//! @[story:Examples/ExampleCard/Default]
 //! ```
 //!
 //! ## Re-exports

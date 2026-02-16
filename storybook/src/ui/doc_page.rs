@@ -30,22 +30,18 @@ fn DocContent(content_html: String) -> Element {
 
     rsx! {
         div { class: "doc-content",
-            for (index, part) in parts.iter().enumerate() {
+            for (index , part) in parts.iter().enumerate() {
                 match part {
                     DocPart::Html(html) => rsx! {
-                        div {
-                            key: "html-{index}",
-                            class: "doc-html",
-                            dangerous_inner_html: "{html}"
-                        }
+                        div { key: "html-{index}", class: "doc-html", dangerous_inner_html: "{html}" }
                     },
                     DocPart::StoryEmbed { story_path, story_name } => rsx! {
                         EmbeddedStory {
                             key: "story-{index}",
                             story_path: story_path.clone(),
-                            story_name: story_name.clone()
+                            story_name: story_name.clone(),
                         }
-                    }
+                    },
                 }
             }
         }
@@ -157,7 +153,7 @@ fn EmbeddedStory(story_path: String, story_name: String) -> Element {
                 component_name: component_name.to_string(),
                 story_index,
                 render_fn,
-                prop_schema
+                prop_schema,
             }
         }
     }

@@ -14,19 +14,19 @@ Below are some example components registered in this storybook.
 
 The `ExampleButton` component demonstrates a simple interactive button with customizable label and disabled state.
 
-![Default](Examples/ExampleButton/Default)
+@[story:Examples/ExampleButton/Default]
 
 Here's the disabled variant:
 
-![Disabled](Examples/ExampleButton/Disabled)
+@[story:Examples/ExampleButton/Disabled]
 
 ### Example Card
 
 The `ExampleCard` component shows how to create a card with a title and content.
 
-![Default](Examples/ExampleCard/Default)
+@[story:Examples/ExampleCard/Default]
 
-![With Long Content](Examples/ExampleCard/With Long Content)
+@[story:Examples/ExampleCard/Long Content]
 
 ## Usage
 
@@ -62,9 +62,9 @@ You can also add documentation pages using the `storydoc!` macro:
 storybook::storydoc!("Path/To/Page", "assets/my-docs.md");
 ```
 
-Embed stories in your markdown using image link syntax:
+Embed stories in your markdown using the `@[story:...]` syntax:
 
 ```markdown
-![Story Name](Category/Component/Story)
+@[story:Category/Component/Story]
 ```
 
