@@ -1,6 +1,11 @@
+use crate::ui::UiSettings;
 use crate::ui::preview::StoryCard;
 use crate::{find_component, find_doc};
 use dioxus::prelude::*;
+
+const HLJS_VERSION: &str = "11.11.1";
+const HLJS_LIGHT_THEME: &str = "github";
+const HLJS_DARK_THEME: &str = "github-dark";
 
 /// Component to render a documentation page
 #[component]
@@ -13,6 +18,10 @@ pub fn DocPage(path: String) -> Element {
 
     rsx! {
         div { class: "doc-page",
+            // Load highlight.js JS library
+            document::Script {
+                src: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{HLJS_VERSION}/highlight.min.js",
+            }
             // Render the HTML content with embedded stories
             DocContent { content_html: doc.content_html.to_string() }
         }
@@ -22,6 +31,41 @@ pub fn DocPage(path: String) -> Element {
 /// Component to render documentation content with embedded stories
 #[component]
 fn DocContent(content_html: String) -> Element {
+    let ui_settings = use_context::<UiSettings>();
+    let is_dark = (ui_settings.is_dark_theme)();
+
+    // Trigger highlight.js after content renders and when theme changes
+    use_effect(move || {
+        let theme = if is_dark { HLJS_DARK_THEME } else { HLJS_LIGHT_THEME };
+        let css_url = format!(
+            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{HLJS_VERSION}/styles/{theme}.min.css"
+        );
+        // Create or update the highlight.js theme stylesheet and re-highlight all code blocks
+        document::eval(&format!(
+            r#"
+            // Create or update the highlight.js theme link element
+            var link = document.getElementById('hljs-theme');
+            if (!link) {{
+                link = document.createElement('link');
+                link.id = 'hljs-theme';
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+            }}
+            link.href = "{css_url}";
+            // Wait for the DOM to update and script to load, then highlight
+            setTimeout(function() {{
+                if (typeof hljs !== 'undefined') {{
+                    // Remove previous highlighting so hljs re-processes the blocks
+                    document.querySelectorAll('pre code[data-highlighted]').forEach(function(el) {{
+                        el.removeAttribute('data-highlighted');
+                    }});
+                    hljs.highlightAll();
+                }}
+            }}, 100);
+            "#
+        ));
+    });
+
     // Parse the HTML content and find story embed markers
     // Story embeds are marked as: <div class="storybook-embed" data-story-path="..."></div>
 

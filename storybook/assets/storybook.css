@@ -923,16 +923,15 @@ body {
     color: #d63384;
 }
 
-/* Code blocks */
+/* Code blocks - background/color controlled by highlight.js theme */
 .doc-html pre {
-    background: #2d2d2d;
-    color: #f8f8f2;
     padding: 16px 20px;
     border-radius: 6px;
     overflow-x: auto;
     margin: 16px 0 24px 0;
     font-size: 0.875rem;
     line-height: 1.5;
+    border: 1px solid #d0d0d0;
 }
 
 .doc-html pre code {
@@ -940,6 +939,12 @@ body {
     padding: 0;
     color: inherit;
     font-size: inherit;
+}
+
+/* Fallback colors when highlight.js hasn't loaded yet */
+.doc-html pre:not(:has(code[data-highlighted])) {
+    background: #2d2d2d;
+    color: #f8f8f2;
 }
 
 /* Lists */
@@ -1475,7 +1480,12 @@ body {
     color: #f48fb1;
 }
 
+/* Dark theme border and fallback for code blocks */
 .dark-theme .doc-html pre {
+    border-color: #444;
+}
+
+.dark-theme .doc-html pre:not(:has(code[data-highlighted])) {
     background: #1a1a1a;
     color: #e0e0e0;
 }
