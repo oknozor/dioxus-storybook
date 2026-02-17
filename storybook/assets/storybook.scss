@@ -1,80 +1,78 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap");
 
-:root {
-    /* Primary Color */
-    --color-primary: #1976d2;
-    --color-primary-bg: #e3f2fd;
+$color-primary: #1976d2;
+$color-primary-bg: #e3f2fd;
 
-    /* Accent Colors */
-    --color-accent-purple: #8e24aa;
-    --color-accent-orange: #e65100;
+$color-accent-purple: #8e24aa;
+$color-accent-orange: #e65100;
 
-    /* Backgrounds */
-    --color-bg-base: #ffffff;
-    --color-bg-subtle: #f5f5f5;
-    --color-bg-muted: #e8e8e8;
-    --color-bg-code: #2d3748;
+// Backgrounds
+$color-bg-base: #ffffff;
+$color-bg-subtle: #f5f5f5;
+$color-bg-muted: #e8e8e8;
+$color-bg-code: #2d3748;
 
-    /* Borders */
-    --color-border: #e0e0e0;
-    --color-border-strong: #d0d0d0;
+// Borders
+$color-border: #e0e0e0;
+$color-border-strong: #d0d0d0;
 
-    /* Text */
-    --color-text: #333;
-    --color-text-muted: #666;
-    --color-text-subtle: #999;
+// Text
+$color-text: #333;
+$color-text-muted: #666;
+$color-text-subtle: #999;
 
-    /* Interactive */
-    --color-focus: #4a90e2;
+// Interactive
+$color-focus: #4a90e2;
 
-    /* Status */
-    --color-error: #c62828;
-    --color-error-bg: #ffebee;
+// Status
+$color-error: #c62828;
+$color-error-bg: #ffebee;
 
-    /* Shadows */
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+// Shadows
+$shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
-    /* Grid */
-    --grid-color: rgba(128, 128, 128, 0.15);
-}
+// Grid
+$grid-color: rgba(128, 128, 128, 0.15);
 
-.dark-theme {
-    /* Primary Color */
-    --color-primary: #64b5f6;
-    --color-primary-bg: #1e3a5f;
+// ============================================
+// SCSS Variables - Dark Theme
+// ============================================
 
-    /* Accent Colors */
-    --color-accent-purple: #ce93d8;
-    --color-accent-orange: #ffab40;
+// Primary Color
+$color-primary-dark: #64b5f6;
+$color-primary-bg-dark: #1e3a5f;
 
-    /* Backgrounds */
-    --color-bg-base: #1e1e1e;
-    --color-bg-subtle: #252525;
-    --color-bg-muted: #333;
-    --color-bg-code: #1a1a1a;
+// Accent Colors
+$color-accent-purple-dark: #ce93d8;
+$color-accent-orange-dark: #ffab40;
 
-    /* Borders */
-    --color-border: #333;
-    --color-border-strong: #444;
+// Backgrounds
+$color-bg-base-dark: #1e1e1e;
+$color-bg-subtle-dark: #252525;
+$color-bg-muted-dark: #333;
+$color-bg-code-dark: #1a1a1a;
 
-    /* Text */
-    --color-text: #e0e0e0;
-    --color-text-muted: #aaa;
-    --color-text-subtle: #666;
+// Borders
+$color-border-dark: #333;
+$color-border-strong-dark: #444;
 
-    /* Interactive */
-    --color-focus: #64b5f6;
+// Text
+$color-text-dark: #e0e0e0;
+$color-text-muted-dark: #aaa;
+$color-text-subtle-dark: #666;
 
-    /* Status */
-    --color-error: #ef9a9a;
-    --color-error-bg: #3e1a1a;
+// Interactive
+$color-focus-dark: #64b5f6;
 
-    /* Shadows */
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+// Status
+$color-error-dark: #ef9a9a;
+$color-error-bg-dark: #3e1a1a;
 
-    /* Grid */
-    --grid-color: rgba(255, 255, 255, 0.1);
-}
+// Shadows
+$shadow-dark: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+// Grid
+$grid-color-dark: rgba(255, 255, 255, 0.1);
 
 * {
     margin: 0;
@@ -93,7 +91,7 @@ body {
         Ubuntu,
         Cantarell,
         sans-serif;
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
 }
 
 iframe {
@@ -117,8 +115,8 @@ iframe {
 /* Sidebar */
 .sidebar {
     width: 300px;
-    background: var(--color-bg-subtle);
-    border-right: 1px solid var(--color-border);
+    background: $color-bg-subtle;
+    border-right: 1px solid $color-border;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -132,15 +130,15 @@ iframe {
 .search-input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid $color-border-strong;
     border-radius: 6px;
     font-size: 14px;
     outline: none;
     transition: border-color 0.2s;
-}
 
-.search-input:focus {
-    border-color: var(--color-focus);
+    &:focus {
+        border-color: $color-focus;
+    }
 }
 
 .component-tree {
@@ -170,10 +168,10 @@ iframe {
     border-radius: 4px;
     user-select: none;
     transition: background-color 0.2s;
-}
 
-.tree-header:hover {
-    background-color: var(--color-bg-muted);
+    &:hover {
+        background-color: $color-bg-muted;
+    }
 }
 
 .arrow {
@@ -182,16 +180,16 @@ iframe {
     justify-content: center;
     margin-right: 8px;
     transition: transform 0.2s;
-    color: var(--color-text-muted);
-}
+    color: $color-text-muted;
 
-.arrow svg {
-    width: 14px;
-    height: 14px;
-}
+    svg {
+        width: 14px;
+        height: 14px;
+    }
 
-.arrow.expanded {
-    transform: rotate(90deg);
+    &.expanded {
+        transform: rotate(90deg);
+    }
 }
 
 .node-icon {
@@ -199,25 +197,25 @@ iframe {
     align-items: center;
     justify-content: center;
     margin-right: 6px;
-    color: var(--color-text-muted);
-}
+    color: $color-text-muted;
 
-.node-icon svg {
-    width: 16px;
-    height: 16px;
+    svg {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 .node-name {
     font-weight: 600;
     font-size: 14px;
-    color: var(--color-text);
+    color: $color-text;
     flex: 1;
 }
 
 .category-count {
     font-size: 12px;
-    color: var(--color-text-muted);
-    background: var(--color-bg-muted);
+    color: $color-text-muted;
+    background: $color-bg-muted;
     padding: 2px 8px;
     border-radius: 10px;
     margin-left: 8px;
@@ -244,12 +242,12 @@ iframe {
 }
 
 .component-node:hover {
-    background-color: var(--color-bg-muted);
+    background-color: $color-bg-muted;
 }
 
 .component-node.active {
-    background-color: var(--color-primary-bg);
-    color: var(--color-primary);
+    background-color: $color-primary-bg;
+    color: $color-primary;
 }
 
 .component-node .arrow {
@@ -258,7 +256,7 @@ iframe {
     justify-content: center;
     margin-right: 4px;
     transition: transform 0.2s;
-    color: var(--color-text-subtle);
+    color: $color-text-subtle;
 }
 
 .component-node .arrow.expanded {
@@ -270,7 +268,7 @@ iframe {
     align-items: center;
     justify-content: center;
     margin-right: 8px;
-    color: var(--color-primary);
+    color: $color-primary;
 }
 
 .component-icon svg {
@@ -296,16 +294,16 @@ iframe {
     border-radius: 4px;
     transition: background-color 0.2s;
     font-size: 13px;
-    color: var(--color-text);
+    color: $color-text;
 }
 
 .story-node:hover {
-    background-color: var(--color-bg-muted);
+    background-color: $color-bg-muted;
 }
 
 .story-node.selected {
-    background-color: var(--color-primary-bg);
-    color: var(--color-primary);
+    background-color: $color-primary-bg;
+    color: $color-primary;
     font-weight: 500;
 }
 
@@ -314,7 +312,7 @@ iframe {
     align-items: center;
     justify-content: center;
     margin-right: 8px;
-    color: var(--color-accent-purple);
+    color: $color-accent-purple;
 }
 
 .story-icon svg {
@@ -335,16 +333,16 @@ iframe {
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.2s;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
 }
 
 .doc-node:hover {
-    background-color: var(--color-bg-muted);
+    background-color: $color-bg-muted;
 }
 
 .doc-node.selected {
-    background-color: var(--color-primary-bg);
-    color: var(--color-accent-orange);
+    background-color: $color-primary-bg;
+    color: $color-accent-orange;
 }
 
 .doc-icon {
@@ -352,7 +350,7 @@ iframe {
     align-items: center;
     justify-content: center;
     margin-right: 8px;
-    color: var(--color-accent-orange);
+    color: $color-accent-orange;
 }
 
 .doc-icon svg {
@@ -377,7 +375,7 @@ iframe {
 .component-preview {
     flex: 1;
     overflow-y: auto;
-    background: var(--color-bg-base);
+    background: $color-bg-base;
     min-height: 0;
 }
 
@@ -387,7 +385,7 @@ iframe {
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: var(--color-text-subtle);
+    color: $color-text-subtle;
 }
 
 .empty-state h2 {
@@ -407,9 +405,9 @@ iframe {
 
 .preview-container h2 {
     padding: 20px;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid $color-border;
     font-size: 20px;
-    color: var(--color-text);
+    color: $color-text;
 }
 
 /* Story page - single story full-screen view */
@@ -423,23 +421,23 @@ iframe {
     display: flex;
     align-items: center;
     padding: 18px 20px;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid $color-border;
     font-size: 18px;
     gap: 8px;
 }
 
 .story-page-component-name {
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     font-weight: 400;
 }
 
 .story-page-separator {
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     font-weight: 300;
 }
 
 .story-page-story-name {
-    color: var(--color-text);
+    color: $color-text;
     font-weight: 600;
 }
 
@@ -460,11 +458,11 @@ iframe {
 /* Component description from doc comments */
 .component-description {
     padding: 16px 20px;
-    background: var(--color-bg-subtle);
-    border-bottom: 1px solid var(--color-border);
+    background: $color-bg-subtle;
+    border-bottom: 1px solid $color-border;
     font-size: 14px;
     line-height: 1.6;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
 }
 
 .component-description p {
@@ -476,7 +474,7 @@ iframe {
 }
 
 .component-description code {
-    background: var(--color-bg-muted);
+    background: $color-bg-muted;
     padding: 2px 6px;
     border-radius: 3px;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
@@ -484,8 +482,8 @@ iframe {
 }
 
 .component-description pre {
-    background: var(--color-bg-code);
-    color: var(--color-bg-muted);
+    background: $color-bg-code;
+    color: $color-bg-muted;
     padding: 12px 16px;
     border-radius: 6px;
     overflow-x: auto;
@@ -509,7 +507,7 @@ iframe {
 }
 
 .component-description a {
-    color: var(--color-focus);
+    color: $color-focus;
     text-decoration: none;
 }
 
@@ -530,7 +528,7 @@ iframe {
     align-items: stretch;
     justify-content: stretch;
     padding: 0;
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
     min-height: 300px;
     overflow: hidden;
 }
@@ -546,8 +544,8 @@ iframe {
 /* Props panel */
 .props-panel {
     width: 320px;
-    border-left: 1px solid var(--color-border);
-    background: var(--color-bg-base);
+    border-left: 1px solid $color-border;
+    background: $color-bg-base;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -557,15 +555,15 @@ iframe {
     padding: 16px 20px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--color-text);
-    border-bottom: 1px solid var(--color-border);
+    color: $color-text;
+    border-bottom: 1px solid $color-border;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .props-editor-section {
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid $color-border;
     margin-top: 12px;
 }
 
@@ -579,20 +577,20 @@ iframe {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--color-text-muted);
-    background: var(--color-bg-subtle);
+    color: $color-text-muted;
+    background: $color-bg-subtle;
     user-select: none;
     transition: background-color 0.15s ease;
 }
 
 .props-editor-header:hover {
-    background: var(--color-bg-muted);
+    background: $color-bg-muted;
 }
 
 .collapse-icon {
     display: flex;
     align-items: center;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
 }
 
 .props-editor {
@@ -603,7 +601,7 @@ iframe {
 
 .props-empty {
     padding: 20px;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     font-size: 13px;
     line-height: 1.5;
     text-align: center;
@@ -617,25 +615,25 @@ iframe {
 }
 
 .props-table th {
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.4px;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     padding: 8px 12px;
     text-align: left;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid $color-border;
 }
 
 .props-table td {
     padding: 8px 12px;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid $color-border;
     vertical-align: middle;
 }
 
 .prop-row.editable:hover td {
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
 }
 
 .prop-row.non-editable {
@@ -645,18 +643,18 @@ iframe {
 .prop-name {
     font-size: 12px;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
 }
 
 .prop-type {
     font-size: 11px;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
 }
 
 .prop-description {
     font-size: 11px;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     line-height: 1.4;
     font-style: italic;
 }
@@ -664,7 +662,7 @@ iframe {
 .prop-input {
     width: 100%;
     padding: 6px 8px;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid $color-border-strong;
     border-radius: 4px;
     font-size: 13px;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
@@ -672,20 +670,20 @@ iframe {
     transition:
         border-color 0.2s,
         box-shadow 0.2s;
-    background: var(--color-bg-base);
+    background: $color-bg-base;
     box-sizing: border-box;
 }
 
 .prop-input:focus {
-    border-color: var(--color-focus);
+    border-color: $color-focus;
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
 /* Props form (legacy) */
 .props-form {
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid $color-border;
     padding: 20px;
-    background: var(--color-bg-base);
+    background: $color-bg-base;
     max-height: 400px;
     overflow-y: auto;
 }
@@ -693,7 +691,7 @@ iframe {
 .props-form h3 {
     font-size: 16px;
     margin-bottom: 16px;
-    color: var(--color-text);
+    color: $color-text;
 }
 
 .form-group {
@@ -705,13 +703,13 @@ iframe {
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 6px;
-    color: var(--color-text);
+    color: $color-text;
 }
 
 .form-group input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid $color-border-strong;
     border-radius: 4px;
     font-size: 14px;
     outline: none;
@@ -719,7 +717,7 @@ iframe {
 }
 
 .form-group input:focus {
-    border-color: var(--color-focus);
+    border-color: $color-focus;
 }
 
 .form-group input[type="number"] {
@@ -730,7 +728,7 @@ iframe {
 .json-editor {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid $color-border-strong;
     border-radius: 4px;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
     font-size: 13px;
@@ -739,29 +737,29 @@ iframe {
     transition: border-color 0.2s;
     resize: vertical;
     min-height: 200px;
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
 }
 
 .json-editor:focus {
-    border-color: var(--color-focus);
-    background: var(--color-bg-base);
+    border-color: $color-focus;
+    background: $color-bg-base;
 }
 
 .json-error {
-    background: var(--color-error-bg);
-    border: 1px solid var(--color-error);
+    background: $color-error-bg;
+    border: 1px solid $color-error;
     border-radius: 4px;
     padding: 8px 12px;
     margin-bottom: 12px;
-    color: var(--color-error);
+    color: $color-error;
     font-size: 13px;
 }
 
 .reset-button {
     margin-top: 12px;
     padding: 8px 16px;
-    background: var(--color-bg-subtle);
-    border: 1px solid var(--color-border-strong);
+    background: $color-bg-subtle;
+    border: 1px solid $color-border-strong;
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
@@ -769,52 +767,52 @@ iframe {
 }
 
 .reset-button:hover {
-    background: var(--color-bg-muted);
+    background: $color-bg-muted;
 }
 
 .reset-button:active {
-    background: var(--color-border-strong);
+    background: $color-border-strong;
 }
 
 /* Story selector and info */
 .story-selector {
     padding: 12px 20px;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-bg-subtle);
+    border-bottom: 1px solid $color-border;
+    background: $color-bg-subtle;
 }
 
 .story-selector select {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid $color-border-strong;
     border-radius: 6px;
     font-size: 14px;
-    background: var(--color-bg-base);
+    background: $color-bg-base;
     outline: none;
     cursor: pointer;
     transition: border-color 0.2s;
 }
 
 .story-selector select:focus {
-    border-color: var(--color-focus);
+    border-color: $color-focus;
 }
 
 .story-info {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-bg-base);
+    border-bottom: 1px solid $color-border;
+    background: $color-bg-base;
 }
 
 .story-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
     margin: 0 0 4px 0;
 }
 
 .story-description {
     font-size: 13px;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     margin: 0;
     line-height: 1.5;
 }
@@ -830,23 +828,23 @@ iframe {
 
 /* Individual story card */
 .story-card {
-    background: var(--color-bg-base);
-    border: 1px solid var(--color-border);
+    background: $color-bg-base;
+    border: 1px solid $color-border;
     border-radius: 8px;
     padding: 16px;
-    box-shadow: var(--shadow);
+    box-shadow: $shadow;
 }
 
 .story-card-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
     margin: 0 0 8px 0;
 }
 
 .story-card-description {
     font-size: 13px;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     margin: 0 0 16px 0;
     line-height: 1.5;
 }
@@ -857,8 +855,8 @@ iframe {
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    background: var(--color-bg-subtle);
-    border: 1px solid var(--color-border);
+    background: $color-bg-subtle;
+    border: 1px solid $color-border;
     border-bottom: none;
     border-radius: 4px 4px 0 0;
 }
@@ -870,12 +868,12 @@ iframe {
     min-width: 28px;
     height: 28px;
     padding: 0 6px;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid $color-border-strong;
     border-radius: 4px;
-    background: var(--color-bg-base);
+    background: $color-bg-base;
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-text);
+    color: $color-text;
     cursor: pointer;
     transition: all 0.15s ease;
 }
@@ -886,12 +884,12 @@ iframe {
 }
 
 .toolbar-button:hover {
-    background: var(--color-bg-muted);
-    border-color: var(--color-border-strong);
+    background: $color-bg-muted;
+    border-color: $color-border-strong;
 }
 
 .toolbar-button:active {
-    background: var(--color-border);
+    background: $color-border;
 }
 
 .toolbar-button.reset-zoom {
@@ -903,14 +901,14 @@ iframe {
     text-align: center;
     font-size: 13px;
     font-weight: 500;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
 }
 
 /* Story preview area within a card */
 .story-preview-area {
-    background: var(--color-bg-subtle);
-    border: 1px solid var(--color-border);
+    background: $color-bg-subtle;
+    border: 1px solid $color-border;
     border-radius: 0 0 4px 4px;
     min-height: 100px;
     overflow: hidden;
@@ -930,7 +928,7 @@ iframe {
 
 .doc-content {
     line-height: 1.7;
-    color: var(--color-text);
+    color: $color-text;
 }
 
 .doc-html {
@@ -941,46 +939,46 @@ iframe {
 .doc-html h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--color-text);
+    color: $color-text;
     margin: 0 0 24px 0;
     padding-bottom: 12px;
-    border-bottom: 2px solid var(--color-border);
+    border-bottom: 2px solid $color-border;
 }
 
 .doc-html h2 {
     font-size: 1.75rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
     margin: 32px 0 16px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid $color-border;
 }
 
 .doc-html h3 {
     font-size: 1.375rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
     margin: 24px 0 12px 0;
 }
 
 .doc-html h4 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
     margin: 20px 0 10px 0;
 }
 
 .doc-html h5 {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
     margin: 16px 0 8px 0;
 }
 
 .doc-html h6 {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: $color-text-muted;
     margin: 16px 0 8px 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -994,24 +992,24 @@ iframe {
 
 /* Links */
 .doc-html a {
-    color: var(--color-primary);
+    color: $color-primary;
     text-decoration: none;
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s ease;
 }
 
 .doc-html a:hover {
-    border-bottom-color: var(--color-primary);
+    border-bottom-color: $color-primary;
 }
 
 /* Inline code */
 .doc-html code {
     font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
     font-size: 0.875em;
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
     padding: 2px 6px;
     border-radius: 4px;
-    color: var(--color-accent-purple);
+    color: $color-accent-purple;
 }
 
 /* Code blocks - background/color controlled by highlight.js theme */
@@ -1022,7 +1020,7 @@ iframe {
     margin: 16px 0 24px 0;
     font-size: 0.875rem;
     line-height: 1.5;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid $color-border-strong;
 }
 
 .doc-html pre code {
@@ -1034,8 +1032,8 @@ iframe {
 
 /* Fallback colors when highlight.js hasn't loaded yet */
 .doc-html pre:not(:has(code[data-highlighted])) {
-    background: var(--color-bg-code);
-    color: var(--color-text);
+    background: $color-bg-code;
+    color: $color-text;
 }
 
 /* Lists */
@@ -1060,9 +1058,9 @@ iframe {
 .doc-html blockquote {
     margin: 16px 0 24px 0;
     padding: 12px 20px;
-    border-left: 4px solid var(--color-primary);
-    background: var(--color-bg-subtle);
-    color: var(--color-text);
+    border-left: 4px solid $color-primary;
+    background: $color-bg-subtle;
+    color: $color-text;
     font-style: italic;
 }
 
@@ -1082,23 +1080,23 @@ iframe {
 .doc-html td {
     padding: 12px 16px;
     text-align: left;
-    border: 1px solid var(--color-border);
+    border: 1px solid $color-border;
 }
 
 .doc-html th {
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
     font-weight: 600;
-    color: var(--color-text);
+    color: $color-text;
 }
 
 .doc-html tr:nth-child(even) {
-    background: var(--color-bg-subtle);
+    background: $color-bg-subtle;
 }
 
 /* Horizontal rule */
 .doc-html hr {
     border: none;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid $color-border;
     margin: 32px 0;
 }
 
@@ -1118,10 +1116,10 @@ iframe {
 /* Embedded story error */
 .embedded-story-error {
     padding: 16px 20px;
-    background: var(--color-error-bg);
-    border: 1px solid var(--color-error);
+    background: $color-error-bg;
+    border: 1px solid $color-error;
     border-radius: 6px;
-    color: var(--color-error);
+    color: $color-error;
     font-size: 0.875rem;
     margin: 16px 0;
 }
@@ -1135,8 +1133,8 @@ iframe {
     justify-content: space-between;
     height: 48px;
     padding: 0 16px;
-    background: var(--color-bg-primary);
-    border-bottom: 1px solid var(--color-border-primary);
+    background: $color-bg-base;
+    border-bottom: 1px solid $color-border;
     flex-shrink: 0;
 }
 
@@ -1157,21 +1155,26 @@ iframe {
     background: transparent;
     border: 1px solid transparent;
     border-radius: 6px;
-    color: var(--color-text-tertiary);
+    color: $color-text-muted;
     cursor: pointer;
     transition: all 0.15s ease;
-}
 
-.top-bar-btn:hover {
-    background: var(--color-border-lighter);
-    border-color: var(--color-border-primary);
-    color: var(--color-text-primary);
-}
+    &:hover {
+        background: $color-bg-muted;
+        border-color: $color-border;
+        color: $color-text;
+    }
 
-.top-bar-btn.active {
-    background: var(--color-primary-lighter);
-    border-color: var(--color-primary-light);
-    color: var(--color-primary);
+    &.active {
+        background: $color-primary-bg;
+        border-color: $color-primary;
+        color: $color-primary;
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
 }
 
 .top-bar-btn svg {
@@ -1182,65 +1185,502 @@ iframe {
 .top-bar-divider {
     width: 1px;
     height: 24px;
-    background: var(--color-border-primary);
+    background: $color-border;
     margin: 0 8px;
 }
 
 /* ============================================
    Dark Theme Overrides
    ============================================ */
-.dark-theme body,
 .dark-theme {
-    background: var(--color-bg-secondary);
-}
+    body,
+    & {
+        background: $color-bg-subtle-dark;
+    }
 
-.dark-theme .search-input::placeholder {
-    color: var(--color-text-muted);
+    .search-input::placeholder {
+        color: $color-text-muted-dark;
+    }
+
+    // Override all light theme colors with dark theme colors
+    body {
+        background: $color-bg-subtle-dark;
+    }
+
+    .sidebar {
+        background: $color-bg-subtle-dark;
+        border-right-color: $color-border-dark;
+    }
+
+    .search-input {
+        border-color: $color-border-strong-dark;
+
+        &:focus {
+            border-color: $color-focus-dark;
+        }
+    }
+
+    .tree-header:hover {
+        background-color: $color-bg-muted-dark;
+    }
+
+    .arrow,
+    .node-icon {
+        color: $color-text-muted-dark;
+    }
+
+    .node-name {
+        color: $color-text-dark;
+    }
+
+    .category-count {
+        color: $color-text-muted-dark;
+        background: $color-bg-muted-dark;
+    }
+
+    .component-node {
+        &:hover {
+            background-color: $color-bg-muted-dark;
+        }
+
+        &.active {
+            background-color: $color-primary-bg-dark;
+            color: $color-primary-dark;
+        }
+
+        .arrow {
+            color: $color-text-subtle-dark;
+        }
+    }
+
+    .component-icon {
+        color: $color-primary-dark;
+    }
+
+    .story-node {
+        color: $color-text-dark;
+
+        &:hover {
+            background-color: $color-bg-muted-dark;
+        }
+
+        &.selected {
+            background-color: $color-primary-bg-dark;
+            color: $color-primary-dark;
+        }
+    }
+
+    .story-icon {
+        color: $color-accent-purple-dark;
+    }
+
+    .doc-node {
+        color: $color-text-muted-dark;
+
+        &:hover {
+            background-color: $color-bg-muted-dark;
+        }
+
+        &.selected {
+            background-color: $color-primary-bg-dark;
+            color: $color-accent-orange-dark;
+        }
+    }
+
+    .doc-icon {
+        color: $color-accent-orange-dark;
+    }
+
+    .component-preview {
+        background: $color-bg-base-dark;
+    }
+
+    .empty-state {
+        color: $color-text-subtle-dark;
+    }
+
+    .preview-container h2 {
+        color: $color-text-dark;
+        border-bottom-color: $color-border-dark;
+    }
+
+    .story-page-header {
+        border-bottom-color: $color-border-dark;
+    }
+
+    .story-page-component-name,
+    .story-page-separator {
+        color: $color-text-muted-dark;
+    }
+
+    .story-page-story-name {
+        color: $color-text-dark;
+    }
+
+    .component-description {
+        background: $color-bg-subtle-dark;
+        border-bottom-color: $color-border-dark;
+        color: $color-text-muted-dark;
+
+        code {
+            background: $color-bg-muted-dark;
+        }
+
+        pre {
+            background: $color-bg-code-dark;
+            color: $color-bg-muted-dark;
+        }
+
+        a {
+            color: $color-focus-dark;
+        }
+    }
+
+    .preview-area {
+        background: $color-bg-subtle-dark;
+    }
+
+    .props-panel {
+        background: $color-bg-base-dark;
+        border-left-color: $color-border-dark;
+
+        h3 {
+            color: $color-text-dark;
+            border-bottom-color: $color-border-dark;
+        }
+    }
+
+    .props-editor-section {
+        border-top-color: $color-border-dark;
+    }
+
+    .props-editor-header {
+        background: $color-bg-subtle-dark;
+        color: $color-text-muted-dark;
+
+        &:hover {
+            background: $color-bg-muted-dark;
+        }
+    }
+
+    .collapse-icon {
+        color: $color-text-muted-dark;
+    }
+
+    .props-empty {
+        color: $color-text-muted-dark;
+    }
+
+    .props-table {
+        th {
+            background: $color-bg-subtle-dark;
+            color: $color-text-muted-dark;
+            border-bottom-color: $color-border-dark;
+        }
+
+        td {
+            border-bottom-color: $color-border-dark;
+        }
+    }
+
+    .prop-row.editable:hover td {
+        background: $color-bg-subtle-dark;
+    }
+
+    .prop-name {
+        color: $color-text-dark;
+    }
+
+    .prop-description,
+    .prop-type {
+        color: $color-text-muted-dark;
+    }
+
+    .prop-input {
+        background: $color-bg-base-dark;
+        border-color: $color-border-strong-dark;
+        color: $color-text-dark;
+
+        &:focus {
+            border-color: $color-focus-dark;
+            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.15);
+        }
+    }
+
+    .props-form {
+        background: $color-bg-base-dark;
+        border-top-color: $color-border-dark;
+
+        h3 {
+            color: $color-text-dark;
+        }
+    }
+
+    .form-group {
+        label {
+            color: $color-text-dark;
+        }
+
+        input {
+            background: $color-bg-muted-dark;
+            border-color: $color-border-strong-dark;
+            color: $color-text-dark;
+
+            &:focus {
+                border-color: $color-focus-dark;
+            }
+        }
+    }
+
+    .json-editor {
+        background: $color-bg-subtle-dark;
+        border-color: $color-border-strong-dark;
+        color: $color-text-dark;
+
+        &:focus {
+            background: $color-bg-base-dark;
+            border-color: $color-focus-dark;
+        }
+    }
+
+    .json-error {
+        background: $color-error-bg-dark;
+        border-color: $color-error-dark;
+        color: $color-error-dark;
+    }
+
+    .reset-button {
+        background: $color-bg-muted-dark;
+        border-color: $color-border-strong-dark;
+        color: $color-text-dark;
+
+        &:hover {
+            background: $color-bg-muted-dark;
+        }
+
+        &:active {
+            background: $color-border-strong-dark;
+        }
+    }
+
+    .story-selector {
+        background: $color-bg-subtle-dark;
+        border-bottom-color: $color-border-dark;
+
+        select {
+            background: $color-bg-base-dark;
+            border-color: $color-border-strong-dark;
+            color: $color-text-dark;
+
+            &:focus {
+                border-color: $color-focus-dark;
+            }
+        }
+    }
+
+    .story-info {
+        background: $color-bg-base-dark;
+        border-bottom-color: $color-border-dark;
+    }
+
+    .story-title {
+        color: $color-text-dark;
+    }
+
+    .story-description {
+        color: $color-text-muted-dark;
+    }
+
+    .story-card {
+        background: $color-bg-base-dark;
+        border-color: $color-border-dark;
+        box-shadow: $shadow-dark;
+    }
+
+    .story-card-title {
+        color: $color-text-dark;
+    }
+
+    .story-card-description {
+        color: $color-text-muted-dark;
+    }
+
+    .story-toolbar {
+        background: $color-bg-subtle-dark;
+        border-color: $color-border-dark;
+    }
+
+    .toolbar-button {
+        background: $color-bg-base-dark;
+        border-color: $color-border-strong-dark;
+        color: $color-text-dark;
+
+        &:hover {
+            background: $color-bg-muted-dark;
+            border-color: $color-border-strong-dark;
+        }
+
+        &:active {
+            background: $color-border-dark;
+        }
+    }
+
+    .zoom-level {
+        color: $color-text-muted-dark;
+    }
+
+    .story-preview-area {
+        background: $color-bg-subtle-dark;
+        border-color: $color-border-dark;
+    }
+
+    .doc-content {
+        color: $color-text-dark;
+    }
+
+    .doc-html {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            color: $color-text-dark;
+        }
+
+        h6 {
+            color: $color-text-muted-dark;
+        }
+
+        h1 {
+            border-bottom-color: $color-border-dark;
+        }
+
+        h2 {
+            border-bottom-color: $color-border-dark;
+        }
+
+        a {
+            color: $color-primary-dark;
+
+            &:hover {
+                border-bottom-color: $color-primary-dark;
+            }
+        }
+
+        code {
+            background: $color-bg-subtle-dark;
+            color: $color-accent-purple-dark;
+        }
+
+        pre {
+            border-color: $color-border-strong-dark;
+
+            &:not(:has(code[data-highlighted])) {
+                background: $color-bg-code-dark;
+                color: $color-text-dark;
+            }
+        }
+
+        blockquote {
+            background: $color-bg-subtle-dark;
+            border-left-color: $color-primary-dark;
+            color: $color-text-dark;
+        }
+
+        th {
+            background: $color-bg-subtle-dark;
+            color: $color-text-dark;
+            border-color: $color-border-dark;
+        }
+
+        td {
+            border-color: $color-border-dark;
+        }
+
+        tr:nth-child(even) {
+            background: $color-bg-subtle-dark;
+        }
+
+        hr {
+            border-top-color: $color-border-dark;
+        }
+    }
+
+    .embedded-story-error {
+        background: $color-error-bg-dark;
+        border-color: $color-error-dark;
+        color: $color-error-dark;
+    }
+
+    .top-bar {
+        background: $color-bg-base-dark;
+        border-bottom-color: $color-border-dark;
+    }
+
+    .top-bar-btn {
+        color: $color-text-muted-dark;
+
+        &:hover {
+            background: $color-bg-muted-dark;
+            border-color: $color-border-dark;
+            color: $color-text-dark;
+        }
+
+        &.active {
+            background: $color-primary-bg-dark;
+            border-color: $color-primary-dark;
+            color: $color-primary-dark;
+        }
+    }
+
+    .top-bar-divider {
+        background: $color-border-dark;
+    }
+
+    .preview-container.grid-enabled {
+        background-image:
+            linear-gradient(to right, $grid-color-dark 1px, transparent 1px),
+            linear-gradient(to bottom, $grid-color-dark 1px, transparent 1px);
+    }
 }
 
 /* ============================================
    Fullscreen Mode
    ============================================ */
-.fullscreen-mode .content-wrapper {
-    position: fixed;
-    top: 48px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-}
+.fullscreen-mode {
+    .content-wrapper {
+        position: fixed;
+        top: 48px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+    }
 
-.fullscreen-mode .sidebar {
-    display: none;
-}
+    .sidebar {
+        display: none;
+    }
 
-.fullscreen-mode .main-content {
-    width: 100%;
-    max-width: 100%;
-}
+    .main-content {
+        width: 100%;
+        max-width: 100%;
+    }
 
-.fullscreen-mode .top-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1001;
+    .top-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1001;
+    }
 }
 
 /* ============================================
    Grid Overlay for Preview
    ============================================ */
-:root {
-    --grid-color: rgba(128, 128, 128, 0.15);
-}
-
-.dark-theme {
-    --grid-color: rgba(255, 255, 255, 0.1);
-}
-
 .preview-container.grid-enabled {
     background-image:
-        linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+        linear-gradient(to right, $grid-color 1px, transparent 1px),
+        linear-gradient(to bottom, $grid-color 1px, transparent 1px);
     background-size: 20px 20px;
 }
