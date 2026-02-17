@@ -1,132 +1,79 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap");
 
 :root {
-    /* Primary Colors */
+    /* Primary Color */
     --color-primary: #1976d2;
-    --color-primary-light: #64b5f6;
-    --color-primary-lighter: #e3f2fd;
-    --color-primary-dark: #1e3a5f;
+    --color-primary-bg: #e3f2fd;
 
     /* Accent Colors */
     --color-accent-purple: #8e24aa;
-    --color-accent-purple-light: #ce93d8;
     --color-accent-orange: #e65100;
-    --color-accent-orange-light: #ffab40;
-    --color-accent-pink: #d63384;
-    --color-accent-pink-light: #f48fb1;
 
-    /* Neutral Colors - Light Theme */
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f5f5f5;
-    --color-bg-tertiary: #fafafa;
-    --color-bg-hover: #e4e9f0;
-    --color-bg-sidebar: #f0f4f8;
-    --color-bg-code: #f8fafc;
-    --color-bg-code-inline: #e2e8f0;
-    --color-bg-code-block: #2d3748;
+    /* Backgrounds */
+    --color-bg-base: #ffffff;
+    --color-bg-subtle: #f5f5f5;
+    --color-bg-muted: #e8e8e8;
+    --color-bg-code: #2d3748;
 
-    /* Border Colors */
-    --color-border-primary: #e0e0e0;
-    --color-border-secondary: #d0d0d0;
-    --color-border-light: #e8e8e8;
-    --color-border-lighter: #f0f0f0;
+    /* Borders */
+    --color-border: #e0e0e0;
+    --color-border-strong: #d0d0d0;
 
-    /* Text Colors */
-    --color-text-primary: #333;
-    --color-text-secondary: #555;
-    --color-text-tertiary: #666;
-    --color-text-muted: #888;
-    --color-text-light: #999;
-    --color-text-lighter: #aaa;
-    --color-text-dark: #1a1a1a;
-    --color-text-heading: #444;
+    /* Text */
+    --color-text: #333;
+    --color-text-muted: #666;
+    --color-text-subtle: #999;
 
-    /* Interactive States */
-    --color-hover-bg: #e8e8e8;
-    --color-hover-border: #bbb;
-    --color-active-bg: #ddd;
-    --color-focus-border: #4a90e2;
-    --color-focus-shadow: rgba(74, 144, 226, 0.1);
+    /* Interactive */
+    --color-focus: #4a90e2;
 
-    /* Status Colors */
+    /* Status */
+    --color-error: #c62828;
     --color-error-bg: #ffebee;
-    --color-error-border: #ef9a9a;
-    --color-error-text: #c62828;
-    --color-error-bg-dark: #fff5f5;
-    --color-error-border-dark: #feb2b2;
-    --color-error-text-dark: #c53030;
 
     /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
-    /* Special Backgrounds */
-    --color-bg-orange-light: #fff3e0;
-    --color-bg-blockquote: #f8f9fa;
-    --color-bg-count: #e0e5ec;
-
-    /* Link Colors */
-    --color-link: #1ea7fd;
-    --color-link-hover: #1ea7fd;
+    /* Grid */
+    --grid-color: rgba(128, 128, 128, 0.15);
 }
 
 .dark-theme {
-    /* Primary Colors - Dark Theme */
+    /* Primary Color */
     --color-primary: #64b5f6;
-    --color-primary-light: #90caf9;
-    --color-primary-lighter: #1e3a5f;
-    --color-primary-dark: #2962ff;
+    --color-primary-bg: #1e3a5f;
 
-    /* Accent Colors - Dark Theme */
+    /* Accent Colors */
     --color-accent-purple: #ce93d8;
     --color-accent-orange: #ffab40;
-    --color-accent-pink: #f48fb1;
 
-    /* Neutral Colors - Dark Theme */
-    --color-bg-primary: #1e1e1e;
-    --color-bg-secondary: #121212;
-    --color-bg-tertiary: #252525;
-    --color-bg-hover: #2d2d2d;
-    --color-bg-sidebar: #1a1f2e;
-    --color-bg-code: #1e2a38;
-    --color-bg-code-inline: #2d2d2d;
-    --color-bg-code-block: #1a1a1a;
+    /* Backgrounds */
+    --color-bg-base: #1e1e1e;
+    --color-bg-subtle: #252525;
+    --color-bg-muted: #333;
+    --color-bg-code: #1a1a1a;
 
-    /* Border Colors - Dark Theme */
-    --color-border-primary: #333;
-    --color-border-secondary: #444;
-    --color-border-light: #555;
-    --color-border-lighter: #666;
+    /* Borders */
+    --color-border: #333;
+    --color-border-strong: #444;
 
-    /* Text Colors - Dark Theme */
-    --color-text-primary: #e0e0e0;
-    --color-text-secondary: #ddd;
-    --color-text-tertiary: #ccc;
+    /* Text */
+    --color-text: #e0e0e0;
     --color-text-muted: #aaa;
-    --color-text-light: #888;
-    --color-text-lighter: #777;
-    --color-text-dark: #e0e0e0;
-    --color-text-heading: #ccc;
+    --color-text-subtle: #666;
 
-    /* Interactive States - Dark Theme */
-    --color-hover-bg: #444;
-    --color-hover-border: #666;
-    --color-active-bg: #555;
-    --color-focus-border: #64b5f6;
-    --color-focus-shadow: rgba(100, 181, 246, 0.15);
+    /* Interactive */
+    --color-focus: #64b5f6;
 
-    /* Status Colors - Dark Theme */
+    /* Status */
+    --color-error: #ef9a9a;
     --color-error-bg: #3e1a1a;
-    --color-error-border: #c62828;
-    --color-error-text: #ef9a9a;
 
-    /* Shadows - Dark Theme */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    /* Shadows */
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 
-    /* Special Backgrounds - Dark Theme */
-    --color-bg-orange-light: #3e2723;
-    --color-bg-blockquote: #1e2a38;
-    --color-bg-count: #333;
+    /* Grid */
+    --grid-color: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -136,8 +83,17 @@
 }
 
 body {
-    font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: var(--color-bg-secondary);
+    font-family:
+        "Nunito Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        sans-serif;
+    background: var(--color-bg-subtle);
 }
 
 iframe {
@@ -161,8 +117,8 @@ iframe {
 /* Sidebar */
 .sidebar {
     width: 300px;
-    background: var(--color-bg-sidebar);
-    border-right: 1px solid var(--color-border-primary);
+    background: var(--color-bg-subtle);
+    border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -176,7 +132,7 @@ iframe {
 .search-input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--color-border-secondary);
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
     font-size: 14px;
     outline: none;
@@ -184,7 +140,7 @@ iframe {
 }
 
 .search-input:focus {
-    border-color: var(--color-focus-border);
+    border-color: var(--color-focus);
 }
 
 .component-tree {
@@ -217,7 +173,7 @@ iframe {
 }
 
 .tree-header:hover {
-    background-color: var(--color-bg-hover);
+    background-color: var(--color-bg-muted);
 }
 
 .arrow {
@@ -226,7 +182,7 @@ iframe {
     justify-content: center;
     margin-right: 8px;
     transition: transform 0.2s;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
 }
 
 .arrow svg {
@@ -243,7 +199,7 @@ iframe {
     align-items: center;
     justify-content: center;
     margin-right: 6px;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
 }
 
 .node-icon svg {
@@ -254,14 +210,14 @@ iframe {
 .node-name {
     font-weight: 600;
     font-size: 14px;
-    color: var(--color-text-primary);
+    color: var(--color-text);
     flex: 1;
 }
 
 .category-count {
     font-size: 12px;
     color: var(--color-text-muted);
-    background: var(--color-bg-count);
+    background: var(--color-bg-muted);
     padding: 2px 8px;
     border-radius: 10px;
     margin-left: 8px;
@@ -288,11 +244,11 @@ iframe {
 }
 
 .component-node:hover {
-    background-color: var(--color-bg-hover);
+    background-color: var(--color-bg-muted);
 }
 
 .component-node.active {
-    background-color: var(--color-primary-lighter);
+    background-color: var(--color-primary-bg);
     color: var(--color-primary);
 }
 
@@ -302,7 +258,7 @@ iframe {
     justify-content: center;
     margin-right: 4px;
     transition: transform 0.2s;
-    color: var(--color-text-light);
+    color: var(--color-text-subtle);
 }
 
 .component-node .arrow.expanded {
@@ -340,15 +296,15 @@ iframe {
     border-radius: 4px;
     transition: background-color 0.2s;
     font-size: 13px;
-    color: var(--color-text-secondary);
+    color: var(--color-text);
 }
 
 .story-node:hover {
-    background-color: var(--color-bg-hover);
+    background-color: var(--color-bg-muted);
 }
 
 .story-node.selected {
-    background-color: var(--color-primary-lighter);
+    background-color: var(--color-primary-bg);
     color: var(--color-primary);
     font-weight: 500;
 }
@@ -379,15 +335,15 @@ iframe {
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.2s;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
 }
 
 .doc-node:hover {
-    background-color: var(--color-bg-hover);
+    background-color: var(--color-bg-muted);
 }
 
 .doc-node.selected {
-    background-color: var(--color-bg-orange-light);
+    background-color: var(--color-primary-bg);
     color: var(--color-accent-orange);
 }
 
@@ -421,7 +377,7 @@ iframe {
 .component-preview {
     flex: 1;
     overflow-y: auto;
-    background: var(--color-bg-primary);
+    background: var(--color-bg-base);
     min-height: 0;
 }
 
@@ -431,7 +387,7 @@ iframe {
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: var(--color-text-light);
+    color: var(--color-text-subtle);
 }
 
 .empty-state h2 {
@@ -451,9 +407,9 @@ iframe {
 
 .preview-container h2 {
     padding: 20px;
-    border-bottom: 1px solid var(--color-border-primary);
+    border-bottom: 1px solid var(--color-border);
     font-size: 20px;
-    color: var(--color-text-primary);
+    color: var(--color-text);
 }
 
 /* Story page - single story full-screen view */
@@ -467,23 +423,23 @@ iframe {
     display: flex;
     align-items: center;
     padding: 18px 20px;
-    border-bottom: 1px solid var(--color-border-primary);
+    border-bottom: 1px solid var(--color-border);
     font-size: 18px;
     gap: 8px;
 }
 
 .story-page-component-name {
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
     font-weight: 400;
 }
 
 .story-page-separator {
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
     font-weight: 300;
 }
 
 .story-page-story-name {
-    color: var(--color-text-primary);
+    color: var(--color-text);
     font-weight: 600;
 }
 
@@ -504,11 +460,11 @@ iframe {
 /* Component description from doc comments */
 .component-description {
     padding: 16px 20px;
-    background: var(--color-bg-code);
-    border-bottom: 1px solid var(--color-border-primary);
+    background: var(--color-bg-subtle);
+    border-bottom: 1px solid var(--color-border);
     font-size: 14px;
     line-height: 1.6;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
 }
 
 .component-description p {
@@ -520,16 +476,16 @@ iframe {
 }
 
 .component-description code {
-    background: var(--color-bg-code-inline);
+    background: var(--color-bg-muted);
     padding: 2px 6px;
     border-radius: 3px;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
     font-size: 13px;
 }
 
 .component-description pre {
-    background: var(--color-bg-code-block);
-    color: var(--color-bg-code-inline);
+    background: var(--color-bg-code);
+    color: var(--color-bg-muted);
     padding: 12px 16px;
     border-radius: 6px;
     overflow-x: auto;
@@ -553,7 +509,7 @@ iframe {
 }
 
 .component-description a {
-    color: var(--color-focus-border);
+    color: var(--color-focus);
     text-decoration: none;
 }
 
@@ -574,7 +530,7 @@ iframe {
     align-items: stretch;
     justify-content: stretch;
     padding: 0;
-    background: var(--color-bg-tertiary);
+    background: var(--color-bg-subtle);
     min-height: 300px;
     overflow: hidden;
 }
@@ -590,8 +546,8 @@ iframe {
 /* Props panel */
 .props-panel {
     width: 320px;
-    border-left: 1px solid var(--color-border-primary);
-    background: var(--color-bg-primary);
+    border-left: 1px solid var(--color-border);
+    background: var(--color-bg-base);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -601,15 +557,15 @@ iframe {
     padding: 16px 20px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--color-text-primary);
-    border-bottom: 1px solid var(--color-border-primary);
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .props-editor-section {
-    border-top: 1px solid var(--color-border-primary);
+    border-top: 1px solid var(--color-border);
     margin-top: 12px;
 }
 
@@ -623,14 +579,14 @@ iframe {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--color-text-tertiary);
-    background: var(--color-bg-code);
+    color: var(--color-text-muted);
+    background: var(--color-bg-subtle);
     user-select: none;
     transition: background-color 0.15s ease;
 }
 
 .props-editor-header:hover {
-    background: var(--color-border-lighter);
+    background: var(--color-bg-muted);
 }
 
 .collapse-icon {
@@ -661,25 +617,25 @@ iframe {
 }
 
 .props-table th {
-    background: var(--color-bg-code);
+    background: var(--color-bg-subtle);
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.4px;
-    color: var(--color-text-lighter);
+    color: var(--color-text-muted);
     padding: 8px 12px;
     text-align: left;
-    border-bottom: 1px solid var(--color-border-primary);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .props-table td {
     padding: 8px 12px;
-    border-bottom: 1px solid var(--color-border-lighter);
+    border-bottom: 1px solid var(--color-border);
     vertical-align: middle;
 }
 
 .prop-row.editable:hover td {
-    background: var(--color-bg-sidebar);
+    background: var(--color-bg-subtle);
 }
 
 .prop-row.non-editable {
@@ -689,18 +645,18 @@ iframe {
 .prop-name {
     font-size: 12px;
     font-weight: 600;
-    color: var(--color-text-secondary);
+    color: var(--color-text);
 }
 
 .prop-type {
     font-size: 11px;
     color: var(--color-text-muted);
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
 }
 
 .prop-description {
     font-size: 11px;
-    color: var(--color-text-lighter);
+    color: var(--color-text-muted);
     line-height: 1.4;
     font-style: italic;
 }
@@ -708,26 +664,28 @@ iframe {
 .prop-input {
     width: 100%;
     padding: 6px 8px;
-    border: 1px solid var(--color-border-secondary);
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
     font-size: 13px;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background: var(--color-bg-primary);
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    background: var(--color-bg-base);
     box-sizing: border-box;
 }
 
 .prop-input:focus {
-    border-color: var(--color-focus-border);
-    box-shadow: 0 0 0 3px var(--color-focus-shadow);
+    border-color: var(--color-focus);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
 /* Props form (legacy) */
 .props-form {
-    border-top: 1px solid var(--color-border-primary);
+    border-top: 1px solid var(--color-border);
     padding: 20px;
-    background: var(--color-bg-primary);
+    background: var(--color-bg-base);
     max-height: 400px;
     overflow-y: auto;
 }
@@ -735,7 +693,7 @@ iframe {
 .props-form h3 {
     font-size: 16px;
     margin-bottom: 16px;
-    color: var(--color-text-primary);
+    color: var(--color-text);
 }
 
 .form-group {
@@ -747,13 +705,13 @@ iframe {
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 6px;
-    color: var(--color-text-secondary);
+    color: var(--color-text);
 }
 
 .form-group input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--color-border-secondary);
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
     font-size: 14px;
     outline: none;
@@ -761,7 +719,7 @@ iframe {
 }
 
 .form-group input:focus {
-    border-color: var(--color-focus-border);
+    border-color: var(--color-focus);
 }
 
 .form-group input[type="number"] {
@@ -772,38 +730,38 @@ iframe {
 .json-editor {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--color-border-secondary);
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
     font-size: 13px;
     line-height: 1.5;
     outline: none;
     transition: border-color 0.2s;
     resize: vertical;
     min-height: 200px;
-    background: var(--color-bg-tertiary);
+    background: var(--color-bg-subtle);
 }
 
 .json-editor:focus {
-    border-color: var(--color-focus-border);
-    background: var(--color-bg-primary);
+    border-color: var(--color-focus);
+    background: var(--color-bg-base);
 }
 
 .json-error {
     background: var(--color-error-bg);
-    border: 1px solid var(--color-error-border);
+    border: 1px solid var(--color-error);
     border-radius: 4px;
     padding: 8px 12px;
     margin-bottom: 12px;
-    color: var(--color-error-text);
+    color: var(--color-error);
     font-size: 13px;
 }
 
 .reset-button {
     margin-top: 12px;
     padding: 8px 16px;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border-secondary);
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
@@ -811,52 +769,52 @@ iframe {
 }
 
 .reset-button:hover {
-    background: var(--color-border-primary);
+    background: var(--color-bg-muted);
 }
 
 .reset-button:active {
-    background: var(--color-border-secondary);
+    background: var(--color-border-strong);
 }
 
 /* Story selector and info */
 .story-selector {
     padding: 12px 20px;
-    border-bottom: 1px solid var(--color-border-primary);
-    background: var(--color-bg-tertiary);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-subtle);
 }
 
 .story-selector select {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--color-border-secondary);
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
     font-size: 14px;
-    background: var(--color-bg-primary);
+    background: var(--color-bg-base);
     outline: none;
     cursor: pointer;
     transition: border-color 0.2s;
 }
 
 .story-selector select:focus {
-    border-color: var(--color-focus-border);
+    border-color: var(--color-focus);
 }
 
 .story-info {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--color-border-primary);
-    background: var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-base);
 }
 
 .story-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--color-text);
     margin: 0 0 4px 0;
 }
 
 .story-description {
     font-size: 13px;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
     margin: 0;
     line-height: 1.5;
 }
@@ -872,23 +830,23 @@ iframe {
 
 /* Individual story card */
 .story-card {
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border-primary);
+    background: var(--color-bg-base);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 16px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow);
 }
 
 .story-card-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--color-text);
     margin: 0 0 8px 0;
 }
 
 .story-card-description {
     font-size: 13px;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
     margin: 0 0 16px 0;
     line-height: 1.5;
 }
@@ -899,8 +857,8 @@ iframe {
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border-primary);
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
     border-bottom: none;
     border-radius: 4px 4px 0 0;
 }
@@ -912,12 +870,12 @@ iframe {
     min-width: 28px;
     height: 28px;
     padding: 0 6px;
-    border: 1px solid var(--color-border-secondary);
+    border: 1px solid var(--color-border-strong);
     border-radius: 4px;
-    background: var(--color-bg-primary);
+    background: var(--color-bg-base);
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-text-secondary);
+    color: var(--color-text);
     cursor: pointer;
     transition: all 0.15s ease;
 }
@@ -928,12 +886,12 @@ iframe {
 }
 
 .toolbar-button:hover {
-    background: var(--color-hover-bg);
-    border-color: var(--color-hover-border);
+    background: var(--color-bg-muted);
+    border-color: var(--color-border-strong);
 }
 
 .toolbar-button:active {
-    background: var(--color-active-bg);
+    background: var(--color-border);
 }
 
 .toolbar-button.reset-zoom {
@@ -945,14 +903,14 @@ iframe {
     text-align: center;
     font-size: 13px;
     font-weight: 500;
-    color: var(--color-text-tertiary);
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    color: var(--color-text-muted);
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
 }
 
 /* Story preview area within a card */
 .story-preview-area {
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border-primary);
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
     border-radius: 0 0 4px 4px;
     min-height: 100px;
     overflow: hidden;
@@ -972,7 +930,7 @@ iframe {
 
 .doc-content {
     line-height: 1.7;
-    color: var(--color-text-primary);
+    color: var(--color-text);
 }
 
 .doc-html {
@@ -983,46 +941,46 @@ iframe {
 .doc-html h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--color-text-dark);
+    color: var(--color-text);
     margin: 0 0 24px 0;
     padding-bottom: 12px;
-    border-bottom: 2px solid var(--color-border-primary);
+    border-bottom: 2px solid var(--color-border);
 }
 
 .doc-html h2 {
     font-size: 1.75rem;
     font-weight: 600;
-    color: var(--color-text-dark);
+    color: var(--color-text);
     margin: 32px 0 16px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--color-border-light);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .doc-html h3 {
     font-size: 1.375rem;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--color-text);
     margin: 24px 0 12px 0;
 }
 
 .doc-html h4 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--color-text-heading);
+    color: var(--color-text);
     margin: 20px 0 10px 0;
 }
 
 .doc-html h5 {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text-secondary);
+    color: var(--color-text);
     margin: 16px 0 8px 0;
 }
 
 .doc-html h6 {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-muted);
     margin: 16px 0 8px 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1036,24 +994,24 @@ iframe {
 
 /* Links */
 .doc-html a {
-    color: var(--color-link);
+    color: var(--color-primary);
     text-decoration: none;
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s ease;
 }
 
 .doc-html a:hover {
-    border-bottom-color: var(--color-link-hover);
+    border-bottom-color: var(--color-primary);
 }
 
 /* Inline code */
 .doc-html code {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
     font-size: 0.875em;
-    background: var(--color-bg-secondary);
+    background: var(--color-bg-subtle);
     padding: 2px 6px;
     border-radius: 4px;
-    color: var(--color-accent-pink);
+    color: var(--color-accent-purple);
 }
 
 /* Code blocks - background/color controlled by highlight.js theme */
@@ -1064,7 +1022,7 @@ iframe {
     margin: 16px 0 24px 0;
     font-size: 0.875rem;
     line-height: 1.5;
-    border: 1px solid var(--color-border-secondary);
+    border: 1px solid var(--color-border-strong);
 }
 
 .doc-html pre code {
@@ -1076,8 +1034,8 @@ iframe {
 
 /* Fallback colors when highlight.js hasn't loaded yet */
 .doc-html pre:not(:has(code[data-highlighted])) {
-    background: var(--color-bg-code-block);
-    color: var(--color-text-primary);
+    background: var(--color-bg-code);
+    color: var(--color-text);
 }
 
 /* Lists */
@@ -1102,9 +1060,9 @@ iframe {
 .doc-html blockquote {
     margin: 16px 0 24px 0;
     padding: 12px 20px;
-    border-left: 4px solid var(--color-link);
-    background: var(--color-bg-blockquote);
-    color: var(--color-text-secondary);
+    border-left: 4px solid var(--color-primary);
+    background: var(--color-bg-subtle);
+    color: var(--color-text);
     font-style: italic;
 }
 
@@ -1124,23 +1082,23 @@ iframe {
 .doc-html td {
     padding: 12px 16px;
     text-align: left;
-    border: 1px solid var(--color-border-primary);
+    border: 1px solid var(--color-border);
 }
 
 .doc-html th {
-    background: var(--color-bg-secondary);
+    background: var(--color-bg-subtle);
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--color-text);
 }
 
 .doc-html tr:nth-child(even) {
-    background: var(--color-bg-tertiary);
+    background: var(--color-bg-subtle);
 }
 
 /* Horizontal rule */
 .doc-html hr {
     border: none;
-    border-top: 1px solid var(--color-border-primary);
+    border-top: 1px solid var(--color-border);
     margin: 32px 0;
 }
 
@@ -1160,10 +1118,10 @@ iframe {
 /* Embedded story error */
 .embedded-story-error {
     padding: 16px 20px;
-    background: var(--color-error-bg-dark);
-    border: 1px solid var(--color-error-border-dark);
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error);
     border-radius: 6px;
-    color: var(--color-error-text-dark);
+    color: var(--color-error);
     font-size: 0.875rem;
     margin: 16px 0;
 }
@@ -1239,8 +1197,6 @@ iframe {
 .dark-theme .search-input::placeholder {
     color: var(--color-text-muted);
 }
-
-
 
 /* ============================================
    Fullscreen Mode

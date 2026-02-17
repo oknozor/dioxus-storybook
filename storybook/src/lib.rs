@@ -121,7 +121,7 @@ use crate::ui::App;
 use dioxus::prelude::*;
 use schemars::schema::{InstanceType, RootSchema, Schema, SchemaObject, SingleOrVec};
 
-const STORYBOOK_CSS: Asset = asset!("../assets/storybook.css");
+const STORYBOOK_CSS: Asset = asset!("../assets/storybook.scss");
 
 mod ui;
 
