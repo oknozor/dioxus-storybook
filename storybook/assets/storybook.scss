@@ -538,7 +538,7 @@ iframe {
     align-content: center;
     justify-content: center;
     width: 100%;
-    min-height: 200px;
+    height: 100%;
 }
 
 /* Props panel */
@@ -1745,11 +1745,6 @@ iframe {
         }
     }
 
-    .preview-container.grid-enabled {
-        background-image:
-            linear-gradient(to right, $grid-color-dark 1px, transparent 1px),
-            linear-gradient(to bottom, $grid-color-dark 1px, transparent 1px);
-    }
 }
 
 /* ============================================
@@ -1786,9 +1781,13 @@ iframe {
 /* ============================================
    Grid Overlay for Preview
    ============================================ */
-.preview-container.grid-enabled {
+.grid-enabled {
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position: 0 0, 0 0, 0 0, 0 0;
+    background-blend-mode: difference;
     background-image:
-        linear-gradient(to right, $grid-color 1px, transparent 1px),
-        linear-gradient(to bottom, $grid-color 1px, transparent 1px);
-    background-size: 20px 20px;
+        linear-gradient(rgba(130, 130, 130, 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(130, 130, 130, 0.5) 1px, transparent 1px),
+        linear-gradient(rgba(130, 130, 130, 0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(130, 130, 130, 0.25) 1px, transparent 1px);
 }
