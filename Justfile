@@ -11,3 +11,6 @@ bin:
 
 example:
     dx --verbose serve --hot-patch --package storybook-example --platform web
+
+storybook:
+    dx --verbose serve --hot-patch --package storybook --platform web

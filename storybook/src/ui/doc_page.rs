@@ -1,7 +1,9 @@
 use crate::ui::UiSettings;
-use crate::ui::preview::StoryCard;
 use crate::{find_component, find_doc};
 use dioxus::prelude::*;
+use crate::ui::doc_page::embedded_story::EmbeddedStory;
+
+mod embedded_story;
 
 const HLJS_VERSION: &str = "11.11.1";
 const HLJS_LIGHT_THEME: &str = "github";
@@ -9,6 +11,7 @@ const HLJS_DARK_THEME: &str = "github-dark";
 
 /// Component to render a documentation page
 #[component]
+
 pub fn DocPage(path: String) -> Element {
     let Some(doc) = find_doc(&path) else {
         return rsx! {
@@ -18,11 +21,7 @@ pub fn DocPage(path: String) -> Element {
 
     rsx! {
         div { class: "doc-page",
-            // Load highlight.js JS library
-            document::Script {
-                src: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{HLJS_VERSION}/highlight.min.js",
-            }
-            // Render the HTML content with embedded stories
+            document::Script { src: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{HLJS_VERSION}/highlight.min.js" }
             DocContent { content_html: doc.content_html.to_string() }
         }
     }
@@ -43,7 +42,8 @@ fn DocContent(content_html: String) -> Element {
         // Create or update the highlight.js theme stylesheet and re-highlight all code blocks
         document::eval(&format!(
             r#"
-            // Create or update the highlight.js theme link element
+            // Create or update the highlight.js th
+eme link element
             var link = document.getElementById('hljs-theme');
             if (!link) {{
                 link = document.createElement('link');
@@ -153,52 +153,3 @@ fn extract_attr(element: &str, attr_name: &str) -> Option<String> {
     None
 }
 
-/// Component to render an embedded story within a doc page
-#[component]
-fn EmbeddedStory(story_path: String, story_name: String) -> Element {
-    // Parse the story path: "Category/Component/StoryName"
-    let path_parts: Vec<&str> = story_path.split('/').collect();
-
-    if path_parts.len() < 2 {
-        return rsx! {
-            div { class: "embedded-story-error", "Invalid story path: {story_path}" }
-        };
-    }
-
-    // The component name is the second-to-last part, story name is the last
-    let component_name = path_parts[path_parts.len() - 2];
-
-    let Some(registration) = find_component(component_name) else {
-        return rsx! {
-            div { class: "embedded-story-error", "Component not found: {component_name}" }
-        };
-    };
-
-    // Find the specific story and its index
-    let stories = (registration.get_stories)();
-    let story_with_index = stories
-        .iter()
-        .enumerate()
-        .find(|(_, s)| s.title == story_name);
-
-    let Some((story_index, story)) = story_with_index else {
-        return rsx! {
-            div { class: "embedded-story-error", "Story not found: {story_name} in {component_name}" }
-        };
-    };
-
-    let render_fn = registration.render_with_props;
-    let prop_schema = (registration.get_prop_schema)();
-
-    rsx! {
-        div { class: "embedded-story",
-            StoryCard {
-                story: story.clone(),
-                component_name: component_name.to_string(),
-                story_index,
-                render_fn,
-                prop_schema,
-            }
-        }
-    }
-}

@@ -121,9 +121,10 @@ use crate::ui::App;
 use dioxus::prelude::*;
 use schemars::schema::{InstanceType, RootSchema, Schema, SchemaObject, SingleOrVec};
 
-const STORYBOOK_CSS: Asset = asset!("../assets/storybook.scss");
+pub const STORYBOOK_CSS: Asset = asset!("../assets/storybook.scss");
 
 mod ui;
+mod model;
 
 /// Configuration for the storybook application.
 ///
@@ -528,11 +529,11 @@ fn get_type_name_from_schema(
 
     // Check instance type
     if let Some(instance_type) = &schema.instance_type {
-        match instance_type {
-            SingleOrVec::Single(t) => return format_instance_type(**t),
+        return match instance_type {
+            SingleOrVec::Single(t) => format_instance_type(**t),
             SingleOrVec::Vec(types) => {
                 let type_strs: Vec<_> = types.iter().map(|t| format_instance_type(*t)).collect();
-                return type_strs.join(" | ");
+                type_strs.join(" | ")
             }
         }
     }

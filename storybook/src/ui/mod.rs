@@ -1,18 +1,20 @@
 use crate::ui::doc_page::DocPage;
-use crate::ui::preview::StoryPage;
-use crate::ui::sidebar::{ComponentInfo, ComponentTree, Selection};
-use crate::{STORYBOOK_CSS, get_components, take_config};
+use crate::ui::sidebar::{ComponentInfo, Selection, Sidebar};
+use crate::{STORYBOOK_CSS, get_components, take_config, Stories, Story};
 use dioxus::prelude::*;
-use lucide_dioxus::{Grid3X3, Maximize2, Minimize2, Moon, RotateCcw, Square, Sun, ZoomIn, ZoomOut};
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
+use storybook_macro::storybook;
+use crate::ui::shared::{FullscreenButton, GridButton, OutlineButton, ResetZoomButton, ThemeToggleButton, ViewPortSelector, ZoomInButton, ZoomOutButton};
+use crate::{self as storybook};
+use crate::ui::story::{StoryPage, StoryZoomControls};
 
 pub mod doc_page;
-pub mod preview;
-pub mod props_editor;
 pub mod sidebar;
-
+pub mod story;
+pub mod shared;
 /// Represents the available viewport size presets for story preview.
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug, Deserialize, Serialize, schemars::JsonSchema)]
 pub(crate) enum ViewportSize {
     FullWidth,
     SmallMobile,
@@ -74,7 +76,7 @@ impl ViewportSize {
 
 /// Global UI settings shared via context
 #[derive(Clone, Copy)]
-pub(crate) struct UiSettings {
+pub struct UiSettings {
     pub is_dark_theme: Signal<bool>,
     pub grid_enabled: Signal<bool>,
     pub outline_enabled: Signal<bool>,
@@ -83,20 +85,26 @@ pub(crate) struct UiSettings {
     pub viewport_width: Signal<ViewportSize>,
 }
 
+impl Default for UiSettings {
+    fn default() -> Self {
+        UiSettings {
+            is_dark_theme: Signal::new(false),
+            grid_enabled: Signal::new(false),
+            outline_enabled: Signal::new(false),
+            fullscreen: Signal::new(false),
+            zoom_level: Signal::new(100),
+            viewport_width: Signal::new(ViewportSize::FullWidth),
+        }
+    }
+}
+
 #[component]
 pub(crate) fn App() -> Element {
     // Take the config from thread-local storage and provide it as context
     let _config = use_context_provider(take_config);
 
     // Provide UI settings as context
-    let _ui_settings = use_context_provider(|| UiSettings {
-        is_dark_theme: Signal::new(false),
-        grid_enabled: Signal::new(false),
-        outline_enabled: Signal::new(false),
-        fullscreen: Signal::new(false),
-        zoom_level: Signal::new(100),
-        viewport_width: Signal::new(ViewportSize::FullWidth),
-    });
+    let _ui_settings = use_context_provider(|| UiSettings::default());
 
     rsx! {
         Stylesheet { href: STORYBOOK_CSS }
@@ -105,125 +113,49 @@ pub(crate) fn App() -> Element {
 }
 
 /// Top navigation bar with theme, grid, outline, fullscreen toggles, and story-specific controls
+#[storybook(tag = "Organisms")]
 #[component]
 fn TopBar(selected: Signal<Option<Selection>>) -> Element {
-    let mut ui_settings = use_context::<UiSettings>();
-
-    let is_dark = (ui_settings.is_dark_theme)();
-    let grid_on = (ui_settings.grid_enabled)();
-    let outline_on = (ui_settings.outline_enabled)();
-    let fullscreen_on = (ui_settings.fullscreen)();
+    let ui_settings = use_context::<UiSettings>();
     let zoom = (ui_settings.zoom_level)();
-    let viewport = (ui_settings.viewport_width)();
-
     let is_story_selected = matches!(selected(), Some(Selection::Story(_, _)));
 
     rsx! {
         div { class: "top-bar",
             div { class: "top-bar-left",
-                // Theme toggle
-                button {
-                    class: if is_dark { "top-bar-btn active" } else { "top-bar-btn" },
-                    title: if is_dark { "Switch to light theme" } else { "Switch to dark theme" },
-                    onclick: move |_| ui_settings.is_dark_theme.set(!is_dark),
-                    if is_dark {
-                        Sun {}
-                    } else {
-                        Moon {}
-                    }
-                }
-                // Grid toggle
-                button {
-                    class: if grid_on { "top-bar-btn active" } else { "top-bar-btn" },
-                    title: if grid_on { "Hide grid overlay" } else { "Show grid overlay" },
-                    onclick: move |_| ui_settings.grid_enabled.set(!grid_on),
-                    Grid3X3 {}
-                }
-                // Outline toggle
-                button {
-                    class: if outline_on { "top-bar-btn active" } else { "top-bar-btn" },
-                    title: if outline_on { "Hide element outlines" } else { "Show element outlines" },
-                    onclick: move |_| ui_settings.outline_enabled.set(!outline_on),
-                    Square {}
-                }
+                ThemeToggleButton { is_dark_theme: ui_settings.is_dark_theme }
+                GridButton { grid_enabled: ui_settings.grid_enabled }
+                OutlineButton { outline_enabled: ui_settings.outline_enabled }
 
-                // Story-specific controls: zoom and viewport
                 if is_story_selected {
                     div { class: "top-bar-divider" }
-
-                    // Zoom controls
-                    button {
-                        class: "top-bar-btn",
-                        title: "Zoom Out",
-                        onclick: move |_| {
-                            let current = (ui_settings.zoom_level)();
-                            if current > 25 {
-                                ui_settings.zoom_level.set(current - 25);
-                            }
-                        },
-                        ZoomOut {}
-                    }
-                    span { class: "top-bar-zoom-level", "{zoom}%" }
-                    button {
-                        class: "top-bar-btn",
-                        title: "Zoom In",
-                        onclick: move |_| {
-                            let current = (ui_settings.zoom_level)();
-                            if current < 200 {
-                                ui_settings.zoom_level.set(current + 25);
-                            }
-                        },
-                        ZoomIn {}
-                    }
-                    button {
-                        class: "top-bar-btn",
-                        title: "Reset Zoom",
-                        onclick: move |_| ui_settings.zoom_level.set(100),
-                        RotateCcw {}
-                    }
-
+                    StoryZoomControls { zoom_level: ui_settings.zoom_level }
                     div { class: "top-bar-divider" }
-
-                    // Viewport size dropdown
-                    select {
-                        class: "top-bar-viewport-select",
-                        title: "Viewport Size",
-                        value: "{viewport.value()}",
-                        onchange: move |e: Event<FormData>| {
-                            let size = ViewportSize::from_value(&e.value());
-                            ui_settings.viewport_width.set(size);
-                        },
-                        for size in ViewportSize::all() {
-                            option {
-                                value: "{size.value()}",
-                                selected: viewport == *size,
-                                "{size.label()}"
-                            }
-                        }
-                    }
+                    ViewPortSelector { viewport_width: ui_settings.viewport_width }
                 }
             }
+
             div { class: "top-bar-right",
-                // Fullscreen toggle
-                button {
-                    class: if fullscreen_on { "top-bar-btn active" } else { "top-bar-btn" },
-                    title: if fullscreen_on { "Show sidebar" } else { "Hide sidebar" },
-                    onclick: move |_| ui_settings.fullscreen.set(!fullscreen_on),
-                    if fullscreen_on {
-                        Minimize2 {}
-                    } else {
-                        Maximize2 {}
-                    }
-                }
+                FullscreenButton { fullscreen_on: ui_settings.fullscreen }
             }
         }
+    }
+}
+
+impl Stories for TopBarProps {
+    fn stories() -> Vec<Story<Self>> {
+        vec![
+            Story::new("Default", Self {
+                selected: Signal::new(None),
+            }),
+        ]
     }
 }
 
 #[component]
 fn Storybook() -> Element {
     let ui_settings = use_context::<UiSettings>();
-    let mut search_query = use_signal(String::new);
+    let search_query = use_signal(String::new);
     let selected = use_signal(|| Option::<Selection>::None);
     let components = use_store(|| ComponentStore {
         components: get_components()
@@ -258,22 +190,10 @@ fn Storybook() -> Element {
 
             div { class: "content-wrapper",
                 if !(ui_settings.fullscreen)() {
-                    div { class: "sidebar",
-                        div { class: "search-container",
-                            input {
-                                class: "search-input",
-                                r#type: "text",
-                                placeholder: "Search components...",
-                                value: "{search_query}",
-                                oninput: move |e| search_query.set(e.value()),
-                            }
-                        }
-                        div { class: "component-tree",
-                            ComponentTree {
-                                components: filtered_components(),
-                                selected,
-                            }
-                        }
+                    Sidebar {
+                        search_query,
+                        components: filtered_components(),
+                        selected,
                     }
                 }
 

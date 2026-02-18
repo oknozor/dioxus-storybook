@@ -1,6 +1,24 @@
 use crate::{SchemaFieldInfo, extract_fields_from_schema, parse_input_value, update_prop_value};
 use dioxus::prelude::*;
+use lucide_dioxus::{ChevronDown, ChevronRight};
 use schemars::schema::{InstanceType, RootSchema};
+use crate::ui::shared::{Checkbox, Td, TextInput, Tr};
+
+#[component]
+pub fn PropsEditorHeader(expanded: Signal<bool>) -> Element {
+    rsx! {
+        div { class: "props-editor-header", onclick: move |_| expanded.toggle(),
+            span { class: "collapse-icon",
+                if expanded() {
+                    ChevronDown { size: 14, stroke_width: 2 }
+                } else {
+                    ChevronRight { size: 14, stroke_width: 2 }
+                }
+            }
+            "Props Editor"
+        }
+    }
+}
 
 #[component]
 pub(crate) fn PropsEditor(props_json: Signal<String>, schema: RootSchema) -> Element {
@@ -86,16 +104,13 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
         Some(InstanceType::Boolean) => {
             let is_checked = current_value == "true";
             rsx! {
-                input {
-                    class: "prop-input prop-checkbox",
-                    r#type: "checkbox",
+                Checkbox {
                     checked: is_checked,
-                    onchange: move |e| {
-                        let new_value = e.checked();
+                    onchange: move |checked| {
                         update_prop_value(
                             &mut props_json,
                             &field_name_for_handler,
-                            serde_json::Value::Bool(new_value),
+                            serde_json::Value::Bool(checked),
                         );
                     },
                 }
@@ -103,13 +118,11 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
         }
         Some(InstanceType::Integer) | Some(InstanceType::Number) => {
             rsx! {
-                input {
-                    class: "prop-input",
+                TextInput {
                     r#type: "number",
                     value: "{current_value}",
-                    oninput: move |e| {
-                        let new_value = e.value();
-                        let parsed = parse_input_value(&new_value, instance_type);
+                    oninput: move |e: String| {
+                        let parsed = parse_input_value(&e, instance_type);
                         update_prop_value(&mut props_json, &field_name_for_handler, parsed);
                     },
                 }
@@ -117,13 +130,11 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
         }
         _ => {
             rsx! {
-                input {
-                    class: "prop-input",
+                TextInput {
                     r#type: "text",
                     value: "{current_value}",
-                    oninput: move |e| {
-                        let new_value = e.value();
-                        let parsed = parse_input_value(&new_value, instance_type);
+                    oninput: move |e: String| {
+                        let parsed = parse_input_value(&e, instance_type);
                         update_prop_value(&mut props_json, &field_name_for_handler, parsed);
                     },
                 }
@@ -132,17 +143,17 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
     };
 
     rsx! {
-        tr { class: "prop-row editable",
-            td { class: "prop-cell prop-name", "{field_name}{required_marker}" }
-            td { class: "prop-cell prop-type", "{type_name}" }
-            td { class: "prop-cell prop-description",
+        Tr {
+            Td { class: "prop-name", "{field_name}{required_marker}" }
+            Td { class: "prop-type", "{type_name}" }
+            Td { class: "prop-description",
                 if let Some(desc) = &description {
                     "{desc}"
                 } else {
                     "—"
                 }
             }
-            td { class: "prop-cell prop-value", {value_cell} }
+            Td { class: "prop-cell prop-value", {value_cell} }
         }
     }
 }
