@@ -64,8 +64,16 @@ impl Stories for ExampleCardProps {
                 Self {
                     title: "Featured Article".to_string(),
                     content: "This is a much longer content that demonstrates how the card handles more text.".to_string(),
-                },
-            ),
+                }
+            ).with_decorator(|story| rsx! {
+                div {
+                    display: "flex",
+                    justify_content: "center",
+                    align_items: "center",
+                    height: "100%",
+                    background_color: "white", {story}
+                }
+            }),
         ]
     }
 }

@@ -101,7 +101,7 @@ iframe {
 .storybook-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
 }
 
@@ -915,6 +915,61 @@ iframe {
 }
 
 /* ============================================
+   Full-Screen Story View
+   ============================================ */
+
+.fullscreen-story-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.fullscreen-preview-area {
+    flex: 1;
+    overflow-y: auto;
+    background: $color-bg-subtle;
+    min-height: 0;
+    padding: 20px;
+}
+
+.fullscreen-iframe-container {
+    background: $color-bg-base;
+    border: 1px solid $color-border;
+    border-radius: 4px;
+    height: 100%;
+    overflow: hidden;
+    transition: max-width 0.2s ease;
+}
+
+.fullscreen-props-panel {
+    flex-shrink: 0;
+    border-top: 1px solid $color-border;
+    background: $color-bg-base;
+    max-height: 40vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.fullscreen-props-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Top bar zoom level display */
+.top-bar-zoom-level {
+    min-width: 48px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: $color-text-muted;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+    line-height: 36px;
+}
+
+/* ============================================
    Documentation Page Styles
    ============================================ */
 
@@ -1187,6 +1242,27 @@ iframe {
     height: 24px;
     background: $color-border;
     margin: 0 8px;
+}
+
+.top-bar-viewport-select {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid $color-border;
+    border-radius: 4px;
+    background: $color-bg-base;
+    color: $color-text;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+
+    &:hover {
+        border-color: $color-text-muted;
+    }
+
+    &:focus {
+        border-color: $color-primary;
+    }
 }
 
 /* ============================================
@@ -1534,6 +1610,24 @@ iframe {
         border-color: $color-border-dark;
     }
 
+    .fullscreen-preview-area {
+        background: $color-bg-subtle-dark;
+    }
+
+    .fullscreen-iframe-container {
+        background: $color-bg-subtle-dark;
+        border-color: $color-border-dark;
+    }
+
+    .fullscreen-props-panel {
+        background: $color-bg-base-dark;
+        border-top-color: $color-border-dark;
+    }
+
+    .top-bar-zoom-level {
+        color: $color-text-muted-dark;
+    }
+
     .doc-content {
         color: $color-text-dark;
     }
@@ -1635,6 +1729,20 @@ iframe {
 
     .top-bar-divider {
         background: $color-border-dark;
+    }
+
+    .top-bar-viewport-select {
+        background: $color-bg-base-dark;
+        color: $color-text-dark;
+        border-color: $color-border-dark;
+
+        &:hover {
+            border-color: $color-text-muted-dark;
+        }
+
+        &:focus {
+            border-color: $color-primary-dark;
+        }
     }
 
     .preview-container.grid-enabled {
