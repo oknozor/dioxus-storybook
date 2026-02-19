@@ -1,6 +1,6 @@
 use crate::ui::view::shared::{
-    FullscreenButtonProps, GridButtonProps, OutlineButtonProps, ResetZoomButtonProps,
-    ThemeToggleButtonProps, ZoomInButtonProps, ZoomOutButtonProps,
+    CheckboxProps, FullscreenButtonProps, GridButtonProps, OutlineButtonProps, ResetZoomButtonProps,
+    TdProps, TextInputProps, ThemeToggleButtonProps, TrProps, ZoomInButtonProps, ZoomOutButtonProps,
 };
 use crate::{Stories, Story};
 use dioxus::prelude::*;
@@ -110,5 +110,62 @@ impl Stories for FullscreenButtonProps {
                 },
             ),
         ]
+    }
+}
+
+impl Stories for CheckboxProps {
+    fn stories() -> Vec<Story<Self>> {
+        vec![
+            Story::new(
+                "Checked",
+                Self {
+                    attributes: vec![],
+                    onchange: EventHandler::default(),
+                },
+            ),
+            Story::new(
+                "Unchecked",
+                Self {
+                    attributes: vec![],
+                    onchange: EventHandler::default(),
+                },
+            ),
+        ]
+    }
+}
+
+impl Stories for TextInputProps {
+    fn stories() -> Vec<Story<Self>> {
+        vec![Story::new(
+            "Default",
+            Self {
+                oninput: EventHandler::default(),
+                attributes: vec![],
+            },
+        )]
+    }
+}
+
+impl Stories for TrProps {
+    fn stories() -> Vec<Story<Self>> {
+        vec![Story::new(
+            "Default",
+            Self {
+                attributes: vec![],
+                children: rsx! { td { "Cell content" } },
+            },
+        )]
+    }
+}
+
+impl Stories for TdProps {
+    fn stories() -> Vec<Story<Self>> {
+        vec![Story::new(
+            "Default",
+            Self {
+                attributes: vec![],
+                children: rsx! { "Cell content" },
+            },
+        )]
     }
 }

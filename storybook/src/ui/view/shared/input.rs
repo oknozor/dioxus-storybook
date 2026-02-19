@@ -1,5 +1,12 @@
 use dioxus::prelude::*;
 
+#[cfg(feature = "self-stories")]
+use crate::{self as storybook};
+
+#[cfg(feature = "self-stories")]
+use storybook_macro::storybook;
+
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn Checkbox(
     #[props(extends = GlobalAttributes, extends = input)] attributes: Vec<Attribute>,
@@ -15,6 +22,7 @@ pub fn Checkbox(
     }
 }
 
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn TextInput(
     oninput: EventHandler<String>,

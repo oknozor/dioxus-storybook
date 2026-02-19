@@ -4,6 +4,13 @@ use dioxus::prelude::*;
 use lucide_dioxus::{ChevronDown, ChevronRight};
 use schemars::Schema;
 
+#[cfg(feature = "self-stories")]
+use crate::{self as storybook};
+
+#[cfg(feature = "self-stories")]
+use storybook_macro::storybook;
+
+#[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn PropsEditorHeader(expanded: Signal<bool>) -> Element {
     rsx! {

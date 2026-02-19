@@ -2,9 +2,16 @@ use crate::ui::models::Selection;
 use dioxus::prelude::*;
 use lucide_dioxus::{BookOpen, ChevronRight, Component};
 
+#[cfg(feature = "self-stories")]
+use crate::{self as storybook};
+
+#[cfg(feature = "self-stories")]
+use storybook_macro::storybook;
+
 /// Expandable component node that shows individual stories as children.
 ///
 /// Pure presentational component — `is_active` is computed by the parent.
+#[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn ComponentNode(
     name: String,

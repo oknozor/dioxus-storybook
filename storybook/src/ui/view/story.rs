@@ -10,6 +10,9 @@ mod preview;
 mod toolbar;
 pub use toolbar::StoryZoomControls;
 
+#[cfg(feature = "self-stories")]
+mod stories;
+
 mod card;
 use crate::ui::view::story::preview::StoryPreview;
 pub use card::StoryCard;
