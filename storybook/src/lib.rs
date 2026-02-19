@@ -124,7 +124,6 @@ use schemars::schema::{InstanceType, RootSchema, Schema, SchemaObject, SingleOrV
 pub const STORYBOOK_CSS: Asset = asset!("../assets/storybook.scss");
 
 mod ui;
-mod model;
 
 /// Configuration for the storybook application.
 ///
@@ -183,7 +182,7 @@ impl StorybookConfig {
 /// }
 /// ```
 pub fn launch(config: StorybookConfig) {
-    // Store the config in a static so the App component can access it
+    // Store the config in static so the App component can access it
     // We use a context provider inside App to make it available to child components
     CONFIG.with(|c| *c.borrow_mut() = Some(config));
     dioxus::launch(App);
@@ -194,9 +193,12 @@ std::thread_local! {
     static CONFIG: std::cell::RefCell<Option<StorybookConfig>> = const { std::cell::RefCell::new(None) };
 }
 
-/// Get the stored configuration (called by App during initialization)
+/// Get the stored configuration (called by App during initialization).
+///
+/// Uses `.clone()` instead of `.take()` so the value survives hot-reloads —
+/// when the `App` component re-runs the config is still available.
 pub(crate) fn take_config() -> StorybookConfig {
-    CONFIG.with(|c| c.borrow_mut().take()).unwrap_or_default()
+    CONFIG.with(|c| c.borrow().clone()).unwrap_or_default()
 }
 
 /// Type alias for a decorator function.

@@ -1,9 +1,11 @@
-use crate::ui::UiSettings;
-use crate::{find_component, find_doc};
+use crate::ui::settings::UiSettings;
+use crate::find_doc;
 use dioxus::prelude::*;
 use crate::ui::doc_page::embedded_story::EmbeddedStory;
+use crate::ui::doc_page::parser::{DocPart, parse_doc_content};
 
 mod embedded_story;
+pub(crate) mod parser;
 
 const HLJS_VERSION: &str = "11.11.1";
 const HLJS_LIGHT_THEME: &str = "github";
@@ -11,7 +13,6 @@ const HLJS_DARK_THEME: &str = "github-dark";
 
 /// Component to render a documentation page
 #[component]
-
 pub fn DocPage(path: String) -> Element {
     let Some(doc) = find_doc(&path) else {
         return rsx! {
@@ -42,8 +43,7 @@ fn DocContent(content_html: String) -> Element {
         // Create or update the highlight.js theme stylesheet and re-highlight all code blocks
         document::eval(&format!(
             r#"
-            // Create or update the highlight.js th
-eme link element
+            // Create or update the highlight.js theme link element
             var link = document.getElementById('hljs-theme');
             if (!link) {{
                 link = document.createElement('link');
@@ -66,10 +66,6 @@ eme link element
         ));
     });
 
-    // Parse the HTML content and find story embed markers
-    // Story embeds are marked as: <div class="storybook-embed" data-story-path="..."></div>
-
-    // Split content by story embed markers and render each part
     let parts = parse_doc_content(&content_html);
 
     rsx! {
@@ -90,66 +86,5 @@ eme link element
             }
         }
     }
-}
-
-#[derive(Clone, Debug)]
-enum DocPart {
-    Html(String),
-    StoryEmbed {
-        story_path: String,
-        story_name: String,
-    },
-}
-
-/// Parse documentation content and extract story embed markers
-fn parse_doc_content(content: &str) -> Vec<DocPart> {
-    let mut parts = Vec::new();
-    let mut remaining = content;
-
-    while let Some(start_idx) = remaining.find(r#"<div class="storybook-embed""#) {
-        // Add HTML before the embed marker
-        if start_idx > 0 {
-            parts.push(DocPart::Html(remaining[..start_idx].to_string()));
-        }
-
-        // Find the end of this div
-        if let Some(end_idx) = remaining[start_idx..].find("</div>") {
-            let embed_div = &remaining[start_idx..start_idx + end_idx + 6];
-
-            // Extract story path and name from data attributes
-            if let (Some(path), Some(name)) = (
-                extract_attr(embed_div, "data-story-path"),
-                extract_attr(embed_div, "data-story-name"),
-            ) {
-                parts.push(DocPart::StoryEmbed {
-                    story_path: path,
-                    story_name: name,
-                });
-            }
-
-            remaining = &remaining[start_idx + end_idx + 6..];
-        } else {
-            break;
-        }
-    }
-
-    // Add any remaining HTML
-    if !remaining.is_empty() {
-        parts.push(DocPart::Html(remaining.to_string()));
-    }
-
-    parts
-}
-
-/// Extract an attribute value from an HTML element string
-fn extract_attr(element: &str, attr_name: &str) -> Option<String> {
-    let pattern = format!(r#"{}=""#, attr_name);
-    if let Some(start) = element.find(&pattern) {
-        let value_start = start + pattern.len();
-        if let Some(end) = element[value_start..].find('"') {
-            return Some(element[value_start..value_start + end].to_string());
-        }
-    }
-    None
 }
 

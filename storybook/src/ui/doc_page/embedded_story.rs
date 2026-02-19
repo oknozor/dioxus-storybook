@@ -14,7 +14,7 @@ pub fn EmbeddedStory(story_path: String, story_name: String) -> Element {
         };
     }
 
-    // The component name is the second-to-last part, story name is the last
+    // The component name is the second-to-last part, the story name is the last
     let component_name = path_parts[path_parts.len() - 2];
 
     let Some(registration) = find_component(component_name) else {

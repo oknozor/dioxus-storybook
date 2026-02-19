@@ -2,8 +2,9 @@ use crate::{RootSchema, StorybookConfig};
 use dioxus::prelude::*;
 use crate::StoryInfo;
 use super::props_editor::{PropsEditor, PropsEditorHeader};
+use super::iframe::{build_css_links, build_outline_css, build_srcdoc, capture_inner_html, make_container_id};
 use crate::ui::story::apply_decorators;
-use crate::ui::UiSettings;
+use crate::ui::settings::UiSettings;
 
 /// Full-screen story view with fixed bottom props editor and viewport/zoom from UiSettings.
 /// Used by StoryPage for the main story display.
@@ -20,25 +21,13 @@ pub fn StoryPreview(
     let props_json = use_signal(|| story.props_json.clone());
     let props_expanded = use_signal(|| true);
 
-    let container_id = format!(
-        "fullscreen-render-{}-story-{}",
-        component_name.replace(" ", "-").replace("::", "-"),
-        story_index
-    );
-
+    let container_id = make_container_id("fullscreen-render", &component_name, story_index);
     let container_id_for_effect = container_id.clone();
 
     use_effect(move || {
         let _props_json_value = props_json();
-
-        use web_sys::window;
-        if let Some(window) = window() {
-            if let Some(document) = window.document() {
-                if let Some(container) = document.get_element_by_id(&container_id_for_effect) {
-                    let html = container.inner_html();
-                    iframe_html.set(html);
-                }
-            }
+        if let Some(html) = capture_inner_html(&container_id_for_effect) {
+            iframe_html.set(html);
         }
     });
 
@@ -49,42 +38,15 @@ pub fn StoryPreview(
     let zoom_level = (ui_settings.zoom_level)();
     let viewport_size = (ui_settings.viewport_width)();
 
-    let css_links = config
-        .component_css
-        .iter()
-        .map(|css| format!(r#"<link rel="stylesheet" href="{}">"#, css))
-        .collect::<Vec<_>>()
-        .join("\n    ");
+    let css_links = build_css_links(&config);
+    let outline_css = build_outline_css(outline_enabled);
+    let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html());
 
-    let outline_css = if outline_enabled {
-        "* { outline: 1px solid rgba(255, 0, 0, 0.3) !important; }"
+    let preview_area_class = if grid_enabled {
+        "fullscreen-preview-area grid-enabled"
     } else {
-        ""
+        "fullscreen-preview-area"
     };
-
-    let grid_css = if grid_enabled {
-        "body { background-size: 10px 10px; background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px); }"
-    } else {
-        ""
-    };
-
-    let srcdoc = format!(
-        r#"<!DOCTYPE html>
-<html>
-<head>
-    {css_links}
-    <style>
-        body {{ margin: 0; padding: 16px; }}
-        {outline_css}
-        {grid_css}
-    </style>
-</head>
-<body>
-    {}
-</body>
-</html>"#,
-        iframe_html()
-    );
 
     rsx! {
         div { class: "fullscreen-story-view",
@@ -97,7 +59,7 @@ pub fn StoryPreview(
                 {apply_decorators((render_fn)(&props_json()), &story.decorators)}
             }
 
-            div { class: "fullscreen-preview-area",
+            div { class: "{preview_area_class}",
                 div {
                     class: "fullscreen-iframe-container",
                     max_width: "{viewport_size.to_width()}",

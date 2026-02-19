@@ -6,6 +6,7 @@ use crate::ui::sidebar::tree::{build_category_tree, TreeNode};
 use crate::ui::sidebar::search_input::SearchInput;
 
 mod search_input;
+pub(crate) mod category_tree;
 mod tree;
 mod node;
 

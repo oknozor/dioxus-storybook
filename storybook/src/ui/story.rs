@@ -5,6 +5,7 @@ use crate::{find_component, Decorator};
 
 mod docs;
 mod header;
+mod iframe;
 mod preview;
 mod toolbar;
 pub use toolbar::StoryZoomControls;

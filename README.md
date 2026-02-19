@@ -9,4 +9,5 @@
 - [ ] Add icon grid
 - [ ] Add root docs 
 - [ ] Fix tree scroll
-- [ ] Fix search bar
+- [x] Fix search bar
+- [ ] example and storybook inventory are mixed
