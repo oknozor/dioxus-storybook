@@ -17,5 +17,5 @@ serde.workspace = true
 serde_json.workspace = true
 inventory.workspace = true
 web-sys.workspace = true
-schemars.workspace = true
+schemars = { version = "1.2.1", features = ["derive"] }
 lucide-dioxus.workspace = true

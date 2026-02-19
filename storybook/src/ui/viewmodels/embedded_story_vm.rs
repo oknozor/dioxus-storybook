@@ -1,5 +1,5 @@
 use crate::{RenderFn, StoryInfo, find_component};
-use schemars::schema::RootSchema;
+use schemars::Schema;
 
 /// Resolved data for an EmbeddedStory view.
 ///
@@ -10,7 +10,7 @@ pub struct EmbeddedStoryData {
     pub story_index: usize,
     pub story: StoryInfo,
     pub render_fn: RenderFn,
-    pub prop_schema: RootSchema,
+    pub prop_schema: Schema,
 }
 
 /// Error cases when resolving an embedded story.

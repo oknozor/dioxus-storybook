@@ -2,7 +2,7 @@ use crate::{RenderFn, StoryInfo};
 use crate::ui::view::story::docs::StoryDocs;
 use crate::ui::view::story::header::StoryHeader;
 use dioxus::prelude::*;
-use schemars::schema::RootSchema;
+use schemars::Schema;
 
 mod docs;
 mod header;
@@ -26,7 +26,7 @@ pub(crate) fn StoryPage(
     story: StoryInfo,
     story_title: String,
     render_fn: RenderFn,
-    prop_schema: RootSchema,
+    prop_schema: Schema,
     description: &'static str,
 ) -> Element {
     rsx! {

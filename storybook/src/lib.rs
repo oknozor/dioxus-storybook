@@ -119,7 +119,7 @@ pub use storybook_macro::storydoc;
 
 use crate::ui::App;
 use dioxus::prelude::*;
-use schemars::schema::{InstanceType, RootSchema, Schema, SchemaObject, SingleOrVec};
+use schemars::Schema;
 
 pub const STORYBOOK_CSS: Asset = asset!("../assets/storybook.scss");
 
@@ -349,11 +349,11 @@ pub type RenderWithPropsFn = RenderFn;
 /// Generated automatically by the [`#[storybook]`](macro@storybook) macro.
 pub type GetStoriesFn = fn() -> Vec<StoryInfo>;
 
-/// Function pointer that returns the JSON Schema ([`RootSchema`])
+/// Function pointer that returns the JSON Schema ([`Schema`])
 /// for a component's props struct.
 ///
 /// Generated automatically by the [`#[storybook]`](macro@storybook) macro.
-pub type GetPropSchemaFn = fn() -> schemars::schema::RootSchema;
+pub type GetPropSchemaFn = fn() -> Schema;
 
 /// Runtime representation of a story with serialized (JSON) props.
 ///
@@ -403,7 +403,8 @@ impl PartialEq for StoryInfo {
 struct SchemaFieldInfo {
     name: String,
     type_name: String,
-    instance_type: Option<InstanceType>,
+    /// The JSON Schema "type" string (e.g. "boolean", "string", "integer", "number", "null").
+    schema_type: Option<String>,
     is_required: bool,
     description: Option<String>,
 }
@@ -484,40 +485,43 @@ pub fn find_doc(path: &str) -> Option<&'static DocRegistration> {
 }
 
 /// Extract field information from a JSON Schema
-fn extract_fields_from_schema(schema: &RootSchema) -> Vec<SchemaFieldInfo> {
+fn extract_fields_from_schema(schema: &Schema) -> Vec<SchemaFieldInfo> {
     let mut fields = Vec::new();
 
     // Get the required fields set
-    let required: std::collections::HashSet<_> = schema
-        .schema
-        .object
-        .as_ref()
-        .map(|obj| obj.required.iter().cloned().collect())
+    let required: std::collections::HashSet<String> = schema
+        .get("required")
+        .and_then(|v| v.as_array())
+        .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+
+    // Get the $defs (schemars 1.x uses "$defs" instead of "definitions")
+    let defs = schema
+        .get("$defs")
+        .and_then(|v| v.as_object())
+        .cloned()
         .unwrap_or_default();
 
     // Get properties from the schema
-    if let Some(obj) = &schema.schema.object {
-        for (name, prop_schema) in &obj.properties {
-            let (type_name, instance_type, description) = match prop_schema {
-                Schema::Object(schema_obj) => {
-                    let instance_type = schema_obj.instance_type.as_ref().and_then(|t| match t {
-                        SingleOrVec::Single(t) => Some(**t),
-                        SingleOrVec::Vec(v) => v.first().copied(),
-                    });
-                    let type_name = get_type_name_from_schema(schema_obj, &schema.definitions);
-                    let desc = schema_obj
-                        .metadata
-                        .as_ref()
-                        .and_then(|m| m.description.clone());
-                    (type_name, instance_type, desc)
-                }
-                Schema::Bool(_) => ("any".to_string(), None, None),
+    if let Some(properties) = schema.get("properties").and_then(|v| v.as_object()) {
+        for (name, prop_value) in properties {
+            let (type_name, schema_type, description) = if let Some(prop_obj) = prop_value.as_object() {
+                let schema_type = get_schema_type(prop_obj);
+                let type_name = get_type_name_from_value(prop_obj, &defs);
+                let desc = prop_obj
+                    .get("description")
+                    .and_then(|v| v.as_str())
+                    .map(String::from);
+                (type_name, schema_type, desc)
+            } else {
+                // Bool schema (true/false)
+                ("any".to_string(), None, None)
             };
 
             fields.push(SchemaFieldInfo {
                 name: name.clone(),
                 type_name,
-                instance_type,
+                schema_type,
                 is_required: required.contains(name),
                 description,
             });
@@ -534,48 +538,66 @@ fn extract_fields_from_schema(schema: &RootSchema) -> Vec<SchemaFieldInfo> {
     fields
 }
 
-/// Get a human-readable type name from a schema object
-fn get_type_name_from_schema(
-    schema: &SchemaObject,
-    _definitions: &schemars::Map<String, Schema>,
+/// Extract the primary "type" string from a schema property object.
+///
+/// In schemars 1.x, `"type"` can be a single string (`"boolean"`) or an
+/// array (`["string", "null"]`). We return the first non-null type string.
+fn get_schema_type(prop: &serde_json::Map<String, serde_json::Value>) -> Option<String> {
+    match prop.get("type") {
+        Some(serde_json::Value::String(s)) => Some(s.clone()),
+        Some(serde_json::Value::Array(arr)) => arr
+            .iter()
+            .filter_map(|v| v.as_str())
+            .find(|s| *s != "null")
+            .map(String::from),
+        _ => None,
+    }
+}
+
+/// Get a human-readable type name from a schema property value.
+fn get_type_name_from_value(
+    prop: &serde_json::Map<String, serde_json::Value>,
+    _defs: &serde_json::Map<String, serde_json::Value>,
 ) -> String {
     // Check for $ref first
-    if let Some(ref_path) = &schema.reference {
-        // Extract the type name from the reference path (e.g., "#/definitions/MyType" -> "MyType")
+    if let Some(ref_path) = prop.get("$ref").and_then(|v| v.as_str()) {
         return ref_path.rsplit('/').next().unwrap_or("unknown").to_string();
     }
 
-    // Check instance type
-    if let Some(instance_type) = &schema.instance_type {
-        return match instance_type {
-            SingleOrVec::Single(t) => format_instance_type(**t),
-            SingleOrVec::Vec(types) => {
-                let type_strs: Vec<_> = types.iter().map(|t| format_instance_type(*t)).collect();
-                type_strs.join(" | ")
+    // Check type field
+    match prop.get("type") {
+        Some(serde_json::Value::String(s)) => format_type_str(s),
+        Some(serde_json::Value::Array(arr)) => {
+            let type_strs: Vec<_> = arr
+                .iter()
+                .filter_map(|v| v.as_str())
+                .map(format_type_str)
+                .collect();
+            type_strs.join(" | ")
+        }
+        _ => {
+            // Check for enum values
+            if let Some(serde_json::Value::Array(arr)) = prop.get("enum")
+                && !arr.is_empty()
+            {
+                return "enum".to_string();
             }
-        };
+            "unknown".to_string()
+        }
     }
-
-    // Check for enum values
-    if let Some(enum_values) = &schema.enum_values
-        && !enum_values.is_empty()
-    {
-        return "enum".to_string();
-    }
-
-    "unknown".to_string()
 }
 
-/// Format an instance type as a string
-fn format_instance_type(t: InstanceType) -> String {
+/// Format a JSON Schema type string into a human-readable name.
+fn format_type_str(t: &str) -> String {
     match t {
-        InstanceType::Null => "null".to_string(),
-        InstanceType::Boolean => "bool".to_string(),
-        InstanceType::Object => "object".to_string(),
-        InstanceType::Array => "array".to_string(),
-        InstanceType::Number => "number".to_string(),
-        InstanceType::String => "String".to_string(),
-        InstanceType::Integer => "integer".to_string(),
+        "null" => "null".to_string(),
+        "boolean" => "bool".to_string(),
+        "object" => "object".to_string(),
+        "array" => "array".to_string(),
+        "number" => "number".to_string(),
+        "string" => "String".to_string(),
+        "integer" => "integer".to_string(),
+        other => other.to_string(),
     }
 }
 
@@ -591,18 +613,21 @@ fn update_prop_value(props_json: &mut Signal<String>, field_name: &str, value: s
     }
 }
 
-/// Parse an input string value into the appropriate JSON value based on schema type
-fn parse_input_value(value: &str, instance_type: Option<InstanceType>) -> serde_json::Value {
-    match instance_type {
-        Some(InstanceType::Boolean) => value
+/// Parse an input string value into the appropriate JSON value based on schema type.
+///
+/// The `schema_type` is a JSON Schema type string such as `"boolean"`,
+/// `"integer"`, `"number"`, `"string"`, etc.
+fn parse_input_value(value: &str, schema_type: Option<&str>) -> serde_json::Value {
+    match schema_type {
+        Some("boolean") => value
             .parse::<bool>()
             .map(serde_json::Value::Bool)
             .unwrap_or_else(|_| serde_json::Value::String(value.to_string())),
-        Some(InstanceType::Integer) => value
+        Some("integer") => value
             .parse::<i64>()
             .map(|n| serde_json::Value::Number(n.into()))
             .unwrap_or_else(|_| serde_json::Value::String(value.to_string())),
-        Some(InstanceType::Number) => value
+        Some("number") => value
             .parse::<f64>()
             .ok()
             .and_then(serde_json::Number::from_f64)

@@ -1,5 +1,5 @@
 use crate::{RenderFn, StoryInfo, find_component};
-use schemars::schema::RootSchema;
+use schemars::Schema;
 
 /// Resolved data for a StoryPage view.
 ///
@@ -9,7 +9,7 @@ pub struct StoryPageData {
     pub story: StoryInfo,
     pub story_title: String,
     pub render_fn: RenderFn,
-    pub prop_schema: RootSchema,
+    pub prop_schema: Schema,
     pub description: &'static str,
 }
 

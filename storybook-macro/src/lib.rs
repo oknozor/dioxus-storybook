@@ -373,7 +373,7 @@ fn generate_storybook_code(
         }
 
         #[doc(hidden)]
-        fn #get_prop_schema_fn_name() -> storybook::schemars::schema::RootSchema {
+        fn #get_prop_schema_fn_name() -> storybook::schemars::Schema {
             storybook::schemars::schema_for!(#story_props_name)
         }
 

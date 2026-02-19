@@ -2,7 +2,7 @@ use crate::ui::view::shared::{Checkbox, Td, TextInput, Tr};
 use crate::{SchemaFieldInfo, extract_fields_from_schema, parse_input_value, update_prop_value};
 use dioxus::prelude::*;
 use lucide_dioxus::{ChevronDown, ChevronRight};
-use schemars::schema::{InstanceType, RootSchema};
+use schemars::Schema;
 
 #[component]
 pub fn PropsEditorHeader(expanded: Signal<bool>) -> Element {
@@ -21,7 +21,7 @@ pub fn PropsEditorHeader(expanded: Signal<bool>) -> Element {
 }
 
 #[component]
-pub(crate) fn PropsEditor(props_json: Signal<String>, schema: RootSchema) -> Element {
+pub(crate) fn PropsEditor(props_json: Signal<String>, schema: Schema) -> Element {
     let fields = extract_fields_from_schema(&schema);
 
     rsx! {
@@ -64,7 +64,7 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
     let type_name = field.type_name.clone();
 
     // Check if this is a non-editable field (unit type represented as null)
-    let is_non_editable = field.instance_type == Some(InstanceType::Null);
+    let is_non_editable = field.schema_type.as_deref() == Some("null");
 
     if is_non_editable {
         return rsx! {
@@ -97,11 +97,11 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
         .unwrap_or_default();
 
     let field_name_for_handler = field_name.clone();
-    let instance_type = field.instance_type;
+    let schema_type = field.schema_type.clone();
     let required_marker = if field.is_required { "*" } else { "" };
 
-    let value_cell = match field.instance_type {
-        Some(InstanceType::Boolean) => {
+    let value_cell = match field.schema_type.as_deref() {
+        Some("boolean") => {
             let is_checked = current_value == "true";
             rsx! {
                 Checkbox {
@@ -116,25 +116,26 @@ fn PropFieldRow(field: SchemaFieldInfo, mut props_json: Signal<String>) -> Eleme
                 }
             }
         }
-        Some(InstanceType::Integer) | Some(InstanceType::Number) => {
+        Some("integer") | Some("number") => {
             rsx! {
                 TextInput {
                     r#type: "number",
                     value: "{current_value}",
                     oninput: move |e: String| {
-                        let parsed = parse_input_value(&e, instance_type);
+                        let parsed = parse_input_value(&e, schema_type.as_deref());
                         update_prop_value(&mut props_json, &field_name_for_handler, parsed);
                     },
                 }
             }
         }
         _ => {
+            let schema_type = schema_type.clone();
             rsx! {
                 TextInput {
                     r#type: "text",
                     value: "{current_value}",
                     oninput: move |e: String| {
-                        let parsed = parse_input_value(&e, instance_type);
+                        let parsed = parse_input_value(&e, schema_type.as_deref());
                         update_prop_value(&mut props_json, &field_name_for_handler, parsed);
                     },
                 }
