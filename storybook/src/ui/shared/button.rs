@@ -1,9 +1,13 @@
 use dioxus::prelude::*;
 use lucide_dioxus::{Grid3X3, Maximize2, Minimize2, Moon, RotateCcw, Square, Sun, ZoomIn, ZoomOut};
-use storybook_macro::storybook;
-use crate::{self as storybook, Stories, Story};
 
-#[storybook(tag = "Atoms")]
+#[cfg(feature = "self-stories")]
+use crate::{self as storybook};
+
+#[cfg(feature = "self-stories")]
+use storybook_macro::storybook;
+
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn GridButton(grid_enabled: Signal<bool>) -> Element {
     rsx! {
@@ -16,20 +20,8 @@ pub fn GridButton(grid_enabled: Signal<bool>) -> Element {
     }
 }
 
-impl Stories for GridButtonProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Enabled", Self {
-                grid_enabled: Signal::new(true),
-            }),
-            Story::new("Disabled", Self {
-                grid_enabled: Signal::new(false),
-            }),
-        ]
-    }
-}
 
-#[storybook(tag = "Atoms")]
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn OutlineButton(outline_enabled: Signal<bool>) -> Element {
     rsx! {
@@ -42,20 +34,9 @@ pub fn OutlineButton(outline_enabled: Signal<bool>) -> Element {
     }
 }
 
-impl Stories for OutlineButtonProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Enabled", Self {
-                outline_enabled: Signal::new(true),
-            }),
-            Story::new("Disabled", Self {
-                outline_enabled: Signal::new(false),
-            }),
-        ]
-    }
-}
 
-#[storybook(tag = "Atoms")]
+
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn ThemeToggleButton(is_dark_theme: Signal<bool>) -> Element {
     rsx! {
@@ -72,20 +53,8 @@ pub fn ThemeToggleButton(is_dark_theme: Signal<bool>) -> Element {
     }
 }
 
-impl Stories for ThemeToggleButtonProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Dark", Self {
-                is_dark_theme: Signal::new(true),
-            }),
-            Story::new("Light", Self {
-                is_dark_theme: Signal::new(false),
-            }),
-        ]
-    }
-}
 
-#[storybook(tag = "Atoms")]
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn ZoomOutButton(zoom_level: Signal<i32>) -> Element {
     rsx! {
@@ -103,17 +72,8 @@ pub fn ZoomOutButton(zoom_level: Signal<i32>) -> Element {
     }
 }
 
-impl Stories for ZoomOutButtonProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Default", Self {
-                zoom_level: Signal::new(100),
-            }),
-        ]
-    }
-}
 
-#[storybook(tag = "Atoms")]
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn ZoomInButton(zoom_level: Signal<i32>) -> Element {
     rsx! {
@@ -131,17 +91,7 @@ pub fn ZoomInButton(zoom_level: Signal<i32>) -> Element {
     }
 }
 
-impl Stories for ZoomInButtonProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Default", Self {
-                zoom_level: Signal::new(100),
-            }),
-        ]
-    }
-}
-
-#[storybook(tag = "Atoms")]
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn ResetZoomButton(zoom_level: Signal<i32>) -> Element {
     rsx! {
@@ -154,17 +104,7 @@ pub fn ResetZoomButton(zoom_level: Signal<i32>) -> Element {
     }
 }
 
-impl Stories for ResetZoomButtonProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Default", Self {
-                zoom_level: Signal::new(100),
-            }),
-        ]
-    }
-}
-
-#[storybook(tag = "Atoms")]
+#[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn FullscreenButton(fullscreen_on: Signal<bool>) -> Element {
     rsx! {
@@ -178,18 +118,5 @@ pub fn FullscreenButton(fullscreen_on: Signal<bool>) -> Element {
                 Maximize2 {}
             }
         }
-    }
-}
-
-impl Stories for FullscreenButtonProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Fullscreen", Self {
-                fullscreen_on: Signal::new(true),
-            }),
-            Story::new("Not Fullscreen", Self {
-                fullscreen_on: Signal::new(false),
-            }),
-        ]
     }
 }

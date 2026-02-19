@@ -3,6 +3,13 @@ name = "storybook"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+## Include the storybook's own UI components in the story browser.
+## External crates should leave this off (the default) so that internal
+## Atoms / Molecules / Organisms don't leak into their storybook.
+default = []
+self-stories = []
+
 [dependencies]
 storybook-macro = { path = "../storybook-macro" }
 dioxus = { workspace = true }

@@ -9,3 +9,7 @@ pub use input::*;
 
 mod table;
 pub use table::*;
+
+#[cfg(feature = "self-stories")]
+mod stories;
+

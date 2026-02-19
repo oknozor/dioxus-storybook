@@ -1,8 +1,10 @@
 use crate::ui::models::ViewportSize;
+#[cfg(feature = "self-stories")]
 use crate::{self as storybook};
+#[cfg(feature = "self-stories")]
 use crate::{Stories, Story, storybook};
 use dioxus::prelude::*;
-#[storybook(tag = "Molecules")]
+#[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn ViewPortSelector(viewport_width: Signal<ViewportSize>) -> Element {
     rsx! {
@@ -25,6 +27,7 @@ pub fn ViewPortSelector(viewport_width: Signal<ViewportSize>) -> Element {
     }
 }
 
+#[cfg(feature = "self-stories")]
 impl Stories for ViewPortSelectorProps {
     fn stories() -> Vec<Story<Self>> {
         vec![Story::new(

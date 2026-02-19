@@ -10,4 +10,5 @@
 - [ ] Add root docs 
 - [ ] Fix tree scroll
 - [x] Fix search bar
+- [ ] update schemars to ^1
 - [ ] example and storybook inventory are mixed
