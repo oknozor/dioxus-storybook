@@ -1,5 +1,7 @@
 use storybook::{STORYBOOK_CSS, StorybookConfig};
 
+storybook::storydoc!("Welcome", "assets/welcome.md");
+
 fn main() {
     storybook::launch(
         StorybookConfig::default()

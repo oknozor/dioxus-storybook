@@ -100,7 +100,11 @@ pub fn TreeNode(
 }
 
 #[component]
-fn DocNode(selected: Signal<Option<Selection>>, path: String) -> Element {
+pub(crate) fn DocNode(
+    selected: Signal<Option<Selection>>,
+    path: String,
+    #[props(default = String::from("Documentation"))] label: String,
+) -> Element {
     let doc_path = path.clone();
     let is_selected = selected() == Some(Selection::DocPage(doc_path.clone()));
     rsx! {
@@ -112,7 +116,7 @@ fn DocNode(selected: Signal<Option<Selection>>, path: String) -> Element {
             span { class: "doc-icon",
                 FileText { size: 16, stroke_width: 2 }
             }
-            span { class: "doc-name", "Documentation" }
+            span { class: "doc-name", "{label}" }
         }
     }
 }

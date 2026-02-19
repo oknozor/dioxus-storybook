@@ -43,6 +43,32 @@ impl CategoryTreeNode {
         }
     }
 
+    /// Ensure a tree node exists for the given doc path, setting `has_doc` on
+    /// the target node. Unlike [`insert`], this does **not** add a component —
+    /// it only creates intermediate nodes as needed so that the doc page is
+    /// reachable in the sidebar.
+    pub(crate) fn insert_doc_path(&mut self, path: &[&str], current_path: &str) {
+        if path.is_empty() {
+            // We've reached the target node — mark it as having a doc page.
+            self.has_doc = true;
+        } else {
+            let new_path = if current_path.is_empty() {
+                path[0].to_string()
+            } else {
+                format!("{}/{}", current_path, path[0])
+            };
+            let child =
+                self.children
+                    .entry(path[0].to_string())
+                    .or_insert_with(|| CategoryTreeNode {
+                        full_path: new_path.clone(),
+                        has_doc: crate::find_doc(&new_path).is_some(),
+                        ..Default::default()
+                    });
+            child.insert_doc_path(&path[1..], &new_path);
+        }
+    }
+
     /// Count all components in this node and all its children recursively
     pub fn component_count(&self) -> usize {
         let direct_count = self.components.len();
