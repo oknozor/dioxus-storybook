@@ -1,6 +1,6 @@
 use crate::ui::models::{CategoryTreeNode, NodeType, Selection};
 use crate::ui::view::sidebar::node::ComponentNode;
-use crate::ui::viewmodels::sidebar_vm::get_story_titles;
+use crate::ui::viewmodels::sidebar_vm::{get_story_titles, has_component_docs};
 #[cfg(feature = "self-stories")]
 use crate::{self as storybook};
 use dioxus::prelude::*;
@@ -56,12 +56,13 @@ pub fn TreeNode(
                         {
                             let component_name = component_name.clone();
                             let stories = get_story_titles(&component_name);
+                            let has_docs = has_component_docs(&component_name);
+                            let doc_path = format!("__component__/{component_name}");
                             let is_active = matches!(
-
                                 selected(),
                                 Some(Selection::Story(ref cn, _))
                                 if cn == &component_name
-                            );
+                            ) || selected() == Some(Selection::DocPage(doc_path));
                             rsx! {
                                 ComponentNode {
                                     key: "{component_name}",
@@ -69,6 +70,7 @@ pub fn TreeNode(
                                     selected,
                                     stories,
                                     is_active,
+                                    has_docs,
                                 }
                             }
                         }

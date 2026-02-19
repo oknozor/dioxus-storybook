@@ -1,5 +1,4 @@
 use crate::ui::view::story::header::StoryHeaderProps;
-use crate::ui::view::story::docs::StoryDocsProps;
 use crate::ui::view::story::toolbar::StoryZoomControlsProps;
 use crate::ui::view::story::props_editor::PropsEditorHeaderProps;
 use crate::{Stories, Story};
@@ -20,26 +19,6 @@ impl Stories for StoryHeaderProps {
                 Self {
                     component_name: "SuperLongComponentNameForTesting".to_string(),
                     story_title: "With Very Long Story Title Description".to_string(),
-                },
-            ),
-        ]
-    }
-}
-
-impl Stories for StoryDocsProps {
-    fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new(
-                "With Content",
-                Self {
-                    docs: "<p>This is a <strong>documented</strong> component with rich HTML content.</p>".to_string(),
-                },
-            ),
-            Story::with_description(
-                "Empty",
-                "Shows the docs area when no documentation is provided",
-                Self {
-                    docs: String::new(),
                 },
             ),
         ]

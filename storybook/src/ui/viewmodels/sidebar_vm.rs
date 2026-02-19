@@ -10,3 +10,12 @@ pub fn get_story_titles(component_name: &str) -> Vec<String> {
         .map(|reg| (reg.get_stories)().into_iter().map(|s| s.title).collect())
         .unwrap_or_default()
 }
+
+/// Check whether a component has non-empty doc comments (description).
+///
+/// Returns `true` if the component is found and has a non-empty description.
+pub fn has_component_docs(component_name: &str) -> bool {
+    find_component(component_name)
+        .map(|reg| !reg.description.is_empty())
+        .unwrap_or(false)
+}

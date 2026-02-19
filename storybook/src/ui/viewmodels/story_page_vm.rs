@@ -10,7 +10,6 @@ pub struct StoryPageData {
     pub story_title: String,
     pub render_fn: RenderFn,
     pub prop_schema: Schema,
-    pub description: &'static str,
 }
 
 /// Error cases when resolving a story page.
@@ -36,7 +35,6 @@ pub fn resolve_story_page(
     let stories = (registration.get_stories)();
     let render_fn = registration.render_with_props;
     let prop_schema = (registration.get_prop_schema)();
-    let description = registration.description;
 
     let story = stories
         .get(story_index)
@@ -53,6 +51,5 @@ pub fn resolve_story_page(
         story_title,
         render_fn,
         prop_schema,
-        description,
     })
 }

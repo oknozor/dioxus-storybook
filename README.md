@@ -4,7 +4,7 @@
   - [ ] fix grid
   - [ ] fix doc comment
   - [ ] enum props in prop editor should be select
-  - [ ] remove the dark theme
+  - [x] remove the dark theme
   - [ ] select a storybook background
   - [ ] Add a theme component
   - [ ] Add icon grid
@@ -12,7 +12,7 @@
   - [ ] Fix tree scroll
   - [x] Fix search bar
 - Misc
-  - [ ] update schemars to ^1
+  - [x] update schemars to ^1
   - [x] example and storybook inventory are mixed
 - [ ] MVVM
   - [ ] usage of find_component should be lifted out of the view

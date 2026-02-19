@@ -400,8 +400,9 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
         .unwrap_or(&struct_name_str);
 
     // Extract doc comments from the struct and convert to HTML
+    // process_story_embeds=true so @[story:...] lines become embed markers
     let doc_markdown = extract_doc_comments(&input.attrs);
-    let description_html = markdown_to_html(&doc_markdown, false);
+    let description_html = markdown_to_html(&doc_markdown, true);
 
     // Extract fields from the struct
     let syn_fields = match &input.fields {
@@ -465,8 +466,9 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
     }
 
     // Extract doc comments from the function and convert to HTML
+    // process_story_embeds=true so @[story:...] lines become embed markers
     let doc_markdown = extract_doc_comments(&input.attrs);
-    let description_html = markdown_to_html(&doc_markdown, false);
+    let description_html = markdown_to_html(&doc_markdown, true);
 
     // Extract function parameters as FieldInfo
     // Note: Function parameters don't have doc comments, so doc_attrs is empty

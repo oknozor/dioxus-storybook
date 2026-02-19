@@ -59,6 +59,7 @@ impl Stories for ComponentNodeProps {
                     selected: Signal::new(None),
                     stories: vec!["Default".to_string(), "Disabled".to_string()],
                     is_active: false,
+                    has_docs: false,
                 },
             ),
             Story::new(
@@ -71,6 +72,20 @@ impl Stories for ComponentNodeProps {
                     ))),
                     stories: vec!["Default".to_string(), "Disabled".to_string()],
                     is_active: true,
+                    has_docs: false,
+                },
+            ),
+            Story::new(
+                "Expanded with Docs",
+                Self {
+                    name: "ExampleButton".to_string(),
+                    selected: Signal::new(Some(Selection::Story(
+                        "ExampleButton".to_string(),
+                        0,
+                    ))),
+                    stories: vec!["Default".to_string(), "Disabled".to_string()],
+                    is_active: true,
+                    has_docs: true,
                 },
             ),
             Story::with_description(
@@ -81,6 +96,7 @@ impl Stories for ComponentNodeProps {
                     selected: Signal::new(None),
                     stories: vec!["Default".to_string()],
                     is_active: false,
+                    has_docs: false,
                 },
             ),
         ]

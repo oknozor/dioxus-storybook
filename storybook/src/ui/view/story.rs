@@ -1,10 +1,8 @@
 use crate::{RenderFn, StoryInfo};
-use crate::ui::view::story::docs::StoryDocs;
 use crate::ui::view::story::header::StoryHeader;
 use dioxus::prelude::*;
 use schemars::Schema;
 
-mod docs;
 mod header;
 mod preview;
 mod toolbar;
@@ -30,15 +28,10 @@ pub(crate) fn StoryPage(
     story_title: String,
     render_fn: RenderFn,
     prop_schema: Schema,
-    description: &'static str,
 ) -> Element {
     rsx! {
         div { class: "story-page",
             StoryHeader { component_name: component_name.clone(), story_title }
-
-            if !description.is_empty() {
-                StoryDocs { docs: description }
-            }
 
             StoryPreview {
                 key: "{component_name}-{story_index}",

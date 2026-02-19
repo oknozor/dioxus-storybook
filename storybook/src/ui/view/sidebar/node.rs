@@ -1,6 +1,6 @@
 use crate::ui::models::Selection;
 use dioxus::prelude::*;
-use lucide_dioxus::{BookOpen, ChevronRight, Component};
+use lucide_dioxus::{BookOpen, ChevronRight, Component, FileText};
 
 #[cfg(feature = "self-stories")]
 use crate::{self as storybook};
@@ -18,14 +18,34 @@ pub fn ComponentNode(
     selected: Signal<Option<Selection>>,
     stories: Vec<String>,
     is_active: bool,
+    #[props(default = false)] has_docs: bool,
 ) -> Element {
     let component_name = name.clone();
+    let doc_path = format!("__component__/{}", name);
 
     rsx! {
         div { class: "component-node-group",
             RootNode { name: name.clone(), expanded: is_active, selected }
             if is_active {
                 div { class: "story-children",
+                    if has_docs {
+                        {
+                            let doc_path_click = doc_path.clone();
+                            let is_doc_selected = selected() == Some(Selection::DocPage(doc_path.clone()));
+                            rsx! {
+                                div {
+                                    class: if is_doc_selected { "doc-node selected" } else { "doc-node" },
+                                    onclick: move |_| {
+                                        selected.set(Some(Selection::DocPage(doc_path_click.clone())));
+                                    },
+                                    span { class: "doc-icon",
+                                        FileText { size: 14, stroke_width: 2 }
+                                    }
+                                    span { class: "doc-name", "Documentation" }
+                                }
+                            }
+                        }
+                    }
                     for (index , story_title) in stories.iter().enumerate() {
                         {
                             let component_name = component_name.clone();

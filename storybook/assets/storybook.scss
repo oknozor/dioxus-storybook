@@ -415,66 +415,6 @@ iframe {
     background: transparent;
 }
 
-/* Component description from doc comments */
-.component-description {
-    padding: 16px 20px;
-    background: $color-bg-subtle;
-    border-bottom: 1px solid $color-border;
-    font-size: 14px;
-    line-height: 1.6;
-    color: $color-text-muted;
-}
-
-.component-description p {
-    margin: 0 0 12px 0;
-}
-
-.component-description p:last-child {
-    margin-bottom: 0;
-}
-
-.component-description code {
-    background: $color-bg-muted;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
-    font-size: 13px;
-}
-
-.component-description pre {
-    background: $color-bg-code;
-    color: $color-bg-muted;
-    padding: 12px 16px;
-    border-radius: 6px;
-    overflow-x: auto;
-    margin: 12px 0;
-}
-
-.component-description pre code {
-    background: transparent;
-    padding: 0;
-    color: inherit;
-}
-
-.component-description ul,
-.component-description ol {
-    margin: 8px 0;
-    padding-left: 24px;
-}
-
-.component-description li {
-    margin: 4px 0;
-}
-
-.component-description a {
-    color: $color-focus;
-    text-decoration: none;
-}
-
-.component-description a:hover {
-    text-decoration: underline;
-}
-
 /* Preview layout with side panel */
 .preview-layout {
     display: flex;

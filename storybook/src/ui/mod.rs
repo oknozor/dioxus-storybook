@@ -1,7 +1,7 @@
 use crate::ui::models::{ComponentInfo, Selection};
 use crate::ui::view::doc_page::DocPage;
 use crate::ui::view::sidebar::Sidebar;
-use crate::{STORYBOOK_CSS, find_doc, get_components, take_config};
+use crate::{STORYBOOK_CSS, find_component, find_doc, get_components, take_config};
 use dioxus::prelude::*;
 
 // MVVM layers
@@ -89,7 +89,6 @@ fn Storybook() -> Element {
                                             story_title: data.story_title,
                                             render_fn: data.render_fn,
                                             prop_schema: data.prop_schema,
-                                            description: data.description,
                                         }
                                     },
                                     Err(StoryPageError::ComponentNotFound(name)) => rsx! {
@@ -103,13 +102,25 @@ fn Storybook() -> Element {
                                 }
                             }
                             Some(Selection::DocPage(doc_path)) => {
-                                match find_doc(&doc_path) {
-                                    Some(doc) => rsx! {
+                                // First try DocRegistration (from storydoc! macro)
+                                if let Some(doc) = find_doc(&doc_path) {
+                                    rsx! {
                                         DocPage { key: "{doc_path}", content_html: doc.content_html.to_string() }
-                                    },
-                                    None => rsx! {
+                                    }
+                                // Then try component description (from doc comments)
+                                } else if let Some(component_name) = doc_path.strip_prefix("__component__/") {
+                                    match find_component(component_name) {
+                                        Some(reg) if !reg.description.is_empty() => rsx! {
+                                            DocPage { key: "{doc_path}", content_html: reg.description.to_string() }
+                                        },
+                                        _ => rsx! {
+                                            div { class: "error", "Documentation not found: {doc_path}" }
+                                        },
+                                    }
+                                } else {
+                                    rsx! {
                                         div { class: "error", "Documentation not found: {doc_path}" }
-                                    },
+                                    }
                                 }
                             }
                             None => rsx! {

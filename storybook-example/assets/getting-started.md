@@ -8,25 +8,29 @@ Dioxus Storybook allows you to develop UI components in isolation, document them
 
 ## Example Components
 
-Below are some example components registered in this storybook.
+This storybook ships with four example components across three categories:
 
-### Example Button
+### Buttons
 
-The `ExampleButton` component demonstrates a simple interactive button with customizable label and disabled state.
+@[story:Examples/Buttons/ExampleButton/Default]
 
-@[story:Examples/ExampleButton/Default]
+@[story:Examples/Buttons/ExampleButton/Disabled]
 
-Here's the disabled variant:
+### Data Display
 
-@[story:Examples/ExampleButton/Disabled]
+@[story:Examples/Data Display/ExampleCard/Default]
 
-### Example Card
+@[story:Examples/Data Display/ExampleCard/Long Content]
 
-The `ExampleCard` component shows how to create a card with a title and content.
+### Feedback
 
-@[story:Examples/ExampleCard/Default]
+@[story:Examples/Feedback/ExampleBadge/Default]
 
-@[story:Examples/ExampleCard/Long Content]
+@[story:Examples/Feedback/ExampleBadge/Success]
+
+@[story:Examples/Feedback/ExampleAlert/Info]
+
+@[story:Examples/Feedback/ExampleAlert/Error]
 
 ## Usage
 
@@ -54,9 +58,26 @@ impl storybook::Stories for MyComponentProps {
 }
 ```
 
-## Documentation Pages
+## Component Documentation
 
-You can also add documentation pages using the `storydoc!` macro:
+Add `///` doc comments with `@[story:...]` embeds directly on your component
+functions. The storybook macro converts them to HTML and displays them as a
+**Documentation** page in the sidebar:
+
+```rust
+/// A reusable button.
+///
+/// @[story:MyCategory/MyButton/Default]
+#[storybook(tag = "MyCategory")]
+#[component]
+pub fn MyButton(label: String) -> Element {
+    rsx! { button { "{label}" } }
+}
+```
+
+## Markdown Documentation Pages
+
+You can also add standalone documentation pages using the `storydoc!` macro:
 
 ```rust
 storybook::storydoc!("Path/To/Page", "assets/my-docs.md");
@@ -67,4 +88,3 @@ Embed stories in your markdown using the `@[story:...]` syntax:
 ```markdown
 @[story:Category/Component/Story]
 ```
-
