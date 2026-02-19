@@ -323,10 +323,26 @@ pub trait Stories {
         Self: Sized;
 }
 
-/// Function pointer that renders a component from a JSON-encoded props string.
+/// Newtype wrapper around a function pointer that renders a component from
+/// a JSON-encoded props string.
+///
+/// This wrapper exists so that `PartialEq` can be implemented via
+/// [`std::ptr::fn_addr_eq`] instead of the built-in `==` on bare `fn`
+/// pointers, which triggers the `unpredictable_function_pointer_comparisons`
+/// clippy/compiler warning.
 ///
 /// Generated automatically by the [`#[storybook]`](macro@storybook) macro.
-pub type RenderWithPropsFn = fn(&str) -> Element;
+#[derive(Clone, Copy)]
+pub struct RenderFn(pub fn(&str) -> Element);
+
+impl PartialEq for RenderFn {
+    fn eq(&self, other: &Self) -> bool {
+        std::ptr::fn_addr_eq(self.0, other.0)
+    }
+}
+
+/// Kept as a type alias for backward compatibility.
+pub type RenderWithPropsFn = RenderFn;
 
 /// Function pointer that returns all [`StoryInfo`] entries for a component.
 ///

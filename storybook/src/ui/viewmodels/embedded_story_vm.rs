@@ -1,4 +1,4 @@
-use crate::{RenderWithPropsFn, StoryInfo, find_component};
+use crate::{RenderFn, StoryInfo, find_component};
 use schemars::schema::RootSchema;
 
 /// Resolved data for an EmbeddedStory view.
@@ -9,7 +9,7 @@ pub struct EmbeddedStoryData {
     pub component_name: String,
     pub story_index: usize,
     pub story: StoryInfo,
-    pub render_fn: RenderWithPropsFn,
+    pub render_fn: RenderFn,
     pub prop_schema: RootSchema,
 }
 

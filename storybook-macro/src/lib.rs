@@ -10,11 +10,6 @@ struct FieldInfo {
     ty: Type,
     /// Doc comments for this field (to be preserved in generated StoryProps)
     doc_attrs: Vec<syn::Attribute>,
-    /// Whether this field was explicitly marked as non-serializable via
-    /// `#[storybook(non_serializable = [field_name])]`.
-    /// This is used for types that contain Signal fields internally (e.g. `UiSettings`)
-    /// which cannot implement Serialize/Deserialize/JsonSchema.
-    force_non_serializable: bool,
 }
 
 /// Metadata about the component being processed
@@ -230,7 +225,7 @@ fn generate_story_props_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
             let name = &field.name;
             let ty = &field.ty;
             let doc_attrs = &field.doc_attrs;
-            if field.force_non_serializable || is_non_serializable_type(ty) {
+            if is_non_serializable_type(ty) {
                 quote! {
                     #(#doc_attrs)*
                     pub #name: ()
@@ -259,7 +254,7 @@ fn generate_props_to_story_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
         .map(|field| {
             let name = &field.name;
             let ty = &field.ty;
-            if field.force_non_serializable || is_non_serializable_type(ty) {
+            if is_non_serializable_type(ty) {
                 quote! { #name: () }
             } else if is_editable_signal_type(ty) {
                 quote! { #name: props.#name.read().clone() }
@@ -277,7 +272,7 @@ fn generate_story_to_props_fields(fields: &[FieldInfo]) -> Vec<TokenStream2> {
         .map(|field| {
             let name = &field.name;
             let ty = &field.ty;
-            if field.force_non_serializable || is_non_serializable_type(ty) {
+            if is_non_serializable_type(ty) {
                 quote! { #name: default_props.#name.clone() }
             } else if is_editable_signal_type(ty) {
                 quote! { #name: dioxus::prelude::Signal::new(story_props.#name.clone()).into() }
@@ -387,7 +382,7 @@ fn generate_storybook_code(
                 name: #component_name_str,
                 tag: #tag,
                 description: #description_html,
-                render_with_props: #render_fn_name,
+                render_with_props: storybook::RenderFn(#render_fn_name),
                 get_stories: #get_stories_fn_name,
                 get_prop_schema: #get_prop_schema_fn_name,
             }
@@ -434,12 +429,10 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
                     .filter(|attr| attr.path().is_ident("doc"))
                     .cloned()
                     .collect();
-                let force_non_serializable = attr_args.non_serializable.contains(&name.to_string());
                 FieldInfo {
                     name: name.clone(),
                     ty: field.ty.clone(),
                     doc_attrs,
-                    force_non_serializable,
                 }
             })
         })
@@ -492,14 +485,10 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
                     .filter(|attr| attr.path().is_ident("doc"))
                     .cloned()
                     .collect();
-                let force_non_serializable = attr_args
-                    .non_serializable
-                    .contains(&pat_ident.ident.to_string());
                 return Some(FieldInfo {
                     name: pat_ident.ident.clone(),
                     ty: (*pat_type.ty).clone(),
                     doc_attrs,
-                    force_non_serializable,
                 });
             }
             None
@@ -540,15 +529,11 @@ fn is_props_struct_pattern(input: &ItemFn) -> bool {
 
 struct StorybookArgs {
     tag: String,
-    /// Field names explicitly marked as non-serializable.
-    /// These will be mapped to `()` in the generated StoryProps struct.
-    non_serializable: Vec<String>,
 }
 
 impl syn::parse::Parse for StorybookArgs {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let mut tag = String::new();
-        let mut non_serializable = Vec::new();
 
         while !input.is_empty() {
             let ident: Ident = input.parse()?;
@@ -556,28 +541,13 @@ impl syn::parse::Parse for StorybookArgs {
                 let _: syn::Token![=] = input.parse()?;
                 let lit: syn::LitStr = input.parse()?;
                 tag = lit.value();
-            } else if ident == "non_serializable" {
-                let _: syn::Token![=] = input.parse()?;
-                let content;
-                syn::bracketed!(content in input);
-                while !content.is_empty() {
-                    let field_ident: Ident = content.parse()?;
-                    non_serializable.push(field_ident.to_string());
-                    if content.peek(syn::Token![,]) {
-                        let _: syn::Token![,] = content.parse()?;
-                    }
-                }
-            }
-
+            } 
             if input.peek(syn::Token![,]) {
                 let _: syn::Token![,] = input.parse()?;
             }
         }
 
-        Ok(StorybookArgs {
-            tag,
-            non_serializable,
-        })
+        Ok(StorybookArgs { tag })
     }
 }
 

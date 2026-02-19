@@ -1,6 +1,5 @@
 use super::props_editor::{PropsEditor, PropsEditorHeader};
-use crate::RootSchema;
-use crate::StoryInfo;
+use crate::{RenderFn, RootSchema, StoryInfo};
 use crate::ui::services::decorators::apply_decorators;
 use crate::ui::viewmodels::story_preview_vm::use_story_preview;
 use dioxus::prelude::*;
@@ -12,7 +11,7 @@ pub fn StoryPreview(
     story: StoryInfo,
     component_name: String,
     story_index: usize,
-    render_fn: fn(&str) -> Element,
+    render_fn: RenderFn,
     prop_schema: RootSchema,
     #[props(default)] attribute: Vec<Attribute>,
 ) -> Element {
@@ -26,7 +25,7 @@ pub fn StoryPreview(
                 position: "absolute",
                 visibility: "hidden",
                 pointer_events: "none",
-                {apply_decorators((render_fn)(&(state.props_json)()), &story.decorators)}
+                {apply_decorators((render_fn.0)(&(state.props_json)()), &story.decorators)}
             }
 
             div { class: "{state.preview_area_class}",

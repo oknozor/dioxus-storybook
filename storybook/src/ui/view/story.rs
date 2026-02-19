@@ -1,4 +1,4 @@
-use crate::StoryInfo;
+use crate::{RenderFn, StoryInfo};
 use crate::ui::view::story::docs::StoryDocs;
 use crate::ui::view::story::header::StoryHeader;
 use dioxus::prelude::*;
@@ -25,7 +25,7 @@ pub(crate) fn StoryPage(
     story_index: usize,
     story: StoryInfo,
     story_title: String,
-    render_fn: fn(&str) -> Element,
+    render_fn: RenderFn,
     prop_schema: RootSchema,
     description: &'static str,
 ) -> Element {
