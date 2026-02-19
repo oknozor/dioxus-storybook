@@ -1,20 +1,25 @@
 use crate::ui::doc_page::DocPage;
-use crate::ui::sidebar::{ComponentInfo, Selection, Sidebar};
+use crate::ui::models::{ComponentInfo, Selection};
+use crate::ui::sidebar::Sidebar;
 use crate::{STORYBOOK_CSS, get_components, take_config};
 use dioxus::prelude::*;
 
+// MVVM layers
+pub mod models;
+pub mod services;
+pub mod viewmodels;
+
+// View modules
 pub mod doc_page;
 pub mod sidebar;
 pub mod story;
 pub mod shared;
-pub mod settings;
 mod top_bar;
-pub(crate) mod store;
 
-// Re-export commonly used items so existing imports continue to work
-pub use settings::{ViewportSize, UiSettings};
+// Re-export commonly used items for the public API
+pub use models::ViewportSize;
+pub use viewmodels::UiSettings;
 pub(crate) use top_bar::TopBar;
-pub(crate) use store::ComponentStore;
 
 use crate::ui::story::StoryPage;
     
@@ -37,7 +42,7 @@ fn Storybook() -> Element {
     let ui_settings = use_context::<UiSettings>();
     let search_query = use_signal(String::new);
     let selected = use_signal(|| Option::<Selection>::None);
-    let components = use_store(|| ComponentStore {
+    let components = use_store(|| viewmodels::ComponentStore {
         components: get_components()
             .map(|c| {
                 (

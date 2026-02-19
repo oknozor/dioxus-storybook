@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use dioxus::prelude::*;
-use crate::ui::sidebar::ComponentInfo;
+use crate::ui::models::ComponentInfo;
 
 #[derive(Store, PartialEq, Clone, Debug)]
 pub(crate) struct ComponentStore {

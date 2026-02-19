@@ -1,4 +1,4 @@
-use crate::ui::ViewportSize;
+use crate::ui::models::ViewportSize;
 use crate::{self as storybook};
 use crate::{Stories, Story, storybook};
 use dioxus::prelude::*;

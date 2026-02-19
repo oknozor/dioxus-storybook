@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use crate::ui::sidebar::ComponentInfo;
 
 /// A tree node that can contain either subcategories or components (or both).
 ///
@@ -45,17 +44,5 @@ impl CategoryTreeNode {
         let children_count: usize = self.children.values().map(|c| c.component_count()).sum();
         direct_count + children_count
     }
-}
-
-/// Build a tree structure from flat component info.
-pub fn build_category_tree(components: &[ComponentInfo]) -> CategoryTreeNode {
-    let mut root = CategoryTreeNode::default();
-
-    for component in components {
-        let path_segments: Vec<&str> = component.category.split('/').collect();
-        root.insert(&path_segments, component.name.clone(), "");
-    }
-
-    root
 }
 

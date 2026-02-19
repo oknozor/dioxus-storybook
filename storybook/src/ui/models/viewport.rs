@@ -1,4 +1,3 @@
-use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
 /// Represents the available viewport size presets for story preview.
@@ -59,30 +58,6 @@ impl ViewportSize {
             ViewportSize::LargeMobile,
             ViewportSize::Tablet,
         ]
-    }
-}
-
-/// Global UI settings shared via context
-#[derive(Clone, Copy)]
-pub struct UiSettings {
-    pub is_dark_theme: Signal<bool>,
-    pub grid_enabled: Signal<bool>,
-    pub outline_enabled: Signal<bool>,
-    pub fullscreen: Signal<bool>,
-    pub zoom_level: Signal<i32>,
-    pub viewport_width: Signal<ViewportSize>,
-}
-
-impl Default for UiSettings {
-    fn default() -> Self {
-        UiSettings {
-            is_dark_theme: Signal::new(false),
-            grid_enabled: Signal::new(false),
-            outline_enabled: Signal::new(false),
-            fullscreen: Signal::new(false),
-            zoom_level: Signal::new(100),
-            viewport_width: Signal::new(ViewportSize::FullWidth),
-        }
     }
 }
 

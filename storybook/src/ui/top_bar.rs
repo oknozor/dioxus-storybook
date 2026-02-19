@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 use storybook_macro::storybook;
 use crate::{self as storybook, Stories, Story};
-use crate::ui::settings::UiSettings;
-use crate::ui::sidebar::Selection;
+use crate::ui::viewmodels::UiSettings;
+use crate::ui::models::Selection;
 use crate::ui::shared::{FullscreenButton, GridButton, OutlineButton, ViewPortSelector};
 use crate::ui::story::StoryZoomControls;
 

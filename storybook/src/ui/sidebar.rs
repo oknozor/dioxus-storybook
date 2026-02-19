@@ -1,38 +1,13 @@
 use dioxus::prelude::*;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use crate::ui::models::{ComponentInfo, Selection, NodeType};
 use crate::ui::sidebar::node::ComponentNode;
-use crate::ui::sidebar::tree::{build_category_tree, TreeNode};
+use crate::ui::sidebar::tree::TreeNode;
 use crate::ui::sidebar::search_input::SearchInput;
+use crate::ui::services::category_builder::build_category_tree;
 
 mod search_input;
-pub(crate) mod category_tree;
 mod tree;
 mod node;
-
-#[derive(Clone, PartialEq, Debug)]
-pub struct ComponentInfo {
-    pub name: String,
-    pub category: String,
-}
-
-/// Selection type - a story, component, or doc page
-#[derive(Clone, PartialEq, Debug, Serialize, Deserialize, JsonSchema)]
-pub enum Selection {
-    /// A specific story within a component (component_name, story_index)
-    Story(String, usize),
-    /// A documentation page
-    DocPage(String),
-}
-
-/// The type of node in the hierarchy tree
-#[derive(Clone, Copy, PartialEq, Debug)]
-enum NodeType {
-    /// Top-level category (first segment of the path)
-    Category,
-    /// Intermediate folder (middle segments of the path)
-    Folder,
-}
 
 #[component]
 pub fn Sidebar(search_query: Signal<String>, components: Vec<ComponentInfo>, selected: Signal<Option<Selection>>) -> Element {

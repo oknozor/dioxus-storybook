@@ -1,11 +1,10 @@
 use dioxus::prelude::*;
 use crate::ui::story::docs::StoryDocs;
 use crate::ui::story::header::StoryHeader;
-use crate::{find_component, Decorator};
+use crate::find_component;
 
 mod docs;
 mod header;
-mod iframe;
 mod preview;
 mod toolbar;
 pub use toolbar::StoryZoomControls;
@@ -61,14 +60,4 @@ pub(crate) fn StoryPage(
         }
     }
 }
-
-/// Apply decorators to an element.
-/// Decorators are applied in order, with the first decorator being the outermost wrapper.
-fn apply_decorators(element: Element, decorators: &[Decorator]) -> Element {
-    decorators
-        .iter()
-        .rev()
-        .fold(element, |acc, decorator| decorator(acc))
-}
-
 

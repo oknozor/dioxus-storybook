@@ -1,17 +1,9 @@
-/// Represents a parsed section of documentation content.
-#[derive(Clone, Debug)]
-pub(crate) enum DocPart {
-    Html(String),
-    StoryEmbed {
-        story_path: String,
-        story_name: String,
-    },
-}
+use crate::ui::models::DocPart;
 
 /// Parse documentation content and extract story embed markers.
 ///
 /// Story embeds are marked as: `<div class="storybook-embed" data-story-path="..." data-story-name="..."></div>`
-pub(crate) fn parse_doc_content(content: &str) -> Vec<DocPart> {
+pub fn parse_doc_content(content: &str) -> Vec<DocPart> {
     let mut parts = Vec::new();
     let mut remaining = content;
 

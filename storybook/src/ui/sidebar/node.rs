@@ -1,4 +1,4 @@
-use crate::ui::sidebar::Selection;
+use crate::ui::models::Selection;
 use dioxus::prelude::*;
 use lucide_dioxus::{BookOpen, ChevronRight, Component};
 
