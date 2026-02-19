@@ -4,9 +4,18 @@ members = [
     "storybook-macro", "storybook", "storybook-example"]
 
 [workspace.dependencies]
+storybook-macro = { path = "storybook-macro" }
 storybook = { path = "storybook" }
 inventory = "0.3"
 dioxus = "0.7.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 web-sys = { version = "0.3.82", features = ["Window", "Document", "Element"] }
+schemars = { version = "0.8", features = ["derive"] }
+lucide-dioxus = { version = "2.563.0", features = ["all-icons"] }
+
+# Macro
+syn = { version = "2.0", features = ["full", "parsing", "extra-traits"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+pulldown-cmark = "0.13.0"

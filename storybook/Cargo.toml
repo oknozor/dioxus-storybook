@@ -11,11 +11,11 @@ default = []
 self-stories = []
 
 [dependencies]
-storybook-macro = { path = "../storybook-macro" }
-dioxus = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-schemars = { version = "0.8", features = ["derive"] }
-inventory = { workspace = true }
-lucide-dioxus = { version = "2.563.0", features = ["all-icons"] }
-web-sys = { workspace = true }
+storybook-macro.workspace = true
+dioxus.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+inventory.workspace = true
+web-sys.workspace = true
+schemars.workspace = true
+lucide-dioxus.workspace = true
