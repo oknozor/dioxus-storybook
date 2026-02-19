@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-use dioxus::prelude::*;
 use crate::ui::models::ComponentInfo;
+use dioxus::prelude::*;
+use std::collections::HashMap;
 
 #[derive(Store, PartialEq, Clone, Debug)]
 pub(crate) struct ComponentStore {
@@ -14,11 +14,9 @@ impl ComponentStore {
         self.components
             .values()
             .filter(|c| {
-                c.name.to_lowercase().contains(&query)
-                    || c.category.to_lowercase().contains(&query)
+                c.name.to_lowercase().contains(&query) || c.category.to_lowercase().contains(&query)
             })
             .cloned()
             .collect()
     }
 }
-

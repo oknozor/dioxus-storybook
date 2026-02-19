@@ -56,4 +56,3 @@ pub fn make_container_id(prefix: &str, component_name: &str, story_index: usize)
         story_index
     )
 }
-

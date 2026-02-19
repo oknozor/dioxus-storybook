@@ -1,15 +1,13 @@
-use dioxus::prelude::*;
-use lucide_dioxus::{FolderOpen, Folder, ChevronRight, FileText};
-use crate::ui::view::sidebar::node::ComponentNode;
 use crate::ui::models::{CategoryTreeNode, NodeType, Selection};
+use crate::ui::view::sidebar::node::ComponentNode;
 use crate::ui::viewmodels::sidebar_vm::get_story_titles;
 #[cfg(feature = "self-stories")]
 use crate::{self as storybook};
+use dioxus::prelude::*;
+use lucide_dioxus::{ChevronRight, FileText, Folder, FolderOpen};
 
 #[cfg(feature = "self-stories")]
 use storybook_macro::storybook;
-
-
 
 /// Recursive component for rendering tree nodes (categories and folders)
 #[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
@@ -34,7 +32,7 @@ pub fn TreeNode(
     rsx! {
         div { class: "{node_class}",
             TreeNodeHeader {
-                expanded: expanded.clone(),
+                expanded: expanded,
                 name: name.clone(),
                 component_count,
             }
@@ -100,7 +98,7 @@ fn DocNode(selected: Signal<Option<Selection>>, path: String) -> Element {
 }
 
 #[component]
-fn TreeNodeHeader(expanded: Signal<bool>, name: String, component_count: usize) -> Element    {
+fn TreeNodeHeader(expanded: Signal<bool>, name: String, component_count: usize) -> Element {
     rsx! {
         div { class: "tree-header", onclick: move |_| expanded.toggle(),
             span { class: if expanded() { "arrow expanded" } else { "arrow" },

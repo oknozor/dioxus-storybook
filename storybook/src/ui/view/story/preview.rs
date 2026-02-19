@@ -1,9 +1,9 @@
-use crate::RootSchema;
-use dioxus::prelude::*;
-use crate::StoryInfo;
 use super::props_editor::{PropsEditor, PropsEditorHeader};
+use crate::RootSchema;
+use crate::StoryInfo;
 use crate::ui::services::decorators::apply_decorators;
 use crate::ui::viewmodels::story_preview_vm::use_story_preview;
+use dioxus::prelude::*;
 
 /// Full-screen story view with fixed bottom props editor and viewport/zoom from UiSettings.
 /// Used by StoryPage for the main story display.

@@ -12,4 +12,3 @@ pub use table::*;
 
 #[cfg(feature = "self-stories")]
 mod stories;
-

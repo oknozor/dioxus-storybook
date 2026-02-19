@@ -1,10 +1,9 @@
-mod viewport;
-mod selection;
 mod category_tree;
 mod doc;
+mod selection;
+mod viewport;
 
-pub use viewport::ViewportSize;
-pub use selection::{ComponentInfo, Selection, NodeType};
 pub use category_tree::CategoryTreeNode;
 pub use doc::DocPart;
-
+pub use selection::{ComponentInfo, NodeType, Selection};
+pub use viewport::ViewportSize;

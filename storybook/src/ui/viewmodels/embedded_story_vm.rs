@@ -17,7 +17,10 @@ pub struct EmbeddedStoryData {
 pub enum EmbeddedStoryError {
     InvalidPath(String),
     ComponentNotFound(String),
-    StoryNotFound { component_name: String, story_name: String },
+    StoryNotFound {
+        component_name: String,
+        story_name: String,
+    },
 }
 
 /// Parse a story path and resolve the component + story.
@@ -39,9 +42,8 @@ pub fn resolve_embedded_story(
 
     let component_name = path_parts[path_parts.len() - 2];
 
-    let registration = find_component(component_name).ok_or_else(|| {
-        EmbeddedStoryError::ComponentNotFound(component_name.to_string())
-    })?;
+    let registration = find_component(component_name)
+        .ok_or_else(|| EmbeddedStoryError::ComponentNotFound(component_name.to_string()))?;
 
     let stories = (registration.get_stories)();
     let story_with_index = stories
@@ -49,12 +51,11 @@ pub fn resolve_embedded_story(
         .enumerate()
         .find(|(_, s)| s.title == story_name);
 
-    let (story_index, story) = story_with_index.ok_or_else(|| {
-        EmbeddedStoryError::StoryNotFound {
+    let (story_index, story) =
+        story_with_index.ok_or_else(|| EmbeddedStoryError::StoryNotFound {
             component_name: component_name.to_string(),
             story_name: story_name.to_string(),
-        }
-    })?;
+        })?;
 
     let render_fn = registration.render_with_props;
     let prop_schema = (registration.get_prop_schema)();
@@ -67,4 +68,3 @@ pub fn resolve_embedded_story(
         prop_schema,
     })
 }
-

@@ -6,7 +6,6 @@ use crate::{self as storybook};
 #[cfg(feature = "self-stories")]
 use storybook_macro::storybook;
 
-
 #[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn SearchInput(search_query: Signal<String>) -> Element {

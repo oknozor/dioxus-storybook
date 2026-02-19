@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use crate::ui::viewmodels::ui_settings::UiSettings;
+use dioxus::prelude::*;
 
 const HLJS_VERSION: &str = "11.11.1";
 const HLJS_LIGHT_THEME: &str = "github";
@@ -21,7 +21,11 @@ pub fn use_hljs_theme() {
     let is_dark = (ui_settings.is_dark_theme)();
 
     use_effect(move || {
-        let theme = if is_dark { HLJS_DARK_THEME } else { HLJS_LIGHT_THEME };
+        let theme = if is_dark {
+            HLJS_DARK_THEME
+        } else {
+            HLJS_LIGHT_THEME
+        };
         let css_url = format!(
             "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{HLJS_VERSION}/styles/{theme}.min.css"
         );
@@ -51,4 +55,3 @@ pub fn use_hljs_theme() {
         ));
     });
 }
-

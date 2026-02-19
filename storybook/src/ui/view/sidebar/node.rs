@@ -63,8 +63,7 @@ fn RootNode(name: String, expanded: bool, selected: Signal<Option<Selection>>) -
 fn StoryNode(
     is_selected: bool,
     story_title: String,
-    #[props(extends = GlobalAttributes, extends = tr)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes, extends = tr)] attributes: Vec<Attribute>,
     onclick: EventHandler<MouseEvent>,
 ) -> Element {
     rsx! {

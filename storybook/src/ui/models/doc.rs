@@ -7,4 +7,3 @@ pub enum DocPart {
         story_name: String,
     },
 }
-

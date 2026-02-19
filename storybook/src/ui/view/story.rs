@@ -1,8 +1,8 @@
-use dioxus::prelude::*;
-use schemars::schema::RootSchema;
 use crate::StoryInfo;
 use crate::ui::view::story::docs::StoryDocs;
 use crate::ui::view::story::header::StoryHeader;
+use dioxus::prelude::*;
+use schemars::schema::RootSchema;
 
 mod docs;
 mod header;
@@ -11,8 +11,8 @@ mod toolbar;
 pub use toolbar::StoryZoomControls;
 
 mod card;
-pub use card::StoryCard;
 use crate::ui::view::story::preview::StoryPreview;
+pub use card::StoryCard;
 
 pub mod props_editor;
 
@@ -48,4 +48,3 @@ pub(crate) fn StoryPage(
         }
     }
 }
-

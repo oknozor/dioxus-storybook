@@ -537,7 +537,7 @@ fn get_type_name_from_schema(
                 let type_strs: Vec<_> = types.iter().map(|t| format_instance_type(*t)).collect();
                 type_strs.join(" | ")
             }
-        }
+        };
     }
 
     // Check for enum values

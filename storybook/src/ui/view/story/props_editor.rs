@@ -1,8 +1,8 @@
+use crate::ui::view::shared::{Checkbox, Td, TextInput, Tr};
 use crate::{SchemaFieldInfo, extract_fields_from_schema, parse_input_value, update_prop_value};
 use dioxus::prelude::*;
 use lucide_dioxus::{ChevronDown, ChevronRight};
 use schemars::schema::{InstanceType, RootSchema};
-use crate::ui::view::shared::{Checkbox, Td, TextInput, Tr};
 
 #[component]
 pub fn PropsEditorHeader(expanded: Signal<bool>) -> Element {

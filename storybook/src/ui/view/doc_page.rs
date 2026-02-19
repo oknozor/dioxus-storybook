@@ -1,9 +1,9 @@
-use dioxus::prelude::*;
 use crate::ui::models::DocPart;
 use crate::ui::services::doc_parser::parse_doc_content;
 use crate::ui::view::story::StoryCard;
-use crate::ui::viewmodels::doc_page_vm::{use_hljs_theme, HLJS_SCRIPT_URL};
-use crate::ui::viewmodels::embedded_story_vm::{resolve_embedded_story, EmbeddedStoryError};
+use crate::ui::viewmodels::doc_page_vm::{HLJS_SCRIPT_URL, use_hljs_theme};
+use crate::ui::viewmodels::embedded_story_vm::{EmbeddedStoryError, resolve_embedded_story};
+use dioxus::prelude::*;
 
 /// Component to render a documentation page.
 ///
@@ -51,7 +51,9 @@ fn DocContent(content_html: String) -> Element {
                             Err(EmbeddedStoryError::ComponentNotFound(name)) => rsx! {
                                 div { key: "story-{index}", class: "embedded-story-error", "Component not found: {name}" }
                             },
-                            Err(EmbeddedStoryError::StoryNotFound { component_name, story_name }) => {
+                            Err(
+                                EmbeddedStoryError::StoryNotFound { component_name, story_name },
+                            ) => {
                                 rsx! {
                                     div { key: "story-{index}", class: "embedded-story-error",
                                         "Story not found: {story_name} in {component_name}"
@@ -65,4 +67,3 @@ fn DocContent(content_html: String) -> Element {
         }
     }
 }
-

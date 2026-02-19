@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use crate::Decorator;
+use dioxus::prelude::*;
 
 /// Apply decorators to an element.
 /// Decorators are applied in order, with the first decorator being the outermost wrapper.
@@ -9,4 +9,3 @@ pub fn apply_decorators(element: Element, decorators: &[Decorator]) -> Element {
         .rev()
         .fold(element, |acc, decorator| decorator(acc))
 }
-

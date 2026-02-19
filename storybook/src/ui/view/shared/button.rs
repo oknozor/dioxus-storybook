@@ -20,7 +20,6 @@ pub fn GridButton(grid_enabled: Signal<bool>) -> Element {
     }
 }
 
-
 #[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn OutlineButton(outline_enabled: Signal<bool>) -> Element {
@@ -33,8 +32,6 @@ pub fn OutlineButton(outline_enabled: Signal<bool>) -> Element {
         }
     }
 }
-
-
 
 #[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
@@ -53,7 +50,6 @@ pub fn ThemeToggleButton(is_dark_theme: Signal<bool>) -> Element {
     }
 }
 
-
 #[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
 pub fn ZoomOutButton(zoom_level: Signal<i32>) -> Element {
@@ -71,7 +67,6 @@ pub fn ZoomOutButton(zoom_level: Signal<i32>) -> Element {
         }
     }
 }
-
 
 #[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]

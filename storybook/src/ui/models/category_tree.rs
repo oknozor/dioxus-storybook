@@ -50,4 +50,3 @@ impl CategoryTreeNode {
         direct_count + children_count
     }
 }
-

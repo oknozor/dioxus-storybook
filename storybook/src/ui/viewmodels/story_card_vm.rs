@@ -1,7 +1,9 @@
-use dioxus::prelude::*;
-use crate::{StorybookConfig, StoryInfo};
-use crate::ui::services::iframe::{build_css_links, build_outline_css, build_srcdoc, capture_inner_html, make_container_id};
+use crate::ui::services::iframe::{
+    build_css_links, build_outline_css, build_srcdoc, capture_inner_html, make_container_id,
+};
 use crate::ui::viewmodels::ui_settings::UiSettings;
+use crate::{StoryInfo, StorybookConfig};
+use dioxus::prelude::*;
 
 /// Prepared state for a StoryCard view.
 pub struct StoryCardState {
@@ -17,7 +19,11 @@ pub struct StoryCardState {
 ///
 /// Handles HTML capture, srcdoc building, context reading, and state management.
 /// Returns a `StoryCardState` with all data the view needs to render.
-pub fn use_story_card(component_name: &str, story_index: usize, story: &StoryInfo) -> StoryCardState {
+pub fn use_story_card(
+    component_name: &str,
+    story_index: usize,
+    story: &StoryInfo,
+) -> StoryCardState {
     let mut iframe_html = use_signal(String::new);
     let props_json = use_signal(|| story.props_json.clone());
     let props_expanded = use_signal(|| false);
@@ -57,4 +63,3 @@ pub fn use_story_card(component_name: &str, story_index: usize, story: &StoryInf
         props_expanded,
     }
 }
-

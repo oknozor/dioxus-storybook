@@ -1,5 +1,5 @@
-use crate::ui::view::doc_page::DocPage;
 use crate::ui::models::{ComponentInfo, Selection};
+use crate::ui::view::doc_page::DocPage;
 use crate::ui::view::sidebar::Sidebar;
 use crate::{STORYBOOK_CSS, find_doc, get_components, take_config};
 use dioxus::prelude::*;
@@ -13,12 +13,11 @@ pub mod viewmodels;
 pub mod view;
 
 // Re-export commonly used items for the public API
-pub use models::ViewportSize;
-pub use viewmodels::UiSettings;
 pub(crate) use view::top_bar::TopBar;
+pub use viewmodels::UiSettings;
 
 use crate::ui::view::story::StoryPage;
-use crate::ui::viewmodels::story_page_vm::{resolve_story_page, StoryPageError};
+use crate::ui::viewmodels::story_page_vm::{StoryPageError, resolve_story_page};
 
 #[component]
 pub(crate) fn App() -> Element {
@@ -26,7 +25,7 @@ pub(crate) fn App() -> Element {
     let _config = use_context_provider(take_config);
 
     // Provide UI settings as context
-    let _ui_settings = use_context_provider(|| UiSettings::default());
+    let _ui_settings = use_context_provider(UiSettings::default);
 
     rsx! {
         Stylesheet { href: STORYBOOK_CSS }

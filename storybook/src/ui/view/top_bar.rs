@@ -1,12 +1,14 @@
+use crate::ui::models::Selection;
+use crate::ui::view::shared::{
+    FullscreenButton, GridButton, OutlineButton, ThemeToggleButton, ViewPortSelector,
+};
+use crate::ui::view::story::StoryZoomControls;
+use crate::ui::viewmodels::UiSettings;
+#[cfg(feature = "self-stories")]
+use crate::{self as storybook, Stories, Story};
 use dioxus::prelude::*;
 #[cfg(feature = "self-stories")]
 use storybook_macro::storybook;
-#[cfg(feature = "self-stories")]
-use crate::{self as storybook, Stories, Story};
-use crate::ui::viewmodels::UiSettings;
-use crate::ui::models::Selection;
-use crate::ui::view::shared::{FullscreenButton, GridButton, OutlineButton, ThemeToggleButton, ViewPortSelector};
-use crate::ui::view::story::StoryZoomControls;
 
 /// Top navigation bar with theme, grid, outline, fullscreen toggles, and story-specific controls.
 #[cfg_attr(feature = "self-stories", storybook(tag = "Organisms"))]
@@ -40,11 +42,11 @@ pub(crate) fn TopBar(selected: Signal<Option<Selection>>) -> Element {
 #[cfg(feature = "self-stories")]
 impl Stories for TopBarProps {
     fn stories() -> Vec<Story<Self>> {
-        vec![
-            Story::new("Default", Self {
+        vec![Story::new(
+            "Default",
+            Self {
                 selected: Signal::new(None),
-            }),
-        ]
+            },
+        )]
     }
 }
-

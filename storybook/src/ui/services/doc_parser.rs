@@ -53,4 +53,3 @@ fn extract_attr(element: &str, attr_name: &str) -> Option<String> {
     }
     None
 }
-

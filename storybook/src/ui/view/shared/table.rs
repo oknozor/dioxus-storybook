@@ -2,8 +2,7 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn Tr(
-    #[props(extends = GlobalAttributes, extends = tr)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes, extends = tr)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     rsx! {
@@ -13,8 +12,7 @@ pub fn Tr(
 
 #[component]
 pub fn Td(
-    #[props(extends = GlobalAttributes, extends = td)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes, extends = td)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     rsx! {

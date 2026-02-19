@@ -7,12 +7,6 @@ use crate::find_component;
 /// Returns an empty `Vec` if the component is not found.
 pub fn get_story_titles(component_name: &str) -> Vec<String> {
     find_component(component_name)
-        .map(|reg| {
-            (reg.get_stories)()
-                .into_iter()
-                .map(|s| s.title)
-                .collect()
-        })
+        .map(|reg| (reg.get_stories)().into_iter().map(|s| s.title).collect())
         .unwrap_or_default()
 }
-

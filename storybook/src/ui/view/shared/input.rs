@@ -2,8 +2,7 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn Checkbox(
-    #[props(extends = GlobalAttributes, extends = input)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes, extends = input)] attributes: Vec<Attribute>,
     onchange: EventHandler<bool>,
 ) -> Element {
     rsx! {
@@ -19,8 +18,7 @@ pub fn Checkbox(
 #[component]
 pub fn TextInput(
     oninput: EventHandler<String>,
-    #[props(extends = GlobalAttributes, extends = input)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes, extends = input)] attributes: Vec<Attribute>,
 ) -> Element {
     rsx! {
         input {
@@ -30,4 +28,3 @@ pub fn TextInput(
         }
     }
 }
-

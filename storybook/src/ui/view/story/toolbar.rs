@@ -1,8 +1,8 @@
-use dioxus::prelude::*;
 use crate::ui::view::shared::{ResetZoomButton, ZoomInButton, ZoomOutButton};
+use dioxus::prelude::*;
 
 #[component]
-pub fn StoryZoomControls(zoom_level: Signal<i32>     ) -> Element {
+pub fn StoryZoomControls(zoom_level: Signal<i32>) -> Element {
     rsx! {
         div { class: "story-toolbar",
             ZoomOutButton { zoom_level }

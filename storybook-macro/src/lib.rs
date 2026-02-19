@@ -434,8 +434,7 @@ fn storybook_for_struct(input: ItemStruct, attr_args: StorybookArgs) -> TokenStr
                     .filter(|attr| attr.path().is_ident("doc"))
                     .cloned()
                     .collect();
-                let force_non_serializable =
-                    attr_args.non_serializable.contains(&name.to_string());
+                let force_non_serializable = attr_args.non_serializable.contains(&name.to_string());
                 FieldInfo {
                     name: name.clone(),
                     ty: field.ty.clone(),
@@ -493,8 +492,9 @@ fn storybook_for_function(input: ItemFn, attr_args: StorybookArgs) -> TokenStrea
                     .filter(|attr| attr.path().is_ident("doc"))
                     .cloned()
                     .collect();
-                let force_non_serializable =
-                    attr_args.non_serializable.contains(&pat_ident.ident.to_string());
+                let force_non_serializable = attr_args
+                    .non_serializable
+                    .contains(&pat_ident.ident.to_string());
                 return Some(FieldInfo {
                     name: pat_ident.ident.clone(),
                     ty: (*pat_type.ty).clone(),

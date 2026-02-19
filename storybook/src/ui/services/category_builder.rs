@@ -11,4 +11,3 @@ pub fn build_category_tree(components: &[ComponentInfo]) -> CategoryTreeNode {
 
     root
 }
-

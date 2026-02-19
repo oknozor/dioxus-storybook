@@ -1,20 +1,24 @@
-use dioxus::prelude::*;
-use crate::ui::models::{ComponentInfo, Selection, NodeType};
-use crate::ui::view::sidebar::node::ComponentNode;
-use crate::ui::view::sidebar::tree::TreeNode;
-use crate::ui::view::sidebar::search_input::SearchInput;
+use crate::ui::models::{ComponentInfo, NodeType, Selection};
 use crate::ui::services::category_builder::build_category_tree;
+use crate::ui::view::sidebar::node::ComponentNode;
+use crate::ui::view::sidebar::search_input::SearchInput;
+use crate::ui::view::sidebar::tree::TreeNode;
 use crate::ui::viewmodels::sidebar_vm::get_story_titles;
+use dioxus::prelude::*;
 
+mod node;
 mod search_input;
 mod tree;
-mod node;
 
 #[cfg(feature = "self-stories")]
 mod stories;
 
 #[component]
-pub fn Sidebar(search_query: Signal<String>, components: Vec<ComponentInfo>, selected: Signal<Option<Selection>>) -> Element {
+pub fn Sidebar(
+    search_query: Signal<String>,
+    components: Vec<ComponentInfo>,
+    selected: Signal<Option<Selection>>,
+) -> Element {
     rsx! {
         div { class: "sidebar",
             SearchInput { search_query }
@@ -67,5 +71,3 @@ pub fn ComponentTree(
         }
     }
 }
-
-

@@ -16,7 +16,10 @@ pub struct StoryPageData {
 /// Error cases when resolving a story page.
 pub enum StoryPageError {
     ComponentNotFound(String),
-    StoryNotFound { component_name: String, story_index: usize },
+    StoryNotFound {
+        component_name: String,
+        story_index: usize,
+    },
 }
 
 /// Look up a component by name and resolve the story at `story_index`.
@@ -27,9 +30,8 @@ pub fn resolve_story_page(
     component_name: &str,
     story_index: usize,
 ) -> Result<StoryPageData, StoryPageError> {
-    let registration = find_component(component_name).ok_or_else(|| {
-        StoryPageError::ComponentNotFound(component_name.to_string())
-    })?;
+    let registration = find_component(component_name)
+        .ok_or_else(|| StoryPageError::ComponentNotFound(component_name.to_string()))?;
 
     let stories = (registration.get_stories)();
     let render_fn = registration.render_with_props;
@@ -54,4 +56,3 @@ pub fn resolve_story_page(
         description,
     })
 }
-
