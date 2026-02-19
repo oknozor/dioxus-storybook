@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 use crate::ui::models::{ComponentInfo, Selection, NodeType};
-use crate::ui::sidebar::node::ComponentNode;
-use crate::ui::sidebar::tree::TreeNode;
-use crate::ui::sidebar::search_input::SearchInput;
+use crate::ui::view::sidebar::node::ComponentNode;
+use crate::ui::view::sidebar::tree::TreeNode;
+use crate::ui::view::sidebar::search_input::SearchInput;
 use crate::ui::services::category_builder::build_category_tree;
 
 mod search_input;

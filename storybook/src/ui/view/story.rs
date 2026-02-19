@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
-use crate::ui::story::docs::StoryDocs;
-use crate::ui::story::header::StoryHeader;
+use crate::ui::view::story::docs::StoryDocs;
+use crate::ui::view::story::header::StoryHeader;
 use crate::find_component;
 
 mod docs;
@@ -11,7 +11,7 @@ pub use toolbar::StoryZoomControls;
 
 mod card;
 pub use card::StoryCard;
-use crate::ui::story::preview::StoryPreview;
+use crate::ui::view::story::preview::StoryPreview;
 
 pub mod props_editor;
 

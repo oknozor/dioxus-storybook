@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use crate::ui::shared::{ResetZoomButton, ZoomInButton, ZoomOutButton};
+use crate::ui::view::shared::{ResetZoomButton, ZoomInButton, ZoomOutButton};
 
 #[component]
 pub fn StoryZoomControls(zoom_level: Signal<i32>     ) -> Element {

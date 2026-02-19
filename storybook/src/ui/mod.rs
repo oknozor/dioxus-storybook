@@ -1,6 +1,6 @@
-use crate::ui::doc_page::DocPage;
+use crate::ui::view::doc_page::DocPage;
 use crate::ui::models::{ComponentInfo, Selection};
-use crate::ui::sidebar::Sidebar;
+use crate::ui::view::sidebar::Sidebar;
 use crate::{STORYBOOK_CSS, get_components, take_config};
 use dioxus::prelude::*;
 
@@ -9,19 +9,15 @@ pub mod models;
 pub mod services;
 pub mod viewmodels;
 
-// View modules
-pub mod doc_page;
-pub mod sidebar;
-pub mod story;
-pub mod shared;
-mod top_bar;
+// View layer
+pub mod view;
 
 // Re-export commonly used items for the public API
 pub use models::ViewportSize;
 pub use viewmodels::UiSettings;
-pub(crate) use top_bar::TopBar;
+pub(crate) use view::top_bar::TopBar;
 
-use crate::ui::story::StoryPage;
+use crate::ui::view::story::StoryPage;
     
 #[component]
 pub(crate) fn App() -> Element {

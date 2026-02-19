@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use crate::find_component;
-use crate::ui::story::StoryCard;
+use crate::ui::view::story::StoryCard;
 
 /// Component to render an embedded story within a doc page
 #[component]

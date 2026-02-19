@@ -33,7 +33,7 @@ pub fn ComponentNode(
                                 == Some(Selection::Story(component_name.clone(), index));
                             let story_title = story_title.clone();
                             rsx! {
-                                StoryNodeBite {
+                                StoryNode {
                                     key: "{component_name}-story-{index}",
                                     is_selected,
                                     onclick: move |_| selected.set(Some(Selection::Story(component_name.clone(), index))),
@@ -67,7 +67,7 @@ fn RootNode(name: String, expanded: bool, selected: Signal<Option<Selection>>) -
     }
 }
 #[component]
-fn StoryNodeBite(
+fn StoryNode(
     is_selected: bool,
     story_title: String,
     #[props(extends = GlobalAttributes, extends = tr)]

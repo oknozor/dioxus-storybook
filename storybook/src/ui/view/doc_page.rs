@@ -1,6 +1,6 @@
 use crate::find_doc;
 use dioxus::prelude::*;
-use crate::ui::doc_page::embedded_story::EmbeddedStory;
+use crate::ui::view::doc_page::embedded_story::EmbeddedStory;
 use crate::ui::models::DocPart;
 use crate::ui::services::doc_parser::parse_doc_content;
 use crate::ui::viewmodels::doc_page_vm::{use_hljs_theme, HLJS_SCRIPT_URL};

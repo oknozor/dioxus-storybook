@@ -1,14 +1,21 @@
 ## TODOs
 
-- [ ] fix grid
-- [ ] fix doc comment
-- [ ] enum props in prop editor should be select
-- [ ] remove the dark theme
-- [ ] select a storybook background
-- [ ] Add a theme component
-- [ ] Add icon grid
-- [ ] Add root docs 
-- [ ] Fix tree scroll
-- [x] Fix search bar
-- [ ] update schemars to ^1
-- [ ] example and storybook inventory are mixed
+- [ ] UI
+  - [ ] fix grid
+  - [ ] fix doc comment
+  - [ ] enum props in prop editor should be select
+  - [ ] remove the dark theme
+  - [ ] select a storybook background
+  - [ ] Add a theme component
+  - [ ] Add icon grid
+  - [ ] Add root docs 
+  - [ ] Fix tree scroll
+  - [x] Fix search bar
+- Misc
+  - [ ] update schemars to ^1
+  - [x] example and storybook inventory are mixed
+- [ ] MVVM
+  - [ ] usage of find_component should be lifted out of the view
+    - [ ] StoryPage
+    - [ ] EmbeddedStory
+  - [ ] Usage of UiSetting and other provided context should be lifted out of the view 

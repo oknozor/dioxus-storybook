@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use lucide_dioxus::{FolderOpen, Folder, ChevronRight, FileText};
-use crate::ui::sidebar::node::ComponentNode;
+use crate::ui::view::sidebar::node::ComponentNode;
 use crate::ui::models::{CategoryTreeNode, NodeType, Selection};
 
 /// Recursive component for rendering tree nodes (categories and folders)

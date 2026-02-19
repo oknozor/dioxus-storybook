@@ -5,8 +5,8 @@ use storybook_macro::storybook;
 use crate::{self as storybook, Stories, Story};
 use crate::ui::viewmodels::UiSettings;
 use crate::ui::models::Selection;
-use crate::ui::shared::{FullscreenButton, GridButton, OutlineButton, ThemeToggleButton, ViewPortSelector};
-use crate::ui::story::StoryZoomControls;
+use crate::ui::view::shared::{FullscreenButton, GridButton, OutlineButton, ThemeToggleButton, ViewPortSelector};
+use crate::ui::view::story::StoryZoomControls;
 
 /// Top navigation bar with theme, grid, outline, fullscreen toggles, and story-specific controls
 #[cfg_attr(feature = "self-stories", storybook(tag = "Organisms"))]
