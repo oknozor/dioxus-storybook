@@ -10,7 +10,25 @@ use dioxus::prelude::*;
 #[cfg(feature = "self-stories")]
 use storybook_macro::storybook;
 
-/// Top navigation bar with theme, grid, outline, fullscreen toggles, and story-specific controls.
+/// Top navigation bar with global and story-specific controls.
+///
+/// The left section always shows the theme toggle, grid overlay, and
+/// outline buttons. When a story is selected, it additionally renders
+/// the zoom controls toolbar and the viewport size selector, separated
+/// by dividers. The right section contains the fullscreen toggle.
+///
+/// All UI settings are read from the `UiSettings` context rather than
+/// being passed as props, because `UiSettings` contains `Signal` fields
+/// that cannot satisfy the serialization requirements of the
+/// `#[storybook]` macro.
+///
+/// # Props
+///
+/// | Prop | Type | Description |
+/// |------|------|-------------|
+/// | `selected` | `Signal<Option<Selection>>` | The currently selected sidebar item. |
+///
+/// @[story:Organisms/TopBar/Default]
 #[cfg_attr(feature = "self-stories", storybook(tag = "Organisms"))]
 #[component]
 pub(crate) fn TopBar(selected: Signal<Option<Selection>>) -> Element {

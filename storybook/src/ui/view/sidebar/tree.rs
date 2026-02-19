@@ -9,7 +9,25 @@ use lucide_dioxus::{ChevronRight, FileText, Folder, FolderOpen};
 #[cfg(feature = "self-stories")]
 use storybook_macro::storybook;
 
-/// Recursive component for rendering tree nodes (categories and folders)
+/// Recursive tree node for rendering categories and folders in the sidebar.
+///
+/// `TreeNode` is the backbone of the sidebar navigation. It renders a
+/// collapsible header (with a folder icon and component count badge) and
+/// recursively renders child folders, documentation links, and
+/// [`ComponentNode`] entries.
+///
+/// # Props
+///
+/// | Prop | Type | Description |
+/// |------|------|-------------|
+/// | `name` | `String` | Display name of this tree level. |
+/// | `node` | `CategoryTreeNode` | The tree data for this level (children, components, docs). |
+/// | `selected` | `Signal<Option<Selection>>` | Currently selected item in the sidebar. |
+/// | `node_type` | `NodeType` | Whether this node is a top-level `Category` or a nested `Folder`. |
+///
+/// @[story:Molecules/TreeNode/Category Node]
+///
+/// @[story:Molecules/TreeNode/Folder Node]
 #[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn TreeNode(

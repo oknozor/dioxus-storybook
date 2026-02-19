@@ -10,6 +10,22 @@ use crate::{self as storybook};
 #[cfg(feature = "self-stories")]
 use storybook_macro::storybook;
 
+/// Collapsible header for the props editor panel.
+///
+/// Displays a "Props Editor" label with a chevron icon that toggles
+/// between expanded (▼) and collapsed (▶) states. Clicking the header
+/// toggles the `expanded` signal, which controls whether the props
+/// editing table below is visible.
+///
+/// # Props
+///
+/// | Prop | Type | Description |
+/// |------|------|-------------|
+/// | `expanded` | `Signal<bool>` | `true` = panel is open and the chevron points down. |
+///
+/// @[story:Molecules/PropsEditorHeader/Expanded]
+///
+/// @[story:Molecules/PropsEditorHeader/Collapsed]
 #[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn PropsEditorHeader(expanded: Signal<bool>) -> Element {

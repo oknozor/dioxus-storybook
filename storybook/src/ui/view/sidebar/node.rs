@@ -8,9 +8,29 @@ use crate::{self as storybook};
 #[cfg(feature = "self-stories")]
 use storybook_macro::storybook;
 
-/// Expandable component node that shows individual stories as children.
+/// Expandable sidebar node representing a single registered component.
 ///
-/// Pure presentational component — `is_active` is computed by the parent.
+/// When collapsed, shows the component name with a `Component` icon.
+/// When expanded (`is_active = true`), reveals a list of story links and
+/// an optional "Documentation" link (if the component has `///` doc
+/// comments). This is a pure presentational component — `is_active` is
+/// computed by the parent.
+///
+/// # Props
+///
+/// | Prop | Type | Default | Description |
+/// |------|------|---------|-------------|
+/// | `name` | `String` | — | The registered component name. |
+/// | `selected` | `Signal<Option<Selection>>` | — | Currently selected sidebar item. |
+/// | `stories` | `Vec<String>` | — | Titles of the component's stories. |
+/// | `is_active` | `bool` | — | Whether this node is currently expanded. |
+/// | `has_docs` | `bool` | `false` | Whether a "Documentation" link should be shown. |
+///
+/// @[story:Molecules/ComponentNode/Collapsed]
+///
+/// @[story:Molecules/ComponentNode/Expanded]
+///
+/// @[story:Molecules/ComponentNode/Expanded with Docs]
 #[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn ComponentNode(

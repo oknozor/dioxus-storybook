@@ -4,6 +4,20 @@ use crate::{self as storybook};
 #[cfg(feature = "self-stories")]
 use crate::{Stories, Story, storybook};
 use dioxus::prelude::*;
+/// Dropdown selector for changing the story preview viewport width.
+///
+/// Renders a `<select>` element populated with all available
+/// [`ViewportSize`] variants (e.g. Full Width, Mobile, Tablet, Desktop).
+/// Selecting a different option updates the reactive `viewport_width`
+/// signal, which in turn resizes the story preview iframe.
+///
+/// # Props
+///
+/// | Prop | Type | Description |
+/// |------|------|-------------|
+/// | `viewport_width` | `Signal<ViewportSize>` | The currently selected viewport size. |
+///
+/// @[story:Molecules/ViewPortSelector/Default]
 #[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn ViewPortSelector(viewport_width: Signal<ViewportSize>) -> Element {
