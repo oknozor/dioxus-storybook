@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 
 #[derive(Clone, Copy, PartialEq)]
 pub struct UiSettings {
-    pub is_dark_theme: Signal<bool>,
+    pub dark_preview_background: Signal<bool>,
     pub grid_enabled: Signal<bool>,
     pub outline_enabled: Signal<bool>,
     pub fullscreen: Signal<bool>,
@@ -19,7 +19,7 @@ pub struct UiSettings {
 impl Default for UiSettings {
     fn default() -> Self {
         UiSettings {
-            is_dark_theme: Signal::new(false),
+            dark_preview_background: Signal::new(false),
             grid_enabled: Signal::new(false),
             outline_enabled: Signal::new(false),
             fullscreen: Signal::new(false),

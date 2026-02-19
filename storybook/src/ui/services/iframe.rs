@@ -20,14 +20,19 @@ pub fn build_outline_css(enabled: bool) -> &'static str {
 }
 
 /// Build the full srcdoc HTML for an iframe preview.
-pub fn build_srcdoc(css_links: &str, outline_css: &str, body_html: &str) -> String {
+pub fn build_srcdoc(
+    css_links: &str,
+    outline_css: &str,
+    body_html: &str,
+    background_color: &str,
+) -> String {
     format!(
         r#"<!DOCTYPE html>
 <html>
 <head>
     {css_links}
     <style>
-        body {{ margin: 0; padding: 16px; }}
+        body {{ margin: 0; padding: 16px; background: {background_color}; }}
         {outline_css}
     </style>
 </head>

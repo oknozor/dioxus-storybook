@@ -56,9 +56,6 @@ fn Storybook() -> Element {
 
     let container_class = use_memo(move || {
         let mut classes = vec!["storybook-container"];
-        if (ui_settings.is_dark_theme)() {
-            classes.push("dark-theme");
-        }
         if (ui_settings.fullscreen)() {
             classes.push("fullscreen-mode");
         }

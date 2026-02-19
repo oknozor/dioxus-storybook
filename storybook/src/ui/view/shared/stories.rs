@@ -46,15 +46,15 @@ impl Stories for ThemeToggleButtonProps {
     fn stories() -> Vec<Story<Self>> {
         vec![
             Story::new(
-                "Dark",
+                "Dark Background",
                 Self {
-                    is_dark_theme: Signal::new(true),
+                    dark_preview_background: Signal::new(true),
                 },
             ),
             Story::new(
-                "Light",
+                "Light Background",
                 Self {
-                    is_dark_theme: Signal::new(false),
+                    dark_preview_background: Signal::new(false),
                 },
             ),
         ]

@@ -20,7 +20,7 @@ pub(crate) fn TopBar(selected: Signal<Option<Selection>>) -> Element {
     rsx! {
         div { class: "top-bar",
             div { class: "top-bar-left",
-                ThemeToggleButton { is_dark_theme: ui_settings.is_dark_theme }
+                ThemeToggleButton { dark_preview_background: ui_settings.dark_preview_background }
                 GridButton { grid_enabled: ui_settings.grid_enabled }
                 OutlineButton { outline_enabled: ui_settings.outline_enabled }
 

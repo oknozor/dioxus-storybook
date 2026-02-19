@@ -43,10 +43,12 @@ pub fn use_story_card(
     let ui_settings = use_context::<UiSettings>();
     let outline_enabled = (ui_settings.outline_enabled)();
     let grid_enabled = (ui_settings.grid_enabled)();
+    let dark_bg = (ui_settings.dark_preview_background)();
 
     let css_links = build_css_links(&config);
     let outline_css = build_outline_css(outline_enabled);
-    let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html());
+    let background_color = if dark_bg { "#1e1e1e" } else { "#ffffff" };
+    let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html(), background_color);
 
     let preview_area_class = if grid_enabled {
         "story-preview-area grid-enabled"

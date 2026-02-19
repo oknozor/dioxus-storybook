@@ -45,10 +45,12 @@ pub fn use_story_preview(
     let grid_enabled = (ui_settings.grid_enabled)();
     let zoom_level = (ui_settings.zoom_level)();
     let viewport_size = (ui_settings.viewport_width)();
+    let dark_bg = (ui_settings.dark_preview_background)();
 
     let css_links = build_css_links(&config);
     let outline_css = build_outline_css(outline_enabled);
-    let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html());
+    let background_color = if dark_bg { "#1e1e1e" } else { "#ffffff" };
+    let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html(), background_color);
 
     let preview_area_class = if grid_enabled {
         "fullscreen-preview-area grid-enabled"

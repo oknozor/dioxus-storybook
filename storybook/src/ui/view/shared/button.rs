@@ -35,13 +35,13 @@ pub fn OutlineButton(outline_enabled: Signal<bool>) -> Element {
 
 #[cfg_attr(feature = "self-stories", storybook(tag = "Atoms"))]
 #[component]
-pub fn ThemeToggleButton(is_dark_theme: Signal<bool>) -> Element {
+pub fn ThemeToggleButton(dark_preview_background: Signal<bool>) -> Element {
     rsx! {
         button {
-            class: if is_dark_theme() { "top-bar-btn active" } else { "top-bar-btn" },
-            title: if is_dark_theme() { "Switch to light theme" } else { "Switch to dark theme" },
-            onclick: move |_| is_dark_theme.toggle(),
-            if is_dark_theme() {
+            class: if dark_preview_background() { "top-bar-btn active" } else { "top-bar-btn" },
+            title: if dark_preview_background() { "Preview: Dark background" } else { "Preview: Light background" },
+            onclick: move |_| dark_preview_background.toggle(),
+            if dark_preview_background() {
                 Sun {}
             } else {
                 Moon {}

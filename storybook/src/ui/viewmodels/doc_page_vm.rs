@@ -1,9 +1,7 @@
-use crate::ui::viewmodels::ui_settings::UiSettings;
 use dioxus::prelude::*;
 
 const HLJS_VERSION: &str = "11.11.1";
-const HLJS_LIGHT_THEME: &str = "github";
-const HLJS_DARK_THEME: &str = "github-dark";
+const HLJS_THEME: &str = "github";
 
 /// The highlight.js script URL (loaded once per doc page).
 pub const HLJS_SCRIPT_URL: &str = concat!(
@@ -12,24 +10,16 @@ pub const HLJS_SCRIPT_URL: &str = concat!(
     "/highlight.min.js"
 );
 
-/// Custom hook that manages highlight.js theme switching based on dark/light mode.
+/// Custom hook that manages the highlight.js theme stylesheet.
 ///
-/// Injects or updates the highlight.js theme stylesheet and re-highlights all
-/// code blocks whenever the theme changes.
+/// Injects the highlight.js light theme stylesheet and highlights all
+/// code blocks on mount.
 pub fn use_hljs_theme() {
-    let ui_settings = use_context::<UiSettings>();
-    let is_dark = (ui_settings.is_dark_theme)();
-
     use_effect(move || {
-        let theme = if is_dark {
-            HLJS_DARK_THEME
-        } else {
-            HLJS_LIGHT_THEME
-        };
         let css_url = format!(
-            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{HLJS_VERSION}/styles/{theme}.min.css"
+            "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{HLJS_VERSION}/styles/{HLJS_THEME}.min.css"
         );
-        // Create or update the highlight.js theme stylesheet and re-highlight all code blocks
+        // Create or update the highlight.js theme stylesheet and highlight all code blocks
         document::eval(&format!(
             r#"
             // Create or update the highlight.js theme link element
