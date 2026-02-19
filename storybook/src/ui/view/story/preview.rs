@@ -50,7 +50,10 @@ pub fn StoryPreview(
                 PropsEditorHeader { expanded: state.props_expanded }
                 if (state.props_expanded)() {
                     div { class: "fullscreen-props-scroll",
-                        PropsEditor { props_json: state.props_json, schema: prop_schema.clone() }
+                        PropsEditor {
+                            props_json: state.props_json,
+                            schema: prop_schema.clone(),
+                        }
                     }
                 }
             }

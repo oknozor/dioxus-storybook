@@ -25,8 +25,8 @@ pub fn TextInput(
     rsx! {
         input {
             class: "prop-input",
-            r#type: "number",
             oninput: move |e| oninput.call(e.value()),
+            ..attributes,
         }
     }
 }

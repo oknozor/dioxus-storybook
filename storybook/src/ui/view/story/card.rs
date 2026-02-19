@@ -51,7 +51,10 @@ pub fn StoryCard(
             div { class: "props-editor-section",
                 PropsEditorHeader { expanded: state.props_expanded }
                 if (state.props_expanded)() {
-                    PropsEditor { props_json: state.props_json, schema: prop_schema.clone() }
+                    PropsEditor {
+                        props_json: state.props_json,
+                        schema: prop_schema.clone(),
+                    }
                 }
             }
         }

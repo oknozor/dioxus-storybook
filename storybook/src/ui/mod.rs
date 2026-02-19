@@ -1,7 +1,7 @@
 use crate::ui::view::doc_page::DocPage;
 use crate::ui::models::{ComponentInfo, Selection};
 use crate::ui::view::sidebar::Sidebar;
-use crate::{STORYBOOK_CSS, get_components, take_config};
+use crate::{STORYBOOK_CSS, find_doc, get_components, take_config};
 use dioxus::prelude::*;
 
 // MVVM layers
@@ -18,7 +18,8 @@ pub use viewmodels::UiSettings;
 pub(crate) use view::top_bar::TopBar;
 
 use crate::ui::view::story::StoryPage;
-    
+use crate::ui::viewmodels::story_page_vm::{resolve_story_page, StoryPageError};
+
 #[component]
 pub(crate) fn App() -> Element {
     // Take the config from thread-local storage and provide it as context
@@ -81,16 +82,40 @@ fn Storybook() -> Element {
                 div { class: "main-content",
                     div { class: "component-preview",
                         match selected() {
-                            Some(Selection::Story(component_name, story_index)) => rsx! {
-                                StoryPage {
-                                    key: "{component_name}-{story_index}",
-                                    component_name,
-                                    story_index,
+                            Some(Selection::Story(component_name, story_index)) => {
+                                match resolve_story_page(&component_name, story_index) {
+                                    Ok(data) => rsx! {
+                                        StoryPage {
+                                            key: "{component_name}-{story_index}",
+                                            component_name,
+                                            story_index,
+                                            story: data.story,
+                                            story_title: data.story_title,
+                                            render_fn: data.render_fn,
+                                            prop_schema: data.prop_schema,
+                                            description: data.description,
+                                        }
+                                    },
+                                    Err(StoryPageError::ComponentNotFound(name)) => rsx! {
+                                        div { class: "error", "Component not found: {name}" }
+                                    },
+                                    Err(StoryPageError::StoryNotFound { component_name, story_index }) => {
+                                        rsx! {
+                                            div { class: "error", "Story not found: index {story_index} for {component_name}" }
+                                        }
+                                    }
                                 }
-                            },
-                            Some(Selection::DocPage(doc_path)) => rsx! {
-                                DocPage { key: "{doc_path}", path: doc_path }
-                            },
+                            }
+                            Some(Selection::DocPage(doc_path)) => {
+                                match find_doc(&doc_path) {
+                                    Some(doc) => rsx! {
+                                        DocPage { key: "{doc_path}", content_html: doc.content_html.to_string() }
+                                    },
+                                    None => rsx! {
+                                        div { class: "error", "Documentation not found: {doc_path}" }
+                                    },
+                                }
+                            }
                             None => rsx! {
                                 div { class: "empty-state",
                                     h2 { "Select a story" }

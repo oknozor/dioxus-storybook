@@ -2,29 +2,22 @@ use crate::ui::models::Selection;
 use dioxus::prelude::*;
 use lucide_dioxus::{BookOpen, ChevronRight, Component};
 
-/// Expandable component node that shows individual stories as children
+/// Expandable component node that shows individual stories as children.
+///
+/// Pure presentational component — `is_active` is computed by the parent.
 #[component]
 pub fn ComponentNode(
     name: String,
     selected: Signal<Option<Selection>>,
     stories: Vec<String>,
+    is_active: bool,
 ) -> Element {
     let component_name = name.clone();
-    let current_name = name.clone();
-
-    let is_component_active = use_memo(move || match selected() {
-        Some(Selection::Story(ref cn, _)) => cn == &current_name,
-        _ => false,
-    });
 
     rsx! {
         div { class: "component-node-group",
-            RootNode {
-                name: name.clone(),
-                expanded: is_component_active(),
-                selected,
-            }
-            if is_component_active() {
+            RootNode { name: name.clone(), expanded: is_active, selected }
+            if is_active {
                 div { class: "story-children",
                     for (index , story_title) in stories.iter().enumerate() {
                         {

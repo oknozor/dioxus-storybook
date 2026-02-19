@@ -1,11 +1,12 @@
-use dioxus::prelude::*;
 use crate::ui::models::ViewportSize;
+use dioxus::prelude::*;
 
 /// Global UI settings shared via context.
 ///
 /// This is the ViewModel for application-wide UI state — it holds reactive
 /// signals that views can read and write.
-#[derive(Clone, Copy)]
+
+#[derive(Clone, Copy, PartialEq)]
 pub struct UiSettings {
     pub is_dark_theme: Signal<bool>,
     pub grid_enabled: Signal<bool>,

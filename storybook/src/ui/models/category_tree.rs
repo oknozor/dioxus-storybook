@@ -1,8 +1,13 @@
 use std::collections::BTreeMap;
 
+#[cfg(feature = "self-stories")]
+use schemars::JsonSchema;
+
+#[cfg(feature = "self-stories")]
+use serde::{Deserialize, Serialize};
+
 /// A tree node that can contain either subcategories or components (or both).
-///
-/// This is a pure data model — it has no UI rendering logic.
+#[cfg_attr(feature = "self-stories", derive(Serialize, Deserialize, JsonSchema))]
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct CategoryTreeNode {
     /// Subcategories indexed by their name segment

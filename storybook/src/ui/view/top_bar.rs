@@ -8,7 +8,7 @@ use crate::ui::models::Selection;
 use crate::ui::view::shared::{FullscreenButton, GridButton, OutlineButton, ThemeToggleButton, ViewPortSelector};
 use crate::ui::view::story::StoryZoomControls;
 
-/// Top navigation bar with theme, grid, outline, fullscreen toggles, and story-specific controls
+/// Top navigation bar with theme, grid, outline, fullscreen toggles, and story-specific controls.
 #[cfg_attr(feature = "self-stories", storybook(tag = "Organisms"))]
 #[component]
 pub(crate) fn TopBar(selected: Signal<Option<Selection>>) -> Element {

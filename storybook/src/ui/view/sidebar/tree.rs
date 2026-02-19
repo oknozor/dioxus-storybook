@@ -2,8 +2,17 @@ use dioxus::prelude::*;
 use lucide_dioxus::{FolderOpen, Folder, ChevronRight, FileText};
 use crate::ui::view::sidebar::node::ComponentNode;
 use crate::ui::models::{CategoryTreeNode, NodeType, Selection};
+use crate::ui::viewmodels::sidebar_vm::get_story_titles;
+#[cfg(feature = "self-stories")]
+use crate::{self as storybook};
+
+#[cfg(feature = "self-stories")]
+use storybook_macro::storybook;
+
+
 
 /// Recursive component for rendering tree nodes (categories and folders)
+#[cfg_attr(feature = "self-stories", storybook(tag = "Molecules"))]
 #[component]
 pub fn TreeNode(
     name: String,
@@ -48,16 +57,20 @@ pub fn TreeNode(
                     for component_name in node.components.iter() {
                         {
                             let component_name = component_name.clone();
-                            let stories: Vec<String> = crate::find_component(&component_name)
-                                .map(|reg| (reg.get_stories)().into_iter().map(|s| s.title).collect())
-                                .unwrap_or_default();
+                            let stories = get_story_titles(&component_name);
+                            let is_active = matches!(
 
+                                selected(),
+                                Some(Selection::Story(ref cn, _))
+                                if cn == &component_name
+                            );
                             rsx! {
                                 ComponentNode {
                                     key: "{component_name}",
                                     name: component_name.clone(),
                                     selected,
                                     stories,
+                                    is_active,
                                 }
                             }
                         }

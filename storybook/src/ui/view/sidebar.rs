@@ -4,10 +4,14 @@ use crate::ui::view::sidebar::node::ComponentNode;
 use crate::ui::view::sidebar::tree::TreeNode;
 use crate::ui::view::sidebar::search_input::SearchInput;
 use crate::ui::services::category_builder::build_category_tree;
+use crate::ui::viewmodels::sidebar_vm::get_story_titles;
 
 mod search_input;
 mod tree;
 mod node;
+
+#[cfg(feature = "self-stories")]
+mod stories;
 
 #[component]
 pub fn Sidebar(search_query: Signal<String>, components: Vec<ComponentInfo>, selected: Signal<Option<Selection>>) -> Element {
@@ -42,16 +46,20 @@ pub fn ComponentTree(
             for component_name in tree.components.iter() {
                 {
                     let component_name = component_name.clone();
-                    let stories: Vec<String> = crate::find_component(&component_name)
-                        .map(|reg| (reg.get_stories)().into_iter().map(|s| s.title).collect())
-                        .unwrap_or_default();
+                    let stories = get_story_titles(&component_name);
+                    let is_active = matches!(
 
+                        selected(),
+                        Some(Selection::Story(ref cn, _))
+                        if cn == &component_name
+                    );
                     rsx! {
                         ComponentNode {
                             key: "{component_name}",
                             name: component_name.clone(),
                             selected,
                             stories,
+                            is_active,
                         }
                     }
                 }
