@@ -30,7 +30,7 @@ jobs:
         run: cargo install dioxus-cli
 
       - name: Build
-        run: dx bundle --release --platform web --package storybook-example --base-path dioxus-storybook --out-dir dist
+        run: dx bundle --release --platform web --package storybook --base-path dioxus-storybook --out-dir dist
 
       - name: Prepare 404 fallback
         run: cp dist/index.html dist/404.html
