@@ -1,7 +1,7 @@
 ## TODOs
 
 - [ ] UI
-  - [ ] fix grid
+  - [x] fix grid
   - [ ] Props not bound to preview (eg. SearchInput)
   - [x] fix doc comment
   - [ ] enum props in prop editor should be select

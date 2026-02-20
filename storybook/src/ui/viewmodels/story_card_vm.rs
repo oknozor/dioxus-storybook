@@ -1,5 +1,6 @@
 use crate::ui::services::iframe::{
-    build_css_links, build_outline_css, build_srcdoc, capture_inner_html, make_container_id,
+    build_css_links, build_grid_css, build_outline_css, build_srcdoc, capture_inner_html,
+    make_container_id,
 };
 use crate::ui::viewmodels::ui_settings::UiSettings;
 use crate::{StoryInfo, StorybookConfig};
@@ -9,7 +10,6 @@ use dioxus::prelude::*;
 pub struct StoryCardState {
     pub container_id: String,
     pub srcdoc: String,
-    pub preview_area_class: &'static str,
     pub zoom_level: Signal<i32>,
     pub props_json: Signal<String>,
     pub props_expanded: Signal<bool>,
@@ -47,19 +47,13 @@ pub fn use_story_card(
 
     let css_links = build_css_links(&config);
     let outline_css = build_outline_css(outline_enabled);
+    let grid_css = build_grid_css(grid_enabled);
     let background_color = if dark_bg { "#1e1e1e" } else { "#ffffff" };
-    let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html(), background_color);
-
-    let preview_area_class = if grid_enabled {
-        "story-preview-area grid-enabled"
-    } else {
-        "story-preview-area"
-    };
+    let srcdoc = build_srcdoc(&css_links, outline_css, grid_css, &iframe_html(), background_color);
 
     StoryCardState {
         container_id,
         srcdoc,
-        preview_area_class,
         zoom_level,
         props_json,
         props_expanded,

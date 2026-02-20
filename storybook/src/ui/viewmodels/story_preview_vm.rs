@@ -1,5 +1,6 @@
 use crate::ui::services::iframe::{
-    build_css_links, build_outline_css, build_srcdoc, capture_inner_html, make_container_id,
+    build_css_links, build_grid_css, build_outline_css, build_srcdoc, capture_inner_html,
+    make_container_id,
 };
 use crate::ui::viewmodels::ui_settings::UiSettings;
 use crate::{StoryInfo, StorybookConfig};
@@ -18,11 +19,6 @@ pub enum DockPosition {
 pub struct StoryPreviewState {
     pub container_id: String,
     pub srcdoc: String,
-    pub preview_area_class: String,
-    pub container_class: &'static str,
-    pub panel_class: &'static str,
-    pub dock_bottom_btn_class: &'static str,
-    pub dock_right_btn_class: &'static str,
     pub zoom_level: i32,
     pub viewport_width: &'static str,
     pub props_json: Signal<String>,
@@ -64,49 +60,13 @@ pub fn use_story_preview(
 
     let css_links = build_css_links(&config);
     let outline_css = build_outline_css(outline_enabled);
+    let grid_css = build_grid_css(grid_enabled);
     let background_color = if dark_bg { "#1e1e1e" } else { "#ffffff" };
-    let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html(), background_color);
-
-    let mut classes = vec!["fullscreen-preview-area"];
-    if grid_enabled {
-        classes.push("grid-enabled");
-    }
-    let preview_area_class = classes.join(" ");
-
-    let visible = (props_visible)();
-    let dock = (props_dock_position)();
-
-    let container_class = match (visible, dock) {
-        (true, DockPosition::Bottom) => "fullscreen-story-view dock-bottom",
-        (true, DockPosition::Right) => "fullscreen-story-view dock-right",
-        _ => "fullscreen-story-view",
-    };
-
-    let panel_class = match dock {
-        DockPosition::Bottom => "fullscreen-props-panel props-dock-bottom",
-        DockPosition::Right => "fullscreen-props-panel props-dock-right",
-    };
-
-    let dock_bottom_btn_class = if dock == DockPosition::Bottom {
-        "props-panel-btn active"
-    } else {
-        "props-panel-btn"
-    };
-
-    let dock_right_btn_class = if dock == DockPosition::Right {
-        "props-panel-btn active"
-    } else {
-        "props-panel-btn"
-    };
+    let srcdoc = build_srcdoc(&css_links, outline_css, grid_css, &iframe_html(), background_color);
 
     StoryPreviewState {
         container_id,
         srcdoc,
-        preview_area_class,
-        container_class,
-        panel_class,
-        dock_bottom_btn_class,
-        dock_right_btn_class,
         zoom_level,
         viewport_width: viewport_size.to_width(),
         props_json,

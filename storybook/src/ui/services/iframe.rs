@@ -19,10 +19,31 @@ pub fn build_outline_css(enabled: bool) -> &'static str {
     }
 }
 
+/// Build the grid overlay CSS applied to the iframe body when the grid is enabled.
+pub fn build_grid_css(enabled: bool) -> &'static str {
+    if enabled {
+        concat!(
+            "body { ",
+            "background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px; ",
+            "background-position: 0 0, 0 0, 0 0, 0 0; ",
+            "background-blend-mode: difference; ",
+            "background-image: ",
+            "linear-gradient(rgba(130,130,130,0.5) 1px, transparent 1px), ",
+            "linear-gradient(90deg, rgba(130,130,130,0.5) 1px, transparent 1px), ",
+            "linear-gradient(rgba(130,130,130,0.25) 1px, transparent 1px), ",
+            "linear-gradient(90deg, rgba(130,130,130,0.25) 1px, transparent 1px); ",
+            "}"
+        )
+    } else {
+        ""
+    }
+}
+
 /// Build the full srcdoc HTML for an iframe preview.
 pub fn build_srcdoc(
     css_links: &str,
     outline_css: &str,
+    grid_css: &str,
     body_html: &str,
     background_color: &str,
 ) -> String {
@@ -34,6 +55,7 @@ pub fn build_srcdoc(
     <style>
         body {{ margin: 0; padding: 16px; background: {background_color}; }}
         {outline_css}
+        {grid_css}
     </style>
 </head>
 <body>

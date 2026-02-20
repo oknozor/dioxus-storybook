@@ -37,7 +37,7 @@ pub fn StoryCard(
 
             StoryZoomControls { zoom_level: state.zoom_level }
 
-            div { class: "{state.preview_area_class}",
+            div { class: "story-preview-area",
                 iframe {
                     class: "preview-iframe",
                     srcdoc: "{state.srcdoc}",
