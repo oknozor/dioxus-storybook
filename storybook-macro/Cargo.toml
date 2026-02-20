@@ -2,6 +2,13 @@
 name = "storybook-macro"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.85"
+description = "Proc macros for the dioxus-storybook component development framework"
+license-file = "../LICENSE"
+repository = "https://github.com/oknozor/dioxus-storybook"
+authors = ["Paul Delafosse <paul.delafosse@protonmail.com>"]
+keywords = ["dioxus", "storybook", "macro"]
+categories = ["gui", "development-tools"]
 
 [lib]
 proc-macro = true

@@ -2,6 +2,14 @@
 name = "storybook"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.85"
+description = "A component development and documentation framework for Dioxus — inspired by Storybook.js"
+license = "MIT"
+repository = "https://github.com/oknozor/dioxus-storybook"
+authors = ["Paul Delafosse <paul.delafosse@protonmail.com>"]
+keywords = ["dioxus", "storybook", "ui", "components", "documentation"]
+categories = ["gui", "development-tools", "wasm"]
+readme = "../README.md"
 
 [features]
 ## Include the storybook's own UI components in the story browser.
