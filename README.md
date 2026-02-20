@@ -2,14 +2,15 @@
 
 - [ ] UI
   - [ ] fix grid
-  - [ ] fix doc comment
+  - [ ] Props not bound to preview (eg. SearchInput)
+  - [x] fix doc comment
   - [ ] enum props in prop editor should be select
   - [x] remove the dark theme
   - [ ] select a storybook background
   - [ ] Add a theme component
   - [ ] Add icon grid
-  - [ ] Add root docs 
-  - [ ] Fix tree scroll
+  - [x] Add root docs 
+  - [x] Fix tree scroll
   - [x] Fix search bar
 - Misc
   - [x] update schemars to ^1
