@@ -24,16 +24,19 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: cargo-bins/cargo-binstall@main
 
       - name: Install Dioxus CLI
-        run: cargo install dioxus-cli
+        run: cargo binstall dioxus-cli
 
       - name: Build
-        run: dx bundle --release --platform web --package storybook --base-path dioxus-storybook --out-dir dist
+        run: dx bundle --platform web --package storybook --target wasm32 --out-dir dist --base-path "/dioxus-storybook/"
 
       - name: Prepare 404 fallback
-        run: cp dist/index.html dist/404.html
+        run: cp dist/public/index.html dist/public/404.html
+
+      - name: Copy assets
+        run: mv dist/public/* dist
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -50,4 +53,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
