@@ -543,7 +543,7 @@ impl syn::parse::Parse for StorybookArgs {
                 let _: syn::Token![=] = input.parse()?;
                 let lit: syn::LitStr = input.parse()?;
                 tag = lit.value();
-            } 
+            }
             if input.peek(syn::Token![,]) {
                 let _: syn::Token![,] = input.parse()?;
             }

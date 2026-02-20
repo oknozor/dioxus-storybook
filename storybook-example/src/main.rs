@@ -268,10 +268,13 @@ pub fn ExampleBadge(
 impl Stories for ExampleBadgeProps {
     fn stories() -> Vec<Story<Self>> {
         vec![
-            Story::new("Default", Self {
-                text: "Badge".to_string(),
-                variant: "default".to_string(),
-            }),
+            Story::new(
+                "Default",
+                Self {
+                    text: "Badge".to_string(),
+                    variant: "default".to_string(),
+                },
+            ),
             Story::with_description(
                 "Success",
                 "Green badge indicating a positive or completed state",
@@ -384,7 +387,9 @@ pub fn ExampleAlert(
                 strong { "{title}" }
             }
             if !description.is_empty() {
-                p { style: "margin: 4px 0 0 28px; color: #555; font-size: 14px;", "{description}" }
+                p { style: "margin: 4px 0 0 28px; color: #555; font-size: 14px;",
+                    "{description}"
+                }
             }
         }
     }
@@ -393,11 +398,15 @@ pub fn ExampleAlert(
 impl Stories for ExampleAlertProps {
     fn stories() -> Vec<Story<Self>> {
         vec![
-            Story::new("Info", Self {
-                title: "Did you know?".to_string(),
-                description: "You can embed stories inside markdown documentation pages.".to_string(),
-                severity: "info".to_string(),
-            }),
+            Story::new(
+                "Info",
+                Self {
+                    title: "Did you know?".to_string(),
+                    description: "You can embed stories inside markdown documentation pages."
+                        .to_string(),
+                    severity: "info".to_string(),
+                },
+            ),
             Story::with_description(
                 "Success",
                 "A success alert confirming a completed action",
@@ -412,7 +421,8 @@ impl Stories for ExampleAlertProps {
                 "A warning alert drawing attention to a potential issue",
                 Self {
                     title: "Unsaved changes".to_string(),
-                    description: "You have unsaved changes that will be lost if you navigate away.".to_string(),
+                    description: "You have unsaved changes that will be lost if you navigate away."
+                        .to_string(),
                     severity: "warning".to_string(),
                 },
             ),

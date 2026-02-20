@@ -66,10 +66,7 @@ impl Stories for ComponentNodeProps {
                 "Expanded",
                 Self {
                     name: "ExampleButton".to_string(),
-                    selected: Signal::new(Some(Selection::Story(
-                        "ExampleButton".to_string(),
-                        0,
-                    ))),
+                    selected: Signal::new(Some(Selection::Story("ExampleButton".to_string(), 0))),
                     stories: vec!["Default".to_string(), "Disabled".to_string()],
                     is_active: true,
                     has_docs: false,
@@ -79,10 +76,7 @@ impl Stories for ComponentNodeProps {
                 "Expanded with Docs",
                 Self {
                     name: "ExampleButton".to_string(),
-                    selected: Signal::new(Some(Selection::Story(
-                        "ExampleButton".to_string(),
-                        0,
-                    ))),
+                    selected: Signal::new(Some(Selection::Story("ExampleButton".to_string(), 0))),
                     stories: vec!["Default".to_string(), "Disabled".to_string()],
                     is_active: true,
                     has_docs: true,

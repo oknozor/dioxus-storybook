@@ -1,9 +1,9 @@
 use super::props_editor::{PropsEditor, PropsEditorHeader};
-use crate::{RenderFn, StoryInfo};
-use schemars::Schema;
 use crate::ui::services::decorators::apply_decorators;
 use crate::ui::viewmodels::story_preview_vm::use_story_preview;
+use crate::{RenderFn, StoryInfo};
 use dioxus::prelude::*;
+use schemars::Schema;
 
 /// Full-screen story view with fixed bottom props editor and viewport/zoom from UiSettings.
 /// Used by StoryPage for the main story display.

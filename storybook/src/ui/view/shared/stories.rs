@@ -1,6 +1,7 @@
 use crate::ui::view::shared::{
-    CheckboxProps, FullscreenButtonProps, GridButtonProps, OutlineButtonProps, ResetZoomButtonProps,
-    TdProps, TextInputProps, ThemeToggleButtonProps, TrProps, ZoomInButtonProps, ZoomOutButtonProps,
+    CheckboxProps, FullscreenButtonProps, GridButtonProps, OutlineButtonProps,
+    ResetZoomButtonProps, TdProps, TextInputProps, ThemeToggleButtonProps, TrProps,
+    ZoomInButtonProps, ZoomOutButtonProps,
 };
 use crate::{Stories, Story};
 use dioxus::prelude::*;

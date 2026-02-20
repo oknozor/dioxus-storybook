@@ -492,7 +492,11 @@ fn extract_fields_from_schema(schema: &Schema) -> Vec<SchemaFieldInfo> {
     let required: std::collections::HashSet<String> = schema
         .get("required")
         .and_then(|v| v.as_array())
-        .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect()
+        })
         .unwrap_or_default();
 
     // Get the $defs (schemars 1.x uses "$defs" instead of "definitions")
@@ -505,18 +509,19 @@ fn extract_fields_from_schema(schema: &Schema) -> Vec<SchemaFieldInfo> {
     // Get properties from the schema
     if let Some(properties) = schema.get("properties").and_then(|v| v.as_object()) {
         for (name, prop_value) in properties {
-            let (type_name, schema_type, description) = if let Some(prop_obj) = prop_value.as_object() {
-                let schema_type = get_schema_type(prop_obj);
-                let type_name = get_type_name_from_value(prop_obj, &defs);
-                let desc = prop_obj
-                    .get("description")
-                    .and_then(|v| v.as_str())
-                    .map(String::from);
-                (type_name, schema_type, desc)
-            } else {
-                // Bool schema (true/false)
-                ("any".to_string(), None, None)
-            };
+            let (type_name, schema_type, description) =
+                if let Some(prop_obj) = prop_value.as_object() {
+                    let schema_type = get_schema_type(prop_obj);
+                    let type_name = get_type_name_from_value(prop_obj, &defs);
+                    let desc = prop_obj
+                        .get("description")
+                        .and_then(|v| v.as_str())
+                        .map(String::from);
+                    (type_name, schema_type, desc)
+                } else {
+                    // Bool schema (true/false)
+                    ("any".to_string(), None, None)
+                };
 
             fields.push(SchemaFieldInfo {
                 name: name.clone(),

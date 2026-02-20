@@ -49,11 +49,7 @@ pub fn TreeNode(
 
     rsx! {
         div { class: "{node_class}",
-            TreeNodeHeader {
-                expanded: expanded,
-                name: name.clone(),
-                component_count,
-            }
+            TreeNodeHeader { expanded, name: name.clone(), component_count }
             if expanded() {
                 div { class: "tree-children",
                     if has_doc {

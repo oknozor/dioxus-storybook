@@ -64,73 +64,68 @@ fn Storybook() -> Element {
 
     rsx! {
         div { class: "{container_class}",
-            TopBar { selected }
-
-            div { class: "content-wrapper",
-                if !(ui_settings.fullscreen)() {
-                    Sidebar {
-                        search_query,
-                        components: filtered_components(),
-                        selected,
-                    }
+            if !(ui_settings.fullscreen)() {
+                Sidebar {
+                    search_query,
+                    components: filtered_components(),
+                    selected,
                 }
-
-                div { class: "main-content",
-                    div { class: "component-preview",
-                        match selected() {
-                            Some(Selection::Story(component_name, story_index)) => {
-                                match resolve_story_page(&component_name, story_index) {
-                                    Ok(data) => rsx! {
-                                        StoryPage {
-                                            key: "{component_name}-{story_index}",
-                                            component_name,
-                                            story_index,
-                                            story: data.story,
-                                            story_title: data.story_title,
-                                            render_fn: data.render_fn,
-                                            prop_schema: data.prop_schema,
-                                        }
-                                    },
-                                    Err(StoryPageError::ComponentNotFound(name)) => rsx! {
-                                        div { class: "error", "Component not found: {name}" }
-                                    },
-                                    Err(StoryPageError::StoryNotFound { component_name, story_index }) => {
-                                        rsx! {
-                                            div { class: "error", "Story not found: index {story_index} for {component_name}" }
-                                        }
-                                    }
-                                }
-                            }
-                            Some(Selection::DocPage(doc_path)) => {
-                                // First try DocRegistration (from storydoc! macro)
-                                if let Some(doc) = find_doc(&doc_path) {
-                                    rsx! {
-                                        DocPage { key: "{doc_path}", content_html: doc.content_html.to_string() }
-                                    }
-                                // Then try component description (from doc comments)
-                                } else if let Some(component_name) = doc_path.strip_prefix("__component__/") {
-                                    match find_component(component_name) {
-                                        Some(reg) if !reg.description.is_empty() => rsx! {
-                                            DocPage { key: "{doc_path}", content_html: reg.description.to_string() }
-                                        },
-                                        _ => rsx! {
-                                            div { class: "error", "Documentation not found: {doc_path}" }
-                                        },
-                                    }
-                                } else {
-                                    rsx! {
-                                        div { class: "error", "Documentation not found: {doc_path}" }
-                                    }
-                                }
-                            }
-                            None => rsx! {
-                                div { class: "empty-state",
-                                    h2 { "Select a story" }
-                                    p { "Choose a component and story from the sidebar to preview it" }
+            }
+            div { class: "component-preview",
+                TopBar { selected }
+                match selected() {
+                    Some(Selection::Story(component_name, story_index)) => {
+                        match resolve_story_page(&component_name, story_index) {
+                            Ok(data) => rsx! {
+                                StoryPage {
+                                    key: "{component_name}-{story_index}",
+                                    component_name,
+                                    story_index,
+                                    story: data.story,
+                                    story_title: data.story_title,
+                                    render_fn: data.render_fn,
+                                    prop_schema: data.prop_schema,
                                 }
                             },
+                            Err(StoryPageError::ComponentNotFound(name)) => rsx! {
+                                div { class: "error", "Component not found: {name}" }
+                            },
+                            Err(StoryPageError::StoryNotFound { component_name, story_index }) => {
+                                rsx! {
+                                    div { class: "error", "Story not found: index {story_index} for {component_name}" }
+                                }
+                            }
                         }
                     }
+                    Some(Selection::DocPage(doc_path)) => {
+                        // First try DocRegistration (from storydoc! macro)
+                        if let Some(doc) = find_doc(&doc_path) {
+                            rsx! {
+                                DocPage { key: "{doc_path}", content_html: doc.content_html.to_string() }
+                            }
+                            // Then try component description (from doc comments)
+                        } else if let Some(component_name) = doc_path.strip_prefix("__component__/")
+                        {
+                            match find_component(component_name) {
+                                Some(reg) if !reg.description.is_empty() => rsx! {
+                                    DocPage { key: "{doc_path}", content_html: reg.description.to_string() }
+                                },
+                                _ => rsx! {
+                                    div { class: "error", "Documentation not found: {doc_path}" }
+                                },
+                            }
+                        } else {
+                            rsx! {
+                                div { class: "error", "Documentation not found: {doc_path}" }
+                            }
+                        }
+                    }
+                    None => rsx! {
+                        div { class: "empty-state",
+                            h2 { "Select a story" }
+                            p { "Choose a component and story from the sidebar to preview it" }
+                        }
+                    },
                 }
             }
         }

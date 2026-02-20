@@ -1,6 +1,6 @@
 use crate::ui::view::story::header::StoryHeaderProps;
-use crate::ui::view::story::toolbar::StoryZoomControlsProps;
 use crate::ui::view::story::props_editor::PropsEditorHeaderProps;
+use crate::ui::view::story::toolbar::StoryZoomControlsProps;
 use crate::{Stories, Story};
 use dioxus::prelude::Signal;
 
@@ -68,4 +68,3 @@ impl Stories for PropsEditorHeaderProps {
         ]
     }
 }
-
