@@ -54,10 +54,6 @@ pub fn StoryPreview(
                     iframe {
                         class: "preview-iframe",
                         srcdoc: "{state.srcdoc}",
-                        transform: "scale({state.zoom_level as f64 / 100.0})",
-                        transform_origin: "top left",
-                        width: "{10000.0 / state.zoom_level as f64}%",
-                        height: "auto",
                     }
                 }
             }

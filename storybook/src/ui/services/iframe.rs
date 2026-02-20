@@ -39,11 +39,22 @@ pub fn build_grid_css(enabled: bool) -> &'static str {
     }
 }
 
+/// Build the CSS zoom rule applied to the iframe body.
+pub fn build_zoom_css(zoom_level: i32) -> String {
+    if zoom_level == 100 {
+        String::new()
+    } else {
+        let scale = zoom_level as f64 / 100.0;
+        format!("body {{ zoom: {scale}; }}")
+    }
+}
+
 /// Build the full srcdoc HTML for an iframe preview.
 pub fn build_srcdoc(
     css_links: &str,
     outline_css: &str,
     grid_css: &str,
+    zoom_css: &str,
     body_html: &str,
     background_color: &str,
 ) -> String {
@@ -56,6 +67,7 @@ pub fn build_srcdoc(
         body {{ margin: 0; padding: 16px; background: {background_color}; }}
         {outline_css}
         {grid_css}
+        {zoom_css}
     </style>
 </head>
 <body>

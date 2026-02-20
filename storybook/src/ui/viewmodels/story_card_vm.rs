@@ -1,6 +1,6 @@
 use crate::ui::services::iframe::{
-    build_css_links, build_grid_css, build_outline_css, build_srcdoc, capture_inner_html,
-    make_container_id,
+    build_css_links, build_grid_css, build_outline_css, build_srcdoc, build_zoom_css,
+    capture_inner_html, make_container_id,
 };
 use crate::ui::viewmodels::ui_settings::UiSettings;
 use crate::{StoryInfo, StorybookConfig};
@@ -45,11 +45,21 @@ pub fn use_story_card(
     let grid_enabled = (ui_settings.grid_enabled)();
     let dark_bg = (ui_settings.dark_preview_background)();
 
+    let current_zoom = (zoom_level)();
+
     let css_links = build_css_links(&config);
     let outline_css = build_outline_css(outline_enabled);
     let grid_css = build_grid_css(grid_enabled);
+    let zoom_css = build_zoom_css(current_zoom);
     let background_color = if dark_bg { "#1e1e1e" } else { "#ffffff" };
-    let srcdoc = build_srcdoc(&css_links, outline_css, grid_css, &iframe_html(), background_color);
+    let srcdoc = build_srcdoc(
+        &css_links,
+        outline_css,
+        grid_css,
+        &zoom_css,
+        &iframe_html(),
+        background_color,
+    );
 
     StoryCardState {
         container_id,

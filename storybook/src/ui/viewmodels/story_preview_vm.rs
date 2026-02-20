@@ -1,6 +1,6 @@
 use crate::ui::services::iframe::{
-    build_css_links, build_grid_css, build_outline_css, build_srcdoc, capture_inner_html,
-    make_container_id,
+    build_css_links, build_grid_css, build_outline_css, build_srcdoc, build_zoom_css,
+    capture_inner_html, make_container_id,
 };
 use crate::ui::viewmodels::ui_settings::UiSettings;
 use crate::{StoryInfo, StorybookConfig};
@@ -19,7 +19,6 @@ pub enum DockPosition {
 pub struct StoryPreviewState {
     pub container_id: String,
     pub srcdoc: String,
-    pub zoom_level: i32,
     pub viewport_width: &'static str,
     pub props_json: Signal<String>,
     pub props_visible: Signal<bool>,
@@ -61,13 +60,20 @@ pub fn use_story_preview(
     let css_links = build_css_links(&config);
     let outline_css = build_outline_css(outline_enabled);
     let grid_css = build_grid_css(grid_enabled);
+    let zoom_css = build_zoom_css(zoom_level);
     let background_color = if dark_bg { "#1e1e1e" } else { "#ffffff" };
-    let srcdoc = build_srcdoc(&css_links, outline_css, grid_css, &iframe_html(), background_color);
+    let srcdoc = build_srcdoc(
+        &css_links,
+        outline_css,
+        grid_css,
+        &zoom_css,
+        &iframe_html(),
+        background_color,
+    );
 
     StoryPreviewState {
         container_id,
         srcdoc,
-        zoom_level,
         viewport_width: viewport_size.to_width(),
         props_json,
         props_visible,
