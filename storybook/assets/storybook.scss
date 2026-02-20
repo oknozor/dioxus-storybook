@@ -802,12 +802,18 @@ iframe {
    Full-Screen Story View
    ============================================ */
 
+/* Default layout: column (bottom dock) */
 .fullscreen-story-view {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
     overflow: hidden;
+}
+
+/* When docked right, switch to row layout */
+.fullscreen-story-view.dock-right {
+    flex-direction: row;
 }
 
 .fullscreen-preview-area {
@@ -827,18 +833,97 @@ iframe {
     transition: max-width 0.2s ease;
 }
 
+/* --- Props panel: shared base --- */
 .fullscreen-props-panel {
     flex-shrink: 0;
-    border-top: 1px solid $color-border;
     background: $color-bg-base;
-    max-height: 40vh;
     display: flex;
     flex-direction: column;
+}
+
+/* Bottom dock variant */
+.fullscreen-props-panel.props-dock-bottom {
+    border-top: 1px solid $color-border;
+    height: 35vh;
+    min-height: 120px;
+    max-height: 50vh;
+}
+
+/* Right dock variant */
+.fullscreen-props-panel.props-dock-right {
+    border-left: 1px solid $color-border;
+    width: 35%;
+    min-width: 280px;
+    max-width: 50%;
+}
+
+/* --- Props panel header bar --- */
+.props-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    border-bottom: 1px solid $color-border;
+    background: $color-bg-subtle;
+    flex-shrink: 0;
+}
+
+.props-panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $color-text-muted;
+}
+
+.props-panel-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.props-panel-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: $color-text-muted;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: $color-bg-muted;
+        border-color: $color-border;
+        color: $color-text;
+    }
+
+    &.active {
+        background: $color-primary-bg;
+        border-color: $color-primary;
+        color: $color-primary;
+    }
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.props-panel-close:hover {
+    background: $color-error-bg;
+    border-color: $color-error;
+    color: $color-error;
 }
 
 .fullscreen-props-scroll {
     flex: 1;
     overflow-y: auto;
+    overflow-x: auto;
     min-height: 0;
 }
 

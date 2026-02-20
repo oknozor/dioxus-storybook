@@ -1,11 +1,12 @@
-use super::props_editor::{PropsEditor, PropsEditorHeader};
+use super::props_editor::PropsEditor;
 use crate::ui::services::decorators::apply_decorators;
-use crate::ui::viewmodels::story_preview_vm::use_story_preview;
+use crate::ui::viewmodels::story_preview_vm::{DockPosition, use_story_preview};
 use crate::{RenderFn, StoryInfo};
 use dioxus::prelude::*;
+use lucide_dioxus::{PanelBottom, PanelRight, X};
 use schemars::Schema;
 
-/// Full-screen story view with fixed bottom props editor and viewport/zoom from UiSettings.
+/// Full-screen story view with dockable props editor and viewport/zoom from UiSettings.
 /// Used by StoryPage for the main story display.
 #[component]
 pub fn StoryPreview(
@@ -17,9 +18,11 @@ pub fn StoryPreview(
     #[props(default)] attribute: Vec<Attribute>,
 ) -> Element {
     let state = use_story_preview(&component_name, story_index, &story);
+    let mut props_visible = state.props_visible;
+    let mut props_dock_position = state.props_dock_position;
 
     rsx! {
-        div { class: "fullscreen-story-view",
+        div { class: "{state.container_class}",
             // Hidden render container for HTML capture
             div {
                 id: "{state.container_id}",
@@ -45,10 +48,32 @@ pub fn StoryPreview(
                 }
             }
 
-            // Fixed bottom props editor
-            div { class: "fullscreen-props-panel",
-                PropsEditorHeader { expanded: state.props_expanded }
-                if (state.props_expanded)() {
+            if (props_visible)() {
+                div { class: "{state.panel_class}",
+                    // Panel header with dock controls and close button
+                    div { class: "props-panel-header",
+                        span { class: "props-panel-title", "Props Editor" }
+                        div { class: "props-panel-controls",
+                            button {
+                                class: "{state.dock_bottom_btn_class}",
+                                title: "Dock to bottom",
+                                onclick: move |_| props_dock_position.set(DockPosition::Bottom),
+                                PanelBottom { size: 16, stroke_width: 2 }
+                            }
+                            button {
+                                class: "{state.dock_right_btn_class}",
+                                title: "Dock to right",
+                                onclick: move |_| props_dock_position.set(DockPosition::Right),
+                                PanelRight { size: 16, stroke_width: 2 }
+                            }
+                            button {
+                                class: "props-panel-btn props-panel-close",
+                                title: "Close props editor",
+                                onclick: move |_| props_visible.set(false),
+                                X { size: 16, stroke_width: 2 }
+                            }
+                        }
+                    }
                     div { class: "fullscreen-props-scroll",
                         PropsEditor {
                             props_json: state.props_json,

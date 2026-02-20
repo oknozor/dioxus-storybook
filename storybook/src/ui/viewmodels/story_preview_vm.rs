@@ -5,15 +5,29 @@ use crate::ui::viewmodels::ui_settings::UiSettings;
 use crate::{StoryInfo, StorybookConfig};
 use dioxus::prelude::*;
 
+/// Docking position for the props editor panel.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum DockPosition {
+    /// Panel spans full width at the bottom of the preview area.
+    Bottom,
+    /// Panel appears as a vertical column on the right side.
+    Right,
+}
+
 /// Prepared state for a StoryPreview view.
 pub struct StoryPreviewState {
     pub container_id: String,
     pub srcdoc: String,
-    pub preview_area_class: &'static str,
+    pub preview_area_class: String,
+    pub container_class: &'static str,
+    pub panel_class: &'static str,
+    pub dock_bottom_btn_class: &'static str,
+    pub dock_right_btn_class: &'static str,
     pub zoom_level: i32,
     pub viewport_width: &'static str,
     pub props_json: Signal<String>,
-    pub props_expanded: Signal<bool>,
+    pub props_visible: Signal<bool>,
+    pub props_dock_position: Signal<DockPosition>,
 }
 
 /// Custom hook that encapsulates all StoryPreview business logic.
@@ -27,7 +41,8 @@ pub fn use_story_preview(
 ) -> StoryPreviewState {
     let mut iframe_html = use_signal(String::new);
     let props_json = use_signal(|| story.props_json.clone());
-    let props_expanded = use_signal(|| true);
+    let props_visible = use_signal(|| true);
+    let props_dock_position = use_signal(|| DockPosition::Bottom);
 
     let container_id = make_container_id("fullscreen-render", component_name, story_index);
     let container_id_for_effect = container_id.clone();
@@ -52,19 +67,50 @@ pub fn use_story_preview(
     let background_color = if dark_bg { "#1e1e1e" } else { "#ffffff" };
     let srcdoc = build_srcdoc(&css_links, outline_css, &iframe_html(), background_color);
 
-    let preview_area_class = if grid_enabled {
-        "fullscreen-preview-area grid-enabled"
+    let mut classes = vec!["fullscreen-preview-area"];
+    if grid_enabled {
+        classes.push("grid-enabled");
+    }
+    let preview_area_class = classes.join(" ");
+
+    let visible = (props_visible)();
+    let dock = (props_dock_position)();
+
+    let container_class = match (visible, dock) {
+        (true, DockPosition::Bottom) => "fullscreen-story-view dock-bottom",
+        (true, DockPosition::Right) => "fullscreen-story-view dock-right",
+        _ => "fullscreen-story-view",
+    };
+
+    let panel_class = match dock {
+        DockPosition::Bottom => "fullscreen-props-panel props-dock-bottom",
+        DockPosition::Right => "fullscreen-props-panel props-dock-right",
+    };
+
+    let dock_bottom_btn_class = if dock == DockPosition::Bottom {
+        "props-panel-btn active"
     } else {
-        "fullscreen-preview-area"
+        "props-panel-btn"
+    };
+
+    let dock_right_btn_class = if dock == DockPosition::Right {
+        "props-panel-btn active"
+    } else {
+        "props-panel-btn"
     };
 
     StoryPreviewState {
         container_id,
         srcdoc,
         preview_area_class,
+        container_class,
+        panel_class,
+        dock_bottom_btn_class,
+        dock_right_btn_class,
         zoom_level,
         viewport_width: viewport_size.to_width(),
         props_json,
-        props_expanded,
+        props_visible,
+        props_dock_position,
     }
 }
